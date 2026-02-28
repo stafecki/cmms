@@ -1,0 +1,27 @@
+services:
+  # MySQL - Główna baza danych
+  mysql-db:
+    image: mysql:8.0
+    container_name: cmms-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: cmms_db
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+
+  # MongoDB - Logi i historia
+  mongodb:
+    image: mongo:latest
+    container_name: cmms-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  # Redis - Sesje i cache
+  redis:
+    image: redis:alpine
+    container_name: cmms-redis
+    restart: always
+    ports:
+      - "6379:6379"

@@ -1,5 +1,17 @@
 -- 0. WYCZYŚĆ STARE TABELE
 SET FOREIGN_KEY_CHECKS = 0;
+-- Usuwanie Procedur
+DROP PROCEDURE IF EXISTS CloseWorkOrder;
+
+-- Usuwanie Triggerów
+DROP TRIGGER IF EXISTS after_work_order_insert;
+DROP TRIGGER IF EXISTS update_stock_after_usage;
+DROP TRIGGER IF EXISTS before_user_insert;
+
+DROP VIEW IF EXISTS view_active_tickets;
+DROP VIEW IF EXISTS view_low_stock;
+DROP VIEW IF EXISTS view_asset_stats;
+
 DROP TABLE IF EXISTS work_order_parts;
 DROP TABLE IF EXISTS parts;
 DROP TABLE IF EXISTS work_orders;
@@ -7,17 +19,7 @@ DROP TABLE IF EXISTS assets;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS categories;
-DROP VIEW IF EXISTS view_active_tickets;
-DROP VIEW IF EXISTS view_low_stock;
-DROP VIEW IF EXISTS view_asset_stats;
 
--- Usuwanie Procedur
-DROP PROCEDURE IF EXISTS sp_complete_work_order;
-
--- Usuwanie Triggerów
-DROP TRIGGER IF EXISTS after_work_order_insert;
-DROP TRIGGER IF EXISTS update_stock_after_usage;
-DROP TRIGGER IF EXISTS before_user_insert;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. SŁOWNIKI (Tabele pomocnicze)

@@ -1,0 +1,209 @@
+-- 0. WYCZYŚĆ STARE TABELE
+SET FOREIGN_KEY_CHECKS = 0;
+-- Usuwanie Procedur
+DROP PROCEDURE IF EXISTS CloseWorkOrder;
+
+-- Usuwanie Triggerów
+DROP TRIGGER IF EXISTS after_work_order_insert;
+DROP TRIGGER IF EXISTS update_stock_after_usage;
+DROP TRIGGER IF EXISTS before_user_insert;
+
+DROP VIEW IF EXISTS view_active_tickets;
+DROP VIEW IF EXISTS view_low_stock;
+DROP VIEW IF EXISTS view_asset_stats;
+
+DROP TABLE IF EXISTS work_order_parts;
+DROP TABLE IF EXISTS parts;
+DROP TABLE IF EXISTS work_orders;
+DROP TABLE IF EXISTS assets;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS categories;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 1. SŁOWNIKI (Tabele pomocnicze)
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);
+
+CREATE TABLE categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- 2. UŻYTKOWNICY
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    role_id INT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,  -- Możliwość zablokowania konta
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+-- 3. MASZYNY (ASSETY)
+CREATE TABLE assets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    serial_number VARCHAR(50) UNIQUE,
+    category_id INT,
+    status ENUM('SPRAWNA', 'AWARIA', 'W_NAPRAWIE', 'WYCOFANA') DEFAULT 'SPRAWNA',
+    location VARCHAR(100),
+    last_inspection DATE,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+-- 4. ZLECENIA NAPRAWY (WORK ORDERS)
+CREATE TABLE work_orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    asset_id INT NOT NULL,
+    reporter_id INT NOT NULL,
+    technician_id INT,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    priority ENUM('NISKI', 'SREDNI', 'WYSOKI', 'KRYTYCZNY') DEFAULT 'SREDNI',
+    status ENUM('NOWE', 'W_TRAKCIE', 'OCZEKUJE_NA_CZESCI', 'ZAKONCZONE') DEFAULT 'NOWE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    closed_at TIMESTAMP NULL,
+    FOREIGN KEY (asset_id) REFERENCES assets(id),
+    FOREIGN KEY (reporter_id) REFERENCES users(id),
+    FOREIGN KEY (technician_id) REFERENCES users(id)
+);
+
+-- 5. MAGAZYN I CZĘŚCI
+CREATE TABLE parts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    sku VARCHAR(50) UNIQUE,
+    description TEXT,
+    stock_quantity INT DEFAULT 0,
+    min_stock INT DEFAULT 5,
+    unit VARCHAR(10) DEFAULT 'szt'
+);
+
+-- 6. CZĘŚCI ZUŻYTE W ZLECENIU (Relacja wiele-do-wielu)
+CREATE TABLE work_order_parts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    work_order_id INT NOT NULL,
+    part_id INT NOT NULL,
+    quantity_used INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (part_id) REFERENCES parts(id)
+);
+
+-- 7. INSERT STARTOWYCH RÓL
+INSERT INTO roles (name, description) VALUES
+('ADMIN', 'Pełny dostęp do systemu i ustawień'),
+('TECHNICIAN', 'Obsługa napraw i pobieranie części'),
+('OPERATOR', 'Zgłaszanie awarii maszyn'),
+('WAREHOUSE_MANAGER', 'Zarządzanie stanami magazynowymi i dostawami');
+
+-- 8. PRZYKŁADOWY UŻYTKOWNIK
+INSERT INTO users (username, password_hash, first_name, last_name, role_id)
+VALUES ('j.kowalski', 'hash_hasla', 'Jan', 'Kowalski', 4); -- Jan jako Magazynier
+
+-- 9. TRIGGER - AUTOMATYCZNA ZMIANA STATUSU MASZYNY
+                                                           DELIMITER //
+CREATE TRIGGER after_work_order_insert
+AFTER INSERT ON work_orders
+FOR EACH ROW
+BEGIN
+    -- Gdy wpada nowe zlecenie, maszyna automatycznie zmienia status
+    UPDATE assets
+    SET status = 'AWARIA'
+    WHERE id = NEW.asset_id;
+END; //
+DELIMITER ;
+
+-- 10. TRIGGER - ZDEJMOWANIE ZE STANU
+
+DELIMITER //
+CREATE TRIGGER update_stock_after_usage
+AFTER INSERT ON work_order_parts
+FOR EACH ROW
+BEGIN
+    -- Odejmij zużytą ilość od stanu w magazynie
+    UPDATE parts
+    SET stock_quantity = stock_quantity - NEW.quantity_used
+    WHERE id = NEW.part_id;
+END; //
+DELIMITER ;
+
+-- 11. TRIGGER - WALIDACJA EMAILA
+
+DELIMITER //
+CREATE TRIGGER before_user_insert
+BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+    IF NEW.email NOT LIKE '%@%' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'BŁĄD: Niepoprawny format adresu email!';
+    END IF;
+END; //
+DELIMITER ;
+
+-- 12. WIDOK - DASHBOARD TECHNIKA
+
+CREATE VIEW view_active_tickets AS
+SELECT
+    wo.id AS ticket_id,
+    a.name AS machine_name,
+    a.location,
+    wo.priority,
+    CONCAT(u_rep.first_name, ' ', u_rep.last_name) AS reported_by,
+    CONCAT(u_tech.first_name, ' ', u_tech.last_name) AS assigned_technician,
+    wo.status,
+    wo.created_at
+FROM work_orders wo
+JOIN assets a ON wo.asset_id = a.id
+JOIN users u_rep ON wo.reporter_id = u_rep.id
+LEFT JOIN users u_tech ON wo.technician_id = u_tech.id
+WHERE wo.status != 'ZAKONCZONE';
+
+-- 13. WIDOK - ALERT MAGAZYNIERA
+
+CREATE VIEW view_low_stock AS
+SELECT
+    name,
+    sku,
+    stock_quantity,
+    min_stock,
+    (min_stock - stock_quantity) AS suggest_order_amount
+FROM parts
+WHERE stock_quantity <= min_stock;
+
+-- 12. WIDOK - KARTA MASZYNY
+
+CREATE VIEW view_asset_stats AS
+SELECT
+    a.name AS machine_name,
+    a.serial_number,
+    COUNT(wo.id) AS total_repairs,
+    MAX(wo.created_at) AS last_repair_date,
+    a.status AS current_status
+FROM assets a
+LEFT JOIN work_orders wo ON a.id = wo.asset_id
+GROUP BY a.id;
+
+-- 13 PROCEDURA - ZAMKNIECIE ZLECENIA
+
+DELIMITER //
+CREATE PROCEDURE CloseWorkOrder(IN order_id INT)
+BEGIN
+    UPDATE work_orders
+    SET status = 'ZAKONCZONE', closed_at = NOW()
+    WHERE id = order_id;
+
+    UPDATE assets
+    SET status = 'SPRAWNA'
+    WHERE id = (SELECT asset_id FROM work_orders WHERE id = order_id);
+END; //
+DELIMITER ;

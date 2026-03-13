@@ -1,9 +1,14 @@
 {
   "name": "cmms-root",
   "private": true,
-  "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web"
+  },
+  "dependencies": {
+    "sass": "^1.98.0"
   }
 }

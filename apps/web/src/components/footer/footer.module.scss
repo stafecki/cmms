@@ -1,0 +1,16 @@
+@import '../../styles/vars';
+
+.footer{
+  width: 100%;
+  background-color: $noir;
+  color: $oat;
+  font-family: $font;
+  display: flex;
+  justify-content: center;
+  .content{
+    width: 80%;
+    font-size: 1.2rem;
+    padding: 2rem;
+    text-align: center;
+  }
+}

@@ -207,3 +207,19 @@ BEGIN
     WHERE id = (SELECT asset_id FROM work_orders WHERE id = order_id);
 END; //
 DELIMITER ;
+
+ALTER TABLE assets
+    ADD COLUMN current_counter INT DEFAULT 0,
+    ADD COLUMN counter_limit INT DEFAULT 1000, -- limit do serwisu
+    ADD COLUMN documentation_url VARCHAR(255);
+
+-- NOWA TABELA NA KOMENTARZE
+CREATE TABLE work_order_comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    work_order_id INT NOT NULL,
+    user_id INT NOT NULL,
+    comment_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

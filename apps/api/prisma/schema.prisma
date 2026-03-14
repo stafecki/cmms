@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model assets {
+  id                Int            @id @default(autoincrement())
+  name              String         @db.VarChar(100)
+  serial_number     String?        @unique(map: "serial_number") @db.VarChar(50)
+  category_id       Int?
+  status            assets_status? @default(SPRAWNA)
+  location          String?        @db.VarChar(100)
+  last_inspection   DateTime?      @db.Date
+  current_counter   Int?           @default(0)
+  counter_limit     Int?           @default(1000)
+  documentation_url String?        @db.VarChar(255)
+  categories        categories?    @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "assets_ibfk_1")
+  work_orders       work_orders[]
+
+  @@index([category_id], map: "category_id")
+}
+
+model categories {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique(map: "name") @db.VarChar(100)
+  assets assets[]
+}
+
+model parts {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(100)
+  sku              String?            @unique(map: "sku") @db.VarChar(50)
+  description      String?            @db.Text
+  stock_quantity   Int?               @default(0)
+  min_stock        Int?               @default(5)
+  unit             String?            @default("szt") @db.VarChar(10)
+  work_order_parts work_order_parts[]
+}
+
+model roles {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique(map: "name") @db.VarChar(50)
+  description String? @db.VarChar(255)
+  users       users[]
+}
+
+model users {
+  id                                           Int                   @id @default(autoincrement())
+  username                                     String                @unique(map: "username") @db.VarChar(50)
+  password_hash                                String                @db.VarChar(255)
+  first_name                                   String                @db.VarChar(50)
+  last_name                                    String                @db.VarChar(50)
+  email                                        String?               @unique(map: "email") @db.VarChar(100)
+  role_id                                      Int
+  is_active                                    Boolean?              @default(true)
+  created_at                                   DateTime?             @default(now()) @db.Timestamp(0)
+  roles                                        roles                 @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+  work_order_comments                          work_order_comments[]
+  work_orders_work_orders_reporter_idTousers   work_orders[]         @relation("work_orders_reporter_idTousers")
+  work_orders_work_orders_technician_idTousers work_orders[]         @relation("work_orders_technician_idTousers")
+
+  @@index([role_id], map: "role_id")
+}
+
+model work_order_comments {
+  id            Int         @id @default(autoincrement())
+  work_order_id Int
+  user_id       Int
+  comment_text  String      @db.Text
+  created_at    DateTime?   @default(now()) @db.Timestamp(0)
+  work_orders   work_orders @relation(fields: [work_order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "work_order_comments_ibfk_1")
+  users         users       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "work_order_comments_ibfk_2")
+
+  @@index([user_id], map: "user_id")
+  @@index([work_order_id], map: "work_order_id")
+}
+
+model work_order_parts {
+  id            Int         @id @default(autoincrement())
+  work_order_id Int
+  part_id       Int
+  quantity_used Int         @default(1)
+  work_orders   work_orders @relation(fields: [work_order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "work_order_parts_ibfk_1")
+  parts         parts       @relation(fields: [part_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "work_order_parts_ibfk_2")
+
+  @@index([part_id], map: "part_id")
+  @@index([work_order_id], map: "work_order_id")
+}
+
+model work_orders {
+  id                                     Int                   @id @default(autoincrement())
+  asset_id                               Int
+  reporter_id                            Int
+  technician_id                          Int?
+  title                                  String                @db.VarChar(150)
+  description                            String?               @db.Text
+  priority                               work_orders_priority? @default(SREDNI)
+  status                                 work_orders_status?   @default(NOWE)
+  created_at                             DateTime?             @default(now()) @db.Timestamp(0)
+  closed_at                              DateTime?             @db.Timestamp(0)
+  work_order_comments                    work_order_comments[]
+  work_order_parts                       work_order_parts[]
+  assets                                 assets                @relation(fields: [asset_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "work_orders_ibfk_1")
+  users_work_orders_reporter_idTousers   users                 @relation("work_orders_reporter_idTousers", fields: [reporter_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "work_orders_ibfk_2")
+  users_work_orders_technician_idTousers users?                @relation("work_orders_technician_idTousers", fields: [technician_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "work_orders_ibfk_3")
+
+  @@index([asset_id], map: "asset_id")
+  @@index([reporter_id], map: "reporter_id")
+  @@index([technician_id], map: "technician_id")
+}
+
+enum assets_status {
+  SPRAWNA
+  AWARIA
+  W_NAPRAWIE
+  WYCOFANA
+}
+
+enum work_orders_priority {
+  NISKI
+  SREDNI
+  WYSOKI
+  KRYTYCZNY
+}
+
+enum work_orders_status {
+  NOWE
+  W_TRAKCIE
+  OCZEKUJE_NA_CZESCI
+  ZAKONCZONE
+}

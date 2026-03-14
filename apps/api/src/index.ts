@@ -1,13 +1,12 @@
 import app from "./app.js";
+import {serve} from "@hono/node-server";
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
-const startServer = () => {
-    app.listen(PORT, () => {
-        console.log(`Server is running at http://localhost:${PORT}`);
-    }).on("error", (err) => {
-        console.error("Błąd serwera:", err.message);
-    });
-}
+serve({
+    fetch: app.fetch,
+    port: PORT,
+}, (info) => {
+    console.log(`Server running at http://localhost:${info.port}`);
+})
 
-startServer()

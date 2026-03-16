@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "dev:api": "npm run dev --workspace=apps/api",
-    "dev:web": "npm run dev --workspace=apps/web"
+    "dev:web": "npm run dev --workspace=apps/web -- -p 8080"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",

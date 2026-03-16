@@ -1,0 +1,14 @@
+@import "../../styles/vars";
+
+.Header{
+  height: 12vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $noir;
+  h1{
+    font-size: 5rem;
+    color: $oat;
+    letter-spacing: -0.3rem;
+  }
+}

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^7.5.0",
-    "hono": "^4.12.8"
+    "hono": "^4.12.8",
+    "sass": "^1.98.0"
   }
 }

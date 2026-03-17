@@ -1,6 +1,7 @@
 @import "../../styles/vars";
 
 .navbar{
+  z-index: 3;
   width: 100%;
   background-color: $noir;
   color: $oat;

@@ -1,6 +1,8 @@
 @import "../../styles/vars";
 
 .Header{
+  width: 100%;
+  z-index: 3;
   height: 12vh;
   display: flex;
   align-items: center;

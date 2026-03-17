@@ -1,12 +1,13 @@
 @import '../../styles/vars';
 
 .main {
-  background-color: #E2D9C8;
+  background-color: $darkeroat;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
+  overflow-x: hidden;
 
   .mainSection{
     margin: 5rem 0;
@@ -40,7 +41,6 @@
     padding: 5rem;
     background-color: $oat;
     border-radius: $radius;
-    margin: 5rem 0;
     box-shadow: $bxshdw;
     transition: 0.3s;
     margin: 5rem;
@@ -71,14 +71,29 @@
   }
 
 }
+.hiddenUp {
+  z-index: -1;
+  opacity: 0;
+  transform: translateY(-100px);
+  transition: all 3s ease-out;
+}
 
-.hidden {
+.hiddenLeft {
+  z-index: -1;
   opacity: 0;
   transform: translateX(-200px);
   transition: all 0.8s ease-out;
 }
 
+.hiddenRight {
+  z-index: -1;
+  opacity: 0;
+  transform: translateX(200px);
+  transition: all 0.8s ease-out;
+}
+
 .visible {
+  z-index: auto;
   opacity: 1;
   transform: translateX(0);
 }

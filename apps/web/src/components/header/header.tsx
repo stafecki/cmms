@@ -1,8 +1,14 @@
-import styles from "./header.module.scss";
+import styles from './header.module.scss'
+import Navbar from '../navbar/index'
+
 export default function Header() {
   return (
     <header className={styles.Header}>
-        <h1>CMMS</h1>
+      <h1>CMMS</h1>
+      <Navbar />
+      <button>
+        <a href={'/login'}>Logowanie | Rejestracja</a>
+      </button>
     </header>
   )
 }

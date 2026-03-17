@@ -1,11 +1,12 @@
 @import "../../styles/vars";
 
 .navbar{
-  z-index: 3;
-  width: 100%;
+  z-index: 100;
+  width: 50%;
   background-color: $noir;
   color: $oat;
-  padding: 3rem;
+  padding: 3rem 3rem 3rem 0;
+
   display: flex;
   justify-content: center;
   ul{

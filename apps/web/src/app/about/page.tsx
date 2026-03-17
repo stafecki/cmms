@@ -29,9 +29,9 @@ export default function About() {
     }
   }, [])
 
-  const addToRefs = (el: any) => {
-    if (el && !sectionsRef.current.includes(el)) {
-      sectionsRef.current.push(el);
+  const addToRefs = (element: never) => {
+    if (element && !sectionsRef.current.includes(element)) {
+      sectionsRef.current.push(element);
     }
   };
 
@@ -39,7 +39,7 @@ export default function About() {
 
     <main className={styles.main}>
 
-      <section className={styles.mainSection}>
+      <section ref={addToRefs} className={ `${styles.mainSection} ${styles.hiddenUp}` }>
         <h1>O aplikacji CMMS</h1>
 
         <p>
@@ -55,7 +55,7 @@ export default function About() {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section ref={addToRefs} className={`${styles.section} ${styles.hiddenLeft}`}>
         <h2>Najważniejsze funkcjonalności</h2>
 
         <ul>
@@ -68,7 +68,7 @@ export default function About() {
 
       </section>
 
-      <section className={styles.section}>
+      <section ref={addToRefs} className={`${styles.section} ${styles.hiddenRight}`}>
         <h2>Dla kogo przeznaczony jest system</h2>
 
         <p>
@@ -79,7 +79,7 @@ export default function About() {
 
       </section>
 
-      <section className={styles.section}>
+      <section ref={addToRefs} className={`${styles.section} ${styles.hiddenLeft}`}>
         <h2>Korzyści z używania systemu</h2>
 
         <ul>
@@ -91,7 +91,7 @@ export default function About() {
 
       </section>
 
-      <section className={styles.section}>
+      <section ref={addToRefs} className={`${styles.section} ${styles.hiddenRight}`}>
         <h2>Informacje o projekcie</h2>
 
         <p>

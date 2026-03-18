@@ -1,0 +1,87 @@
+@import '../../styles/vars';
+
+.cont {
+  width: 100%;
+  min-height: 80vh;
+  background-color: $darkerOat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  font-family: $font;
+
+  .login, .register {
+    width: 40%;
+    min-height: 500px;
+    box-shadow: $bxshdw;
+    background-color: $oat;
+    border-radius: $radius;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .loginForm, .registerForm {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .formHeader {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
+      color: $noir;
+    }
+
+    .fieldGroup {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
+
+      label {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: $trasparentNoir;
+      }
+
+      input {
+        padding: 0.8rem 1rem;
+        font-size: 1.5rem;
+        border: 2px solid transparent;
+        border-radius: calc($radius / 2);
+        background-color: white;
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: $darkerOat;
+          box-shadow: 0 0 5px rgba(0,0,0,0.05);
+        }
+      }
+    }
+
+    .submitBtn {
+      margin-top: auto;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: $noir;
+      color: $oat;
+      border: none;
+      border-radius: $radius;
+      transition: background-color 0.3s ease;
+    }
+  }
+
+  .registerForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.5rem;
+
+    .formHeader, .submitBtn {
+      grid-column: span 2;
+    }
+  }
+}

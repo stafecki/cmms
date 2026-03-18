@@ -8,12 +8,10 @@
   justify-content: center;
   width: 100%;
   overflow-x: hidden;
-
+  padding: 5rem;
   .mainSection{
-    margin: 5rem 0;
     background: $oat;
     width: calc(80% + 10rem);
-    //border: 0.1rem solid $noir;
     padding: 5rem;
     border-radius: $radius;
     box-shadow: $bxshdw;

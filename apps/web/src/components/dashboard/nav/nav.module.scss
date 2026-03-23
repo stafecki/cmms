@@ -1,0 +1,46 @@
+@import '../../../styles/vars';
+
+.nav{
+  height: 100%;
+  width: 10%;
+  .logoContainer{
+    height: 5%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mainLabel{
+    height: 3%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: #555555;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .panelLink{
+    height: 5%;
+    width: 90%;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    transition: 0.3s ease-in-out;
+    a{
+      text-decoration: none;
+      color: black;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+  .panelLink:hover{
+    background-color: lightgray;
+  }
+  .panelLink:active{
+    background-color: lightgray;
+  }
+}

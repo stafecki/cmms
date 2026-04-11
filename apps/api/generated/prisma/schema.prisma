@@ -1,0 +1,334 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// =============================================================
+// MODUŁ 1 – UŻYTKOWNICY I ROLE
+// =============================================================
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(OPERATOR)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relacje
+  certifications    Certification[]
+  reportedOrders    WorkOrder[]        @relation("ReportedBy")
+  assignedOrders    WorkOrder[]        @relation("AssignedTo")
+  messages          WorkOrderMessage[]
+  toolLoans         ToolLoan[]
+  notifications     Notification[]
+  uploadedDocuments MachineDocument[]
+  eventLogs         EventLog[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  TECHNICIAN
+  WAREHOUSE
+  OPERATOR
+}
+
+model Certification {
+  id        String            @id @default(uuid())
+  userId    String            @map("user_id")
+  type      CertificationType
+  issuedAt  DateTime          @map("issued_at")
+  expiresAt DateTime          @map("expires_at")
+  isValid   Boolean           @default(true) @map("is_valid")
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("certifications")
+}
+
+enum CertificationType {
+  SEP // uprawnienia elektryczne
+  FORKLIFT // wózki widłowe
+  GAS // uprawnienia gazowe
+  HEIGHT_WORK // praca na wysokości
+  WELDING // spawanie
+  OTHER
+}
+
+// =============================================================
+// MODUŁ 2 – DRZEWO LOKALIZACJI I MASZYNY
+// =============================================================
+
+model Location {
+  id       String       @id @default(uuid())
+  name     String
+  type     LocationType
+  parentId String?      @map("parent_id")
+
+  parent   Location?  @relation("LocationTree", fields: [parentId], references: [id])
+  children Location[] @relation("LocationTree")
+  machines Machine[]
+
+  @@index([parentId])
+  @@map("locations")
+}
+
+enum LocationType {
+  PLANT // zakład
+  HALL // hala
+  LINE // linia produkcyjna
+  STATION // stanowisko
+}
+
+model Machine {
+  id             String   @id @default(uuid())
+  name           String
+  serialNumber   String   @unique @map("serial_number")
+  locationId     String   @map("location_id")
+  operatingHours Float    @default(0) @map("operating_hours")
+  purchaseDate   DateTime @map("purchase_date")
+  purchasePrice  Decimal  @map("purchase_price") @db.Decimal(10, 2)
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  location        Location          @relation(fields: [locationId], references: [id])
+  documents       MachineDocument[]
+  workOrders      WorkOrder[]
+  preventivePlans PreventivePlan[]
+
+  @@index([locationId])
+  @@map("machines")
+}
+
+model MachineDocument {
+  id           String   @id @default(uuid())
+  machineId    String   @map("machine_id")
+  uploadedById String   @map("uploaded_by_id")
+  filename     String
+  filePath     String   @map("file_path")
+  version      Int      @default(1)
+  isLatest     Boolean  @default(true) @map("is_latest")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  machine    Machine @relation(fields: [machineId], references: [id], onDelete: Cascade)
+  uploadedBy User    @relation(fields: [uploadedById], references: [id])
+
+  @@index([machineId])
+  @@index([machineId, isLatest])
+  @@map("machine_documents")
+}
+
+// =============================================================
+// MODUŁ 3 – ZLECENIA NAPRAWCZE I ZGŁOSZENIA AWARII
+// =============================================================
+
+model WorkOrder {
+  id           String          @id @default(uuid())
+  machineId    String          @map("machine_id")
+  reportedById String          @map("reported_by_id")
+  assignedToId String?         @map("assigned_to_id")
+  status       WorkOrderStatus @default(NEW)
+  priority     Priority        @default(MEDIUM)
+  title        String
+  description  String          @db.Text
+  bhpConfirmed Boolean         @default(false) @map("bhp_confirmed")
+  laborCost    Decimal         @default(0) @map("labor_cost") @db.Decimal(10, 2)
+  partsCost    Decimal         @default(0) @map("parts_cost") @db.Decimal(10, 2)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  startedAt    DateTime?       @map("started_at")
+  closedAt     DateTime?       @map("closed_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  machine    Machine @relation(fields: [machineId], references: [id])
+  reportedBy User    @relation("ReportedBy", fields: [reportedById], references: [id])
+  assignedTo User?   @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  messages  WorkOrderMessage[]
+  parts     WorkOrderPart[]
+  toolLoans ToolLoan[]
+
+  @@index([machineId])
+  @@index([status])
+  @@index([assignedToId])
+  @@index([createdAt])
+  @@map("work_orders")
+}
+
+enum WorkOrderStatus {
+  NEW
+  IN_PROGRESS
+  WAITING_FOR_PARTS
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model WorkOrderMessage {
+  id          String   @id @default(uuid())
+  workOrderId String   @map("work_order_id")
+  userId      String   @map("user_id")
+  content     String   @db.Text
+  sentAt      DateTime @default(now()) @map("sent_at")
+
+  workOrder WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([workOrderId])
+  @@map("work_order_messages")
+}
+
+// =============================================================
+// MODUŁ 4 – MAGAZYN CZĘŚCI ZAMIENNYCH
+// =============================================================
+
+model PartCategory {
+  id   String @id @default(uuid())
+  name String @unique
+
+  parts Part[]
+
+  @@map("part_categories")
+}
+
+model Part {
+  id            String  @id @default(uuid())
+  categoryId    String  @map("category_id")
+  name          String
+  stockQuantity Int     @default(0) @map("stock_quantity")
+  reorderPoint  Int     @default(5) @map("reorder_point")
+  unitPrice     Decimal @map("unit_price") @db.Decimal(10, 2)
+  qrCode        String? @unique @map("qr_code")
+  isActive      Boolean @default(true) @map("is_active")
+
+  category       PartCategory    @relation(fields: [categoryId], references: [id])
+  workOrderParts WorkOrderPart[]
+  toolLoans      ToolLoan[]
+
+  @@index([categoryId])
+  @@index([stockQuantity])
+  @@map("parts")
+}
+
+model WorkOrderPart {
+  id          String @id @default(uuid())
+  workOrderId String @map("work_order_id")
+  partId      String @map("part_id")
+  quantity    Int
+
+  workOrder WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  part      Part      @relation(fields: [partId], references: [id])
+
+  @@unique([workOrderId, partId])
+  @@map("work_order_parts")
+}
+
+model ToolLoan {
+  id          String    @id @default(uuid())
+  partId      String    @map("part_id")
+  userId      String    @map("user_id")
+  workOrderId String?   @map("work_order_id")
+  loanedAt    DateTime  @default(now()) @map("loaned_at")
+  returnedAt  DateTime? @map("returned_at")
+
+  part      Part       @relation(fields: [partId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+  workOrder WorkOrder? @relation(fields: [workOrderId], references: [id])
+
+  @@index([userId])
+  @@index([partId])
+  @@map("tool_loans")
+}
+
+// =============================================================
+// MODUŁ 5 – ZARZĄDZANIE PREWENCJĄ
+// =============================================================
+
+model PreventivePlan {
+  id            String    @id @default(uuid())
+  machineId     String    @map("machine_id")
+  name          String
+  intervalHours Int?      @map("interval_hours")
+  intervalDays  Int?      @map("interval_days")
+  advanceDays   Int       @default(7) @map("advance_days")
+  checklist     Json
+  isActive      Boolean   @default(true) @map("is_active")
+  lastRunAt     DateTime? @map("last_run_at")
+  nextRunAt     DateTime? @map("next_run_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  machine Machine @relation(fields: [machineId], references: [id], onDelete: Cascade)
+
+  @@index([machineId])
+  @@index([nextRunAt])
+  @@map("preventive_plans")
+}
+
+// =============================================================
+// MODUŁ 6 – POWIADOMIENIA
+// =============================================================
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  CRITICAL_FAILURE // awaria krytyczna
+  REORDER_ALERT // stan magazynowy poniżej minimum
+  PREVENTIVE_DUE // zbliżający się przegląd
+  CERT_EXPIRING // wygasający certyfikat
+  WORK_ORDER_ASSIGNED // przypisanie zlecenia
+  ANNOUNCEMENT // ogłoszenie globalne
+}
+
+// =============================================================
+// MODUŁ 7 – EVENT LOG (audit trail, tylko MySQL)
+// Szczegółowe logi (error, request) → MongoDB
+// =============================================================
+
+model EventLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  action     String
+  entityType String?  @map("entity_type")
+  entityId   String?  @map("entity_id")
+  metadata   Json?
+  occurredAt DateTime @default(now()) @map("occurred_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([occurredAt])
+  @@map("event_logs")
+}

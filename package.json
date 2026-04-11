@@ -1,22 +1,27 @@
 {
   "name": "cmms-root",
   "private": true,
+  "description": "System CMMS - Monorepo (Next.js + Hono)",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
     "dev:api": "npm run dev --workspace=apps/api",
-    "dev:web": "npm run dev --workspace=apps/web -- -p 8080"
+    "dev:web": "npm run dev --workspace=apps/web -- -p 8080",
+    "build": "npm run build --workspaces",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "prisma": "^7.5.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "@prisma/client": "^7.5.0",
-    "hono": "^4.12.8",
-    "sass": "^1.98.0"
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "eslint": "^9.15.0",
+    "eslint-config-next": "15.1.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
   }
 }

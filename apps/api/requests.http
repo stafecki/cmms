@@ -1,0 +1,39 @@
+### Register
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "Jan Kowalski",
+  "email": "jan@test.com",
+  "password": "Test1234"
+}
+
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "jan@test.com",
+  "password": "Test1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+    client.global.set("refreshToken", response.body.tokens.refreshToken)
+%}
+
+### Me
+GET http://localhost:3000/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Logout
+POST http://localhost:3000/auth/logout
+Authorization: Bearer {{accessToken}}
+
+### Refresh
+POST http://localhost:3000/auth/refresh
+Content-Type: application/json
+
+{
+  "token": "{{refreshToken}}"
+}

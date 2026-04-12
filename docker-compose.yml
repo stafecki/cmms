@@ -51,31 +51,31 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    container_name: cmms-api
-    restart: always
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_HOST: mysql-db
-      DATABASE_PORT: 3306
-      DATABASE_USER: ${MYSQL_USER}
-      DATABASE_PASSWORD: ${MYSQL_PASSWORD}
-      DATABASE_NAME: ${MYSQL_DATABASE}
-      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      JWT_SECRET: ${JWT_SECRET}
-      NODE_ENV: development
-    depends_on:
-      mysql-db:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+#  api:
+#    build:
+#      context: ./apps/api
+#      dockerfile: Dockerfile
+#    container_name: cmms-api
+#    restart: always
+#    ports:
+#      - "3000:3000"
+#    environment:
+#      DATABASE_HOST: mysql-db
+#      DATABASE_PORT: 3306
+#      DATABASE_USER: ${MYSQL_USER}
+#      DATABASE_PASSWORD: ${MYSQL_PASSWORD}
+#      DATABASE_NAME: ${MYSQL_DATABASE}
+#      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+#      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+#      JWT_SECRET: ${JWT_SECRET}
+#      NODE_ENV: development
+#    depends_on:
+#      mysql-db:
+#        condition: service_healthy
+#      mongodb:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
 
 volumes:
   mysql_data:

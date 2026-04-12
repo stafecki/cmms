@@ -1,4 +1,4 @@
-import mongoose, { Connection } from "mongoose"
+import mongoose, {type Connection} from "mongoose"
 
 const MONGO_URI = process.env.MONGO_URI!
 

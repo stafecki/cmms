@@ -1,0 +1,92 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+### Login as technician
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "tech@cmms.com",
+  "password": "Tech1234"
+}
+
+> {%
+    client.global.set("technicianToken", response.body.tokens.accessToken)
+    client.global.set("technicianId", response.body.user.id)
+%}
+
+### Create work order
+POST http://localhost:3000/work-orders
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "machineId": "{{machineId}}",
+  "title": "Awaria silnika głównego",
+  "description": "Silnik wydaje nieprawidłowe dźwięki podczas pracy",
+  "priority": "HIGH"
+}
+
+> {% client.global.set("workOrderId", response.body.id) %}
+
+### Get all work orders
+GET http://localhost:3000/work-orders
+Authorization: Bearer {{accessToken}}
+
+### Get work order by id
+GET http://localhost:3000/work-orders/{{workOrderId}}
+Authorization: Bearer {{accessToken}}
+
+### Assign technician
+PATCH http://localhost:3000/work-orders/{{workOrderId}}/assign
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "technicianId": "{{technicianId}}"
+}
+
+### Confirm BHP (jako technik)
+POST http://localhost:3000/work-orders/{{workOrderId}}/bhp-confirm
+Authorization: Bearer {{technicianToken}}
+
+### Update status to IN_PROGRESS
+PATCH http://localhost:3000/work-orders/{{workOrderId}}/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "IN_PROGRESS"
+}
+
+### Add message
+POST http://localhost:3000/work-orders/{{workOrderId}}/messages
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "Rozpoczynam diagnostykę silnika"
+}
+
+### Get messages
+GET http://localhost:3000/work-orders/{{workOrderId}}/messages
+Authorization: Bearer {{accessToken}}
+
+### Update status to COMPLETED
+PATCH http://localhost:3000/work-orders/{{workOrderId}}/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": "COMPLETED"
+}

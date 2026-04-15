@@ -7,7 +7,7 @@ export default function Header() {
       <h1>CMMS</h1>
       <Navbar />
       <button>
-        <a href={'/login'}>Logowanie | Rejestracja</a>
+        <a href={'/login'}>Logowanie</a>
       </button>
     </header>
   )

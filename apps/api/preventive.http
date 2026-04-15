@@ -1,0 +1,64 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+### Create preventive plan
+POST http://localhost:3000/preventive
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "machineId": "0767a477-0789-4ab4-8341-29e861993a9c",
+  "name": "Przegląd miesięczny",
+  "intervalDays": 30,
+  "advanceDays": 7,
+  "checklist": [
+    { "step": 1, "label": "Sprawdź poziom oleju" },
+    { "step": 2, "label": "Dokręć śruby mocujące" },
+    { "step": 3, "label": "Wyczyść filtry" }
+  ]
+}
+
+> {% client.global.set("planId", response.body.id) %}
+
+### Get all preventive plans
+GET http://localhost:3000/preventive
+Authorization: Bearer {{accessToken}}
+
+### Get upcoming plans (7 days)
+GET http://localhost:3000/preventive/upcoming?days=7
+Authorization: Bearer {{accessToken}}
+
+### Get plan by id
+GET http://localhost:3000/preventive/{{planId}}
+Authorization: Bearer {{accessToken}}
+
+### Trigger work order manually
+POST http://localhost:3000/preventive/{{planId}}/trigger
+Authorization: Bearer {{accessToken}}
+
+### Check and create due orders (cron manual trigger)
+GET http://localhost:3000/preventive/check
+Authorization: Bearer {{accessToken}}
+
+### Update plan
+PATCH http://localhost:3000/preventive/{{planId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "advanceDays": 14
+}
+
+### Delete plan
+DELETE http://localhost:3000/preventive/{{planId}}
+Authorization: Bearer {{accessToken}}

@@ -10,9 +10,7 @@ export default function Navbar() {
         <li>
           <a href={"/about"}>O nas</a>
         </li>
-        <li>
-          <a href={"/contact"}>Kontakt</a>
-        </li>
+
 
       </ul>
     </nav>

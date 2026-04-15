@@ -14,10 +14,11 @@
     list-style: none;
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: center;
     li{
       background-color: $noir;
       border-radius: $radius;
+      margin-inline: 10rem;
       a{
         padding: 1.5rem;
         text-decoration: none;

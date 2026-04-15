@@ -29,9 +29,9 @@ export default function About() {
     }
   }, [])
 
-  const addToRefs = (element: never) => {
-    if (element && !sectionsRef.current.includes(element)) {
-      sectionsRef.current.push(element);
+  const addToRefs = (el: HTMLDivElement | null) => {
+    if (el && !sectionsRef.current.includes(el)) {
+      sectionsRef.current.push(el);
     }
   };
 

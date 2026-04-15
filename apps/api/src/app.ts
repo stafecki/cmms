@@ -5,6 +5,7 @@ import auth from './modules/auth/auth.routes.js'
 import machines from "./modules/machines/machines.routes.js";
 import locations from "./modules/locations/locations.routes.js";
 import workOrders from "./modules/work-orders/work-orders.routes.js";
+import inventory from "./modules/inventory/inventory.routes.js";
 
 const app = new Hono()
 
@@ -13,6 +14,7 @@ app.route('/auth', auth)
 app.route('/machines', machines)
 app.route('/locations', locations)
 app.route('/work-orders', workOrders)
+app.route('/inventory', inventory)
 
 export const startDB = async (): Promise<void> => {
     await connectMongo()

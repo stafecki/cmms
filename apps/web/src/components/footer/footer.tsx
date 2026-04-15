@@ -23,7 +23,7 @@ export default function Footer() {
         </div>
 
         <div className={styles.bottom}>
-          <p>© 2026 Twoja Firma</p>
+          <p>© 2026 CMMS</p>
         </div>
       </div>
     </footer>

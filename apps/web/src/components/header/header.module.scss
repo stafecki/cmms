@@ -1,37 +1,47 @@
 @import "../../styles/vars";
 
-.Header{
+.Header {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  z-index: 100;
-  height: 12vh;
+  height: 10vh;
+  z-index: 1000;
   display: flex;
   align-items: center;
-  background-color: $noir;
-  h1{
-    padding-left: 5rem ;
+  justify-content: space-between;
+  padding: 0 7%;
+  background-color: rgba($noir, 0.99);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 2px solid rgba($oat, 0.15);
+
+  .logo h1 {
     font-size: 5rem;
     color: $oat;
-    letter-spacing: -0.3rem;
-    margin: 1rem;
+    letter-spacing: -0.2rem;
+    margin: 0;
+    font-weight: 900;
   }
-  button{
-    margin-left: auto;
-    margin-right: 20rem;
-    padding: 1.5rem;
-    border: 0.5rem solid $darkerOat;
-    outline: none;
-    border-radius: 100px;
-    transition: 0.2s;
-    a{
+
+  .actions {
+    .loginBtn {
       text-decoration: none;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: $noir;
       font-weight: bold;
-    }
+      background-color: $oat;
+      padding: 1.2rem 3.5rem;
+      border-radius: 100px;
+      border: 4px solid transparent;
+      transition: all 0.3s ease;
 
-  }
-  button:hover{
-    border: 0.5rem solid $noir;
-    background-color: $oatHover;
+      &:hover {
+        background-color: transparent;
+        color: $oat;
+        border-color: $oat;
+        transform: scale(1.05);
+      }
+    }
   }
 }

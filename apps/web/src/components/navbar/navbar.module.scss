@@ -1,40 +1,57 @@
 @import "../../styles/vars";
 
-.navbar{
-  z-index: 100;
-  width: 50%;
-  background-color: $noir;
-  color: $oat;
-  padding: 3rem 3rem 3rem 0;
-
-  display: flex;
-  justify-content: center;
-  ul{
-    width: 80%;
+.navbar {
+  ul {
     list-style: none;
     display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    li{
-      background-color: $noir;
-      border-radius: $radius;
-      margin-inline: 10rem;
-      a{
-        padding: 1.5rem;
+    gap: 6rem;
+    margin: 0;
+    padding: 0;
+
+    li {
+      a {
         text-decoration: none;
         font-size: 2rem;
-        font-weight: bold;
+        font-weight: 700;
         color: $oat;
-        height: 1.5rem;
-        transition: 0.3s;
-        width: 100%;
-        height: 100%;
-        border-radius: $radius;
-      }
-      a:hover{
-        color: $noir;
-        background-color: $oat;
+        position: relative;
+        padding: 1rem 0;
+        transition: all 0.3s ease;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -5px;
+          left: 0;
+          width: 0;
+          height: 4px;
+          background-color: $darkerOat;
+          transition: width 0.3s ease;
+        }
+
+        &:hover {
+          color: $darkerOat;
+          &::after {
+            width: 100%;
+          }
+        }
       }
     }
+  }
+}
+
+@media (max-width: 1024px) {
+  .Header {
+    height: auto;
+    padding: 2rem;
+    flex-direction: column;
+    gap: 2rem;
+
+    .logo h1 { font-size: 4rem; }
+  }
+
+  .navbar ul {
+    gap: 3rem;
+    li a { font-size: 1.5rem; }
   }
 }

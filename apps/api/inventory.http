@@ -1,0 +1,79 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+### Create category
+POST http://localhost:3000/inventory/categories
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Łożyska"
+}
+
+> {% client.global.set("categoryId", response.body.id) %}
+
+### Get all categories
+GET http://localhost:3000/inventory/categories
+Authorization: Bearer {{accessToken}}
+
+### Create part
+POST http://localhost:3000/inventory/parts
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "categoryId": "{{categoryId}}",
+  "name": "Łożysko SKF 6205",
+  "stockQuantity": 10,
+  "reorderPoint": 3,
+  "unitPrice": 45.99
+}
+
+> {% client.global.set("partId", response.body.id) %}
+
+### Get all parts
+GET http://localhost:3000/inventory/parts
+Authorization: Bearer {{accessToken}}
+
+### Get low stock parts
+GET http://localhost:3000/inventory/parts/low-stock
+Authorization: Bearer {{accessToken}}
+
+### Adjust stock
+PATCH http://localhost:3000/inventory/parts/{{partId}}/stock
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "quantity": -2,
+  "reason": "Wydano do zlecenia naprawczego"
+}
+
+### Create tool loan
+POST http://localhost:3000/inventory/loans
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "partId": "{{partId}}"
+}
+
+> {% client.global.set("loanId", response.body.id) %}
+
+### Get my loans
+GET http://localhost:3000/inventory/loans/my
+Authorization: Bearer {{accessToken}}
+
+### Return tool
+PATCH http://localhost:3000/inventory/loans/{{loanId}}/return
+Authorization: Bearer {{accessToken}}

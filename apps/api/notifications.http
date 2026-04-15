@@ -1,0 +1,52 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+### Get my notifications
+GET http://localhost:3000/notifications
+Authorization: Bearer {{accessToken}}
+
+### Get unread count
+GET http://localhost:3000/notifications/unread-count
+Authorization: Bearer {{accessToken}}
+
+### Create announcement (wszyscy użytkownicy)
+POST http://localhost:3000/notifications/announcement
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Planowana przerwa w dostawie prądu",
+  "message": "W dniu 20.04.2026 od 8:00 do 12:00 planowana jest przerwa w dostawie prądu"
+}
+
+### Get my notifications (po announcement)
+GET http://localhost:3000/notifications
+Authorization: Bearer {{accessToken}}
+
+> {% client.global.set("notificationId", response.body[0].id) %}
+
+### Mark as read
+PATCH http://localhost:3000/notifications/{{notificationId}}/read
+Authorization: Bearer {{accessToken}}
+
+### Mark all as read
+PATCH http://localhost:3000/notifications/read-all
+Authorization: Bearer {{accessToken}}
+
+### Get all notifications (admin)
+GET http://localhost:3000/notifications/all
+Authorization: Bearer {{accessToken}}
+
+### Delete notification
+DELETE http://localhost:3000/notifications/{{notificationId}}
+Authorization: Bearer {{accessToken}}

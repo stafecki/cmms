@@ -7,6 +7,7 @@ import locations from "./modules/locations/locations.routes.js";
 import workOrders from "./modules/work-orders/work-orders.routes.js";
 import inventory from "./modules/inventory/inventory.routes.js";
 import preventive from "./modules/preventive/preventive.routes.js";
+import notifications from "./modules/notifications/notifications.routes.js";
 
 const app = new Hono()
 
@@ -17,6 +18,7 @@ app.route("/locations", locations)
 app.route("/work-orders", workOrders)
 app.route("/inventory", inventory)
 app.route("/preventive", preventive)
+app.route("/notifications", notifications)
 
 
 export const startDB = async (): Promise<void> => {

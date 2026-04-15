@@ -8,95 +8,101 @@
   justify-content: center;
   width: 100%;
   overflow-x: hidden;
-  padding: 5rem;
-  .mainSection{
-    background: $oat;
-    width: calc(80% + 10rem);
-    padding: 5rem;
+  padding: 15vh 5rem 10rem; // Większy górny padding przez fixed Header
+  gap: 4rem;
+  font-family: $font;
+
+  // Wspólne style dla kart
+  .mainSection, .section {
+    background: rgba($oat, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(white, 0.5);
     border-radius: $radius;
     box-shadow: $bxshdw;
-    transition: 0.3s;
-
-
-
-    h2 {
-      font-size: 2.5rem;
-    }
-
-    p {
-      text-align: justify;
-      font-size: 1.5rem;
-      font-weight: 510;
-      line-height: 2.5rem;
-    }
-
-  }
-  .mainSection:hover{
-    background: $oatHover;
-  }
-  .section {
-    width: 40%;
     padding: 5rem;
-    background-color: $oat;
-    border-radius: $radius;
-    box-shadow: $bxshdw;
-    transition: 0.3s;
-    margin: 5rem;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 
-    h2 {
-      font-size: 2.5rem;
+    h1 {
+      font-size: 5rem;
+      color: $noir;
+      margin-bottom: 3rem;
+      letter-spacing: -2px;
     }
 
-    p {
+    h2 {
+      font-size: 3rem; // Większe nagłówki
+      color: $noir;
+      margin-bottom: 2rem;
+      border-left: 8px solid $darkerOat; // Akcent boczny
+      padding-left: 2rem;
+    }
+
+    p, li {
       text-align: justify;
-      font-size: 1.5rem;
-      font-weight: 510;
-      line-height: 2.5rem;
+      font-size: 1.8rem; // Większy font
+      font-weight: 400;
+      line-height: 1.6;
+      color: rgba($noir, 0.8);
     }
 
     ul {
       list-style: none;
+      padding: 0;
 
       li {
-        font-size: 1.5rem;
-        line-height: 2.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+
+        &::before {
+          content: "→";
+          margin-right: 1.5rem;
+          color: $darkerOat;
+          font-weight: bold;
+        }
       }
+    }
+
+    &:hover {
+      background: $oat;
+      transform: translateY(-10px) scale(1.01);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.12);
     }
   }
 
-  .section:hover{
-    background-color: $oatHover;
+  .mainSection {
+    width: 90%;
+    max-width: 1400px;
+    margin-bottom: 4rem;
   }
 
-}
-.hiddenUp {
-  z-index: -1;
-  opacity: 0;
-  transform: translateY(-100px);
-  transition: all 3s ease-out;
+  .section {
+    width: 44%; // Dwie kolumny obok siebie
+    min-width: 500px;
+  }
 }
 
-.hiddenLeft {
-  z-index: -1;
+// System animacji
+.hiddenUp, .hiddenLeft, .hiddenRight {
   opacity: 0;
-  transform: translateX(-200px);
-  transition: all 0.8s ease-out;
+  pointer-events: none;
+  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.hiddenRight {
-  z-index: -1;
-  opacity: 0;
-  transform: translateX(200px);
-  transition: all 0.8s ease-out;
-}
+.hiddenUp { transform: translateY(100px); } // Lepiej wygląda wjeżdżanie z dołu do góry
+.hiddenLeft { transform: translateX(-150px); }
+.hiddenRight { transform: translateX(150px); }
 
 .visible {
-  z-index: auto;
   opacity: 1;
-  transform: translateX(0);
+  transform: translate(0, 0) !important;
+  pointer-events: all;
 }
 
-
-
-
-
+// Responsywność
+@media (max-width: 1200px) {
+  .main {
+    padding: 12vh 2rem 5rem;
+    .section { width: 90%; }
+  }
+}

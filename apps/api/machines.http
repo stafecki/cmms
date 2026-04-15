@@ -1,3 +1,8 @@
+### Init
+GET http://localhost:3000
+
+> {% client.global.set("serialNumber", "SN-" + Date.now()) %}
+
 ### Login as admin
 POST http://localhost:3000/auth/login
 Content-Type: application/json
@@ -35,7 +40,7 @@ Content-Type: application/json
 
 {
   "name": "CNC Fanuc",
-  "serialNumber": "SN-001-2024",
+  "serialNumber": "{{serialNumber}}",
   "locationId": "{{locationId}}",
   "operatingHours": 0,
   "purchaseDate": "2024-01-01",

@@ -1,10 +1,15 @@
+### Init
+GET http://localhost:3000
+
+> {% client.global.set("testEmail", "jan" + Date.now() + "@test.com") %}
+
 ### Register
 POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
   "name": "Jan Kowalski",
-  "email": "jan@test.com",
+  "email": "{{testEmail}}",
   "password": "Test1234"
 }
 

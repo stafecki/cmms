@@ -1,15 +1,72 @@
 'use client'
 
 import styles from './register.module.scss'
+import { useState } from 'react'
 
 export default function Register() {
+
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const formData = new FormData(event.currentTarget)
+    const data = Object.fromEntries(formData.entries())
+
+    if (data.password !== data.repeatPassword) {
+      setError("Hasła nie są jendakowe")
+      setLoading(false)
+      return
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          role: "OPERATOR"
+        }),
+      });
+
+      // 1. Najpierw pobierz dane raz
+      const result = await response.json();
+
+      // 2. Sprawdź czy status jest OK
+      if (!response.ok) {
+        // Wyświetl błąd z walidacji Zod lub HTTPException
+        setError(result.message || "Błąd rejestracji");
+        return;
+      }
+
+      // 3. Jeśli OK, idź dalej
+      console.log('Zarejestrowano pomyslnie', result);
+      window.location.href = '/login';
+
+    } catch (err: any) {
+      setError("Problem z połączeniem z serwerem");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className={styles.cont}>
       <div className={styles.imgContLeft}></div>
 
       <main className={styles.register}>
-        <form method="post" action="/register" className={styles.registerForm}>
+        <form onSubmit={handleSubmit} className={styles.registerForm}>
           <h1 className={styles.formHeader}>Zarejestruj</h1>
+
+          {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
           <div className={styles.fieldGroup}>
             <label htmlFor="reg-email">Email:</label>
@@ -17,20 +74,9 @@ export default function Register() {
           </div>
 
           <div className={styles.fieldGroup}>
-            <label htmlFor="username">Nazwa użytkownika:</label>
-            <input type="text" id="username" name="username" placeholder="jankowalski" required />
+            <label htmlFor="name">Nazwa użytkownika (Imię i Nazwisko):</label>
+            <input type="text" id="name" name="name" placeholder="Jan Kowalski" required />
           </div>
-
-          <div className={`${styles.fieldGroup} ${styles.half}`}>
-            <label htmlFor="first_name">Imię:</label>
-            <input type="text" id="first_name" name="first_name" placeholder="Jan" required />
-          </div>
-
-          <div className={`${styles.fieldGroup} ${styles.half}`}>
-            <label htmlFor="last_name">Nazwisko:</label>
-            <input type="text" id="last_name" name="last_name" placeholder="Kowalski" required />
-          </div>
-
           <div className={`${styles.fieldGroup} ${styles.half}`}>
             <label htmlFor="reg-password">Hasło:</label>
             <input type="password" id="reg-password" name="password" required />
@@ -41,7 +87,9 @@ export default function Register() {
             <input type="password" id="repeatPassword" name="repeatPassword" required />
           </div>
 
-          <button type="submit" className={styles.submitBtn}>Zarejestruj</button>
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? 'Rejestrowanie...' : 'Zarejestruj'}
+          </button>
 
           <div className={styles.footerLink}>
             <p>Masz już konto?</p>

@@ -1,0 +1,34 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+
+### Bad request - invalid token
+GET http://localhost:3000/machines
+Authorization: Bearer invalid_token_here
+
+
+### Get request logs
+GET http://localhost:3000/monitoring/requests
+Authorization: Bearer {{accessToken}}
+
+### Get request logs with filters
+GET http://localhost:3000/monitoring/requests?limit=10&offset=0&statusCode=401
+Authorization: Bearer {{accessToken}}
+
+### Get error logs
+GET http://localhost:3000/monitoring/errors
+Authorization: Bearer {{accessToken}}
+
+### Get error logs with filters
+GET http://localhost:3000/monitoring/errors?limit=10&offset=0
+Authorization: Bearer {{accessToken}}

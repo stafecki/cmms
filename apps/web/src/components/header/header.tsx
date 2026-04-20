@@ -1,6 +1,6 @@
 import styles from './header.module.scss'
 import Navbar from '../navbar/index'
-import Link from 'next/link'
+import AuthBtn from '../authBtn/index'
 
 export default function Header() {
   return (
@@ -10,9 +10,7 @@ export default function Header() {
       </div>
       <Navbar />
       <div className={styles.actions}>
-        <Link href='/login' className={styles.loginBtn}>
-          Logowanie
-        </Link>
+        <AuthBtn/>
       </div>
     </header>
   )

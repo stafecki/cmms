@@ -36,19 +36,15 @@ export default function Register() {
         }),
       });
 
-      // 1. Najpierw pobierz dane raz
       const result = await response.json();
 
-      // 2. Sprawdź czy status jest OK
       if (!response.ok) {
-        // Wyświetl błąd z walidacji Zod lub HTTPException
         setError(result.message || "Błąd rejestracji");
         return;
       }
 
-      // 3. Jeśli OK, idź dalej
       console.log('Zarejestrowano pomyslnie', result);
-      window.location.href = '/login';
+      window.location.href = '/auth/login';
 
     } catch (err: any) {
       setError("Problem z połączeniem z serwerem");
@@ -93,7 +89,7 @@ export default function Register() {
 
           <div className={styles.footerLink}>
             <p>Masz już konto?</p>
-            <a href={"/login"}>Zaloguj się</a>
+            <a href={"/auth/login"}>Zaloguj się</a>
           </div>
         </form>
       </main>

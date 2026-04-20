@@ -1,7 +1,9 @@
 ### Init
 GET http://localhost:3000
 
-> {% client.global.set("categoryName", "Category" + Date.now()) %}
+> {%
+    client.global.set("categoryName", "kategoria" + Date.now())
+%}
 
 ### Login as admin
 POST http://localhost:3000/auth/login
@@ -16,6 +18,10 @@ Content-Type: application/json
     client.global.set("accessToken", response.body.tokens.accessToken)
 %}
 
+### Get all categories
+GET http://localhost:3000/inventory/categories
+Authorization: Bearer {{accessToken}}
+
 ### Create category
 POST http://localhost:3000/inventory/categories
 Authorization: Bearer {{accessToken}}
@@ -26,10 +32,6 @@ Content-Type: application/json
 }
 
 > {% client.global.set("categoryId", response.body.id) %}
-
-### Get all categories
-GET http://localhost:3000/inventory/categories
-Authorization: Bearer {{accessToken}}
 
 ### Create part
 POST http://localhost:3000/inventory/parts
@@ -50,9 +52,26 @@ Content-Type: application/json
 GET http://localhost:3000/inventory/parts
 Authorization: Bearer {{accessToken}}
 
+### Get parts by category
+GET http://localhost:3000/inventory/parts?categoryId={{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+### Get part by id
+GET http://localhost:3000/inventory/parts/{{partId}}
+Authorization: Bearer {{accessToken}}
+
 ### Get low stock parts
 GET http://localhost:3000/inventory/parts/low-stock
 Authorization: Bearer {{accessToken}}
+
+### Update part
+PATCH http://localhost:3000/inventory/parts/{{partId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "reorderPoint": 5
+}
 
 ### Adjust stock
 PATCH http://localhost:3000/inventory/parts/{{partId}}/stock
@@ -60,9 +79,13 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-  "quantity": -2,
-  "reason": "Wydano do zlecenia naprawczego"
+  "quantity": 5,
+  "reason": "Przyjęcie dostawy"
 }
+
+### Get all loans
+GET http://localhost:3000/inventory/loans
+Authorization: Bearer {{accessToken}}
 
 ### Create tool loan
 POST http://localhost:3000/inventory/loans
@@ -81,4 +104,12 @@ Authorization: Bearer {{accessToken}}
 
 ### Return tool
 PATCH http://localhost:3000/inventory/loans/{{loanId}}/return
+Authorization: Bearer {{accessToken}}
+
+### Delete part
+DELETE http://localhost:3000/inventory/parts/{{partId}}
+Authorization: Bearer {{accessToken}}
+
+### Delete category
+DELETE http://localhost:3000/inventory/categories/{{categoryId}}
 Authorization: Bearer {{accessToken}}

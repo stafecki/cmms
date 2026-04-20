@@ -46,16 +46,32 @@ export const createCategory = async (
 
 export const deleteCategory = async (id: string): Promise<void> => {
     const category = await prisma.partCategory.findUnique({
-        where: { id },
-        include: { parts: true }
+        where: { id }
     })
 
     if (!category) {
-        throw new HTTPException(404, { message: "Category not found" })
+        throw new HTTPException(404, { message: 'Category not found' })
     }
 
-    if (category.parts.length > 0) {
-        throw new HTTPException(400, { message: "Cannot delete category with assigned parts" })
+    const activeParts = await prisma.part.count({
+        where: { categoryId: id, isActive: true }
+    })
+
+    if (activeParts > 0) {
+        throw new HTTPException(400, { message: 'Cannot delete category with assigned parts' })
+    }
+
+    const inactiveParts = await prisma.part.findMany({
+        where: { categoryId: id, isActive: false },
+        select: { id: true }
+    })
+
+    const partIds = inactiveParts.map(p => p.id)
+
+    if (partIds.length > 0) {
+        await prisma.toolLoan.deleteMany({ where: { partId: { in: partIds } } })
+        await prisma.workOrderPart.deleteMany({ where: { partId: { in: partIds } } })
+        await prisma.part.deleteMany({ where: { id: { in: partIds } } })
     }
 
     await prisma.partCategory.delete({ where: { id } })

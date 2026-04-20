@@ -1,0 +1,47 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+  client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+### Get all locations
+GET http://localhost:3000/locations
+Authorization: Bearer {{accessToken}}
+
+> {% client.global.set("locationId", response.body[0].id) %}
+
+### Get location by id
+GET http://localhost:3000/locations/{{locationId}}
+Authorization: Bearer {{accessToken}}
+
+### Create location
+POST http://localhost:3000/locations
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Hala B",
+  "type": "HALL"
+}
+
+> {% client.global.set("locationId", response.body.id) %}
+
+### Update location
+PATCH http://localhost:3000/locations/{{locationId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Hala B - zaktualizowana"
+}
+
+### Delete location
+DELETE http://localhost:3000/locations/{{locationId}}
+Authorization: Bearer {{accessToken}}

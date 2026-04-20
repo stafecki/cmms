@@ -12,6 +12,7 @@ import preventive from './modules/preventive/preventive.routes.js'
 import notifications from './modules/notifications/notifications.routes.js'
 import monitoring from "./modules/monitoring/monitoring.routes.js";
 import dashboard from "./modules/dashboard/dashboard.routes.js";
+import users from "./modules/users/users.routes.js";
 
 const app = new Hono()
 app.use('*', cors())
@@ -27,6 +28,7 @@ app.route('/preventive', preventive)
 app.route('/notifications', notifications)
 app.route('/monitoring', monitoring)
 app.route('/dashboard', dashboard)
+app.route('/users', users)
 
 
 app.onError(errorLoggerMiddleware)

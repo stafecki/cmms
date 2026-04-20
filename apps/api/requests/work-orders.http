@@ -8,8 +8,14 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.tokens.accessToken)
+  client.global.set("accessToken", response.body.tokens.accessToken)
 %}
+
+### Get machines (pobierz id maszyny do dalszych testów)
+GET http://localhost:3000/machines
+Authorization: Bearer {{accessToken}}
+
+> {% client.global.set("machineId", response.body[0].id) %}
 
 ### Login as technician
 POST http://localhost:3000/auth/login
@@ -21,8 +27,8 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("technicianToken", response.body.tokens.accessToken)
-    client.global.set("technicianId", response.body.user.id)
+  client.global.set("technicianToken", response.body.tokens.accessToken)
+  client.global.set("technicianId", response.body.user.id)
 %}
 
 ### Create work order
@@ -46,6 +52,15 @@ Authorization: Bearer {{accessToken}}
 ### Get work order by id
 GET http://localhost:3000/work-orders/{{workOrderId}}
 Authorization: Bearer {{accessToken}}
+
+### Update work order
+PATCH http://localhost:3000/work-orders/{{workOrderId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "priority": "CRITICAL"
+}
 
 ### Assign technician
 PATCH http://localhost:3000/work-orders/{{workOrderId}}/assign
@@ -81,6 +96,26 @@ Content-Type: application/json
 ### Get messages
 GET http://localhost:3000/work-orders/{{workOrderId}}/messages
 Authorization: Bearer {{accessToken}}
+
+### Get work order parts
+GET http://localhost:3000/work-orders/{{workOrderId}}/parts
+Authorization: Bearer {{accessToken}}
+
+### Get parts (pobierz partId)
+GET http://localhost:3000/inventory/parts
+Authorization: Bearer {{accessToken}}
+
+> {% client.global.set("partId", response.body[0].id) %}
+
+### Add part to work order
+POST http://localhost:3000/work-orders/{{workOrderId}}/parts
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "partId": "{{partId}}",
+  "quantity": 2
+}
 
 ### Update status to COMPLETED
 PATCH http://localhost:3000/work-orders/{{workOrderId}}/status

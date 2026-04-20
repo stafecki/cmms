@@ -1,8 +1,3 @@
-### Init
-GET http://localhost:3000
-
-> {% client.global.set("serialNumber", "SN-" + Date.now()) %}
-
 ### Login as admin
 POST http://localhost:3000/auth/login
 Content-Type: application/json
@@ -13,25 +8,20 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("accessToken", response.body.tokens.accessToken)
-    client.global.set("refreshToken", response.body.tokens.refreshToken)
+  client.global.set("accessToken", response.body.tokens.accessToken)
 %}
 
-### Create location
-POST http://localhost:3000/locations
-Authorization: Bearer {{accessToken}}
-Content-Type: application/json
-
-{
-  "name": "Hala A",
-  "type": "HALL"
-}
-
-> {% client.global.set("locationId", response.body.id) %}
-
-### Get all locations
+### Get all locations (pobierz locationId)
 GET http://localhost:3000/locations
 Authorization: Bearer {{accessToken}}
+
+> {% client.global.set("locationId", response.body[0].id) %}
+
+### Set unique serial number
+GET http://localhost:3000/
+Authorization: Bearer {{accessToken}}
+
+> {% client.global.set("serialNumber", "SN-" + Date.now()) %}
 
 ### Create machine
 POST http://localhost:3000/machines
@@ -57,6 +47,32 @@ Authorization: Bearer {{accessToken}}
 GET http://localhost:3000/machines/{{machineId}}
 Authorization: Bearer {{accessToken}}
 
+### Update machine
+PATCH http://localhost:3000/machines/{{machineId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "CNC Fanuc - zaktualizowany"
+}
+
+### Update operating hours
+PATCH http://localhost:3000/machines/{{machineId}}/operating-hours
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "operatingHours": 1500
+}
+
+### Get machine documents
+GET http://localhost:3000/machines/{{machineId}}/documents
+Authorization: Bearer {{accessToken}}
+
 ### Get machine TCO
 GET http://localhost:3000/machines/{{machineId}}/tco
+Authorization: Bearer {{accessToken}}
+
+### Delete machine
+DELETE http://localhost:3000/machines/{{machineId}}
 Authorization: Bearer {{accessToken}}

@@ -13,7 +13,19 @@ Content-Type: application/json
   "password": "Test1234"
 }
 
+### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
 
+{
+  "email": "{{testEmail}}",
+  "password": "Test1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+    client.global.set("refreshToken", response.body.tokens.refreshToken)
+%}
 
 ### Me
 GET http://localhost:3000/auth/me
@@ -30,17 +42,3 @@ Content-Type: application/json
 {
   "token": "{{refreshToken}}"
 }
-
-### Login
-POST http://localhost:3000/auth/login
-Content-Type: application/json
-
-{
-  "email": "fetch@user.com",
-  "password": "123456aA"
-}
-
-> {%
-    client.global.set("accessToken", response.body.tokens.accessToken)
-    client.global.set("refreshToken", response.body.tokens.refreshToken)
-%}

@@ -1,17 +1,16 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
+import styles from './logout.module.scss'
 
 export default function LogoutPage() {
-  const router = useRouter()
-
   useEffect(() => {
     const performLogout = async () => {
       try {
         const accessToken = Cookies.get('accessToken')
 
+        // 1. Opcjonalne powiadomienie backendu
         if (accessToken) {
           await fetch('http://localhost:3000/auth/logout', {
             method: 'POST',
@@ -21,22 +20,24 @@ export default function LogoutPage() {
           })
         }
       } catch (error) {
-        console.error('Błąd podczas wylogowywania w backendzie:', error)
+        console.error('Błąd wylogowania w API:', error)
       } finally {
+        // 2. Czyścimy dane lokalne
         Cookies.remove('accessToken')
         Cookies.remove('refreshToken')
         localStorage.removeItem('user')
 
-        router.push('/login')
-        router.refresh()
+        // 3. WYMUSZAMY PEŁNE PRZEŁADOWANIE I PRZEKIEROWANIE
+        // Używamy window.location, aby zresetować cały stan Reacta
+        window.location.href = '/auth/login'
       }
     }
 
     performLogout()
-  }, [router])
+  }, [])
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <div className={styles.container}>
       <p>Wylogowywanie...</p>
     </div>
   )

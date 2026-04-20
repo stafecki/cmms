@@ -44,11 +44,13 @@ export default function Login() {
 
       localStorage.setItem('user', JSON.stringify(result.user))
 
-      router.push('/dashboard')
-      router.refresh()
+
+      window.location.href = '/dashboard'
+
     } catch (err: any) {
       setError(err.message)
-    } finally {
+      setIsLoading(false)
+    }finally {
       setIsLoading(false)
     }
   }

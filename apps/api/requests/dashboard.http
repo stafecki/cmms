@@ -1,0 +1,24 @@
+### Login as admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@cmms.com",
+  "password": "Admin1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.tokens.accessToken)
+%}
+
+### Dashboard - ostatni miesiąc
+GET http://localhost:3000/dashboard?period=month
+Authorization: Bearer {{accessToken}}
+
+### Dashboard - ostatni tydzień
+GET http://localhost:3000/dashboard?period=week
+Authorization: Bearer {{accessToken}}
+
+### Dashboard - ostatni rok
+GET http://localhost:3000/dashboard?period=year
+Authorization: Bearer {{accessToken}}

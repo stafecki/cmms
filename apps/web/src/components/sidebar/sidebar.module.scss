@@ -1,0 +1,112 @@
+@import '../../styles/vars';
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+
+  z-index: 9998;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 300px;
+  height: 100vh;
+  background-color: $noir;
+  border-right: 1px solid rgba($oat, 0.1);
+
+  z-index: 9999;
+
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+
+  &.open {
+    left: 0;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+
+    h2 {
+      color: $oat;
+      font-size: 1.5rem;
+      margin: 0;
+      span { color: $darkerOat; }
+    }
+
+    .closeBtn {
+      background: none;
+      border: none;
+      color: $oat;
+      font-size: 2.5rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      transition: color 0.2s;
+
+      &:hover { color: #ff6b6b; }
+    }
+  }
+
+  .navLinks {
+    flex: 1;
+    overflow-y: auto;
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        margin-bottom: 0.5rem;
+        a {
+          display: block;
+          color: rgba($oat, 0.7);
+          text-decoration: none;
+          font-size: 1.2rem;
+          padding: 0.8rem 1rem;
+          border-radius: $radius;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: rgba($oat, 0.05);
+            color: $oat;
+            transform: translateX(5px);
+          }
+        }
+      }
+    }
+  }
+
+  .sidebarFooter {
+    padding-top: 1rem;
+    border-top: 1px solid rgba($oat, 0.1);
+    p {
+      color: rgba($oat, 0.3);
+      font-size: 0.8rem;
+      text-align: center;
+      margin: 0;
+    }
+  }
+}

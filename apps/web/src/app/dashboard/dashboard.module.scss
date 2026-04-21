@@ -1,0 +1,203 @@
+@import '../../styles/vars';
+
+.dashboardContainer {
+  margin-top: 10vh;
+  min-height: 100vh;
+  padding: 2rem 5%;
+  background-color: lighten($noir, 3%);
+  color: $oat;
+  font-family: $font;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid rgba($oat, 0.1);
+    padding-bottom: 1.5rem;
+
+    .titleSection {
+      h1 {
+        font-size: 2.5rem;
+        color: $oat;
+        margin-bottom: 0.5rem;
+
+        span {
+          color: $darkerOat;
+        }
+      }
+      p {
+        color: rgba($oat, 0.6);
+        font-size: 1rem;
+      }
+    }
+
+    .periodSwitcher {
+      display: flex;
+      background-color: $noir;
+      padding: 0.4rem;
+      border-radius: $radius;
+      border: 1px solid rgba($oat, 0.2);
+      gap: 0.5rem;
+
+      button {
+        background: transparent;
+        border: none;
+        color: rgba($oat, 0.5);
+        padding: 0.6rem 1.2rem;
+        border-radius: calc($radius - 0.4rem);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: $oat;
+        }
+
+        &.active {
+          background-color: $oat;
+          color: $noir;
+        }
+      }
+    }
+  }
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background-color: $trasparentNoir;
+  border: 1px solid rgba($oat, 0.1);
+  border-radius: $radius;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: $bxshdw;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: rgba($oat, 0.3);
+  }
+
+  .info {
+    span {
+      display: block;
+      color: rgba($oat, 0.5);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    strong {
+      font-size: 1.8rem;
+      color: $oat;
+    }
+    .subValue {
+      font-size: 0.75rem;
+      color: $darkerOat;
+      display: block;
+      margin-top: 0.3rem;
+    }
+  }
+
+  .iconWrapper {
+    width: 50px;
+    height: 50px;
+    background-color: rgba($oat, 0.05);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $darkerOat;
+  }
+}
+
+.mainChartsSection {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartCard {
+  background-color: $trasparentNoir;
+  border: 1px solid rgba($oat, 0.1);
+  border-radius: $radius;
+  padding: 1.5rem;
+  box-shadow: $bxshdw;
+
+  h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    color: $darkerOat;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .chartHeight {
+    height: 300px;
+    width: 100%;
+  }
+}
+
+.inventorySection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+
+  .inventoryItem {
+    background: rgba($oat, 0.03);
+    padding: 1.2rem;
+    border-radius: $radius;
+    text-align: center;
+    border: 1px solid rgba($oat, 0.05);
+
+    p { color: rgba($oat, 0.5); font-size: 0.8rem; margin-bottom: 0.5rem; }
+    span { font-size: 1.5rem; font-weight: bold; color: $oat; }
+
+    &.warning {
+      border-color: rgba(red, 0.3);
+      span { color: #ff6b6b; }
+    }
+  }
+}
+
+:global(.recharts-tooltip-wrapper) {
+  .recharts-default-tooltip {
+    background-color: $noir !important;
+    border: 1px solid $oat !important;
+    border-radius: 8px !important;
+    color: $oat !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+
+      .periodSwitcher {
+        width: 100%;
+        button { flex: 1; }
+      }
+    }
+
+    .inventorySection {
+      grid-template-columns: 1fr;
+    }
+  }
+}

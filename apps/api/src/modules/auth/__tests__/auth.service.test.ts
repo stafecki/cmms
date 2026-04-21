@@ -36,16 +36,32 @@ vi.mock('@node-rs/argon2', () => ({
   verify: vi.fn()
 }))
 
+let setSubjectCalls: string[] = []
+let setExpirationTimeCalls: string[] = []
+
 vi.mock('jose', () => ({
-  SignJWT: vi.fn().mockImplementation(function () {
-    this.setProtectedHeader = vi.fn().mockReturnThis()
-    this.setSubject = vi.fn().mockReturnThis()
-    this.setJti = vi.fn().mockReturnThis()
-    this.setIssuedAt = vi.fn().mockReturnThis()
-    this.setExpirationTime = vi.fn().mockReturnThis()
-    this.sign = vi.fn().mockResolvedValue('token')
-    return this
-  }),
+  SignJWT: class {
+    setProtectedHeader() {
+      return this
+    }
+    setSubject(sub: string) {
+      setSubjectCalls.push(sub)
+      return this
+    }
+    setJti() {
+      return this
+    }
+    setIssuedAt() {
+      return this
+    }
+    setExpirationTime(exp: string) {
+      setExpirationTimeCalls.push(exp)
+      return this
+    }
+    sign() {
+      return Promise.resolve('token')
+    }
+  },
   jwtVerify: vi.fn()
 }))
 
@@ -61,13 +77,14 @@ const mockedPrisma = vi.mocked(prisma)
 const mockedRedis = vi.mocked(redis)
 const mockedHash = vi.mocked(hash)
 const mockedVerify = vi.mocked(verify)
-const mockedJwtVerify = vi.mocked(jwtVerify)
 const mockedRandomUUID = vi.mocked(randomUUID)
 
 describe('Auth Service', () => {
   beforeEach(() => {
     vi.stubEnv('JWT_SECRET', 'secret')
     vi.clearAllMocks()
+    setSubjectCalls = []
+    setExpirationTimeCalls = []
   })
 
   describe('register', () => {
@@ -121,6 +138,9 @@ describe('Auth Service', () => {
           refreshToken: 'token'
         }
       })
+      expect(setSubjectCalls).toEqual(['user-id', 'user-id'])
+      expect(setExpirationTimeCalls).toEqual(['15m', '7d'])
+      expect(mockedRandomUUID).toHaveBeenCalledTimes(2)
     })
 
     it('should throw error if user already exists', async () => {
@@ -139,6 +159,33 @@ describe('Auth Service', () => {
           message: 'User with this email already exists'
         })
       )
+    })
+
+    it('should propagate hash error', async () => {
+      const input = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        password: 'Password123'
+      }
+
+      mockedPrisma.user.findUnique.mockResolvedValue(null)
+      mockedHash.mockRejectedValue(new Error('Hashing failed'))
+
+      await expect(register(input)).rejects.toThrow('Hashing failed')
+    })
+
+    it('should propagate prisma create error', async () => {
+      const input = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        password: 'Password123'
+      }
+
+      mockedPrisma.user.findUnique.mockResolvedValue(null)
+      mockedHash.mockResolvedValue('hashedPassword')
+      mockedPrisma.user.create.mockRejectedValue(new Error('Database error'))
+
+      await expect(register(input)).rejects.toThrow('Database error')
     })
   })
 
@@ -185,6 +232,9 @@ describe('Auth Service', () => {
         email: user.email,
         role: user.role
       })
+      expect(setSubjectCalls).toEqual(['user-id', 'user-id'])
+      expect(setExpirationTimeCalls).toEqual(['15m', '7d'])
+      expect(mockedRandomUUID).toHaveBeenCalledTimes(2)
     })
 
     it('should throw error for invalid credentials', async () => {
@@ -231,15 +281,12 @@ describe('Auth Service', () => {
         exp: Math.floor(Date.now() / 1000) + 3600
       }
 
-      mockedJwtVerify.mockResolvedValue({ payload })
+      jwtVerify.mockResolvedValue({ payload })
       mockedRedis.set.mockResolvedValue('OK')
 
       await logout(token)
 
-      expect(mockedJwtVerify).toHaveBeenCalledWith(
-        token,
-        expect.any(Uint8Array)
-      )
+      expect(jwtVerify).toHaveBeenCalledWith(token, expect.any(Uint8Array))
       expect(mockedRedis.set).toHaveBeenCalledWith(
         'blacklist:jti-123',
         '1',
@@ -251,8 +298,37 @@ describe('Auth Service', () => {
     it('should throw error for invalid token', async () => {
       const token = 'invalid-token'
 
-      mockedJwtVerify.mockRejectedValue(new Error('Invalid token'))
+      jwtVerify.mockRejectedValue(new Error('Invalid token'))
 
+      await expect(logout(token)).rejects.toThrow(
+        new HTTPException(401, { message: 'Invalid token' })
+      )
+    })
+
+    it('should throw error for token without jti', async () => {
+      const token = 'valid-token'
+      const payload = {
+        jti: undefined,
+        exp: Math.floor(Date.now() / 1000) + 3600
+      }
+
+      jwtVerify.mockResolvedValue({ payload })
+      mockedRedis.set.mockResolvedValue('OK')
+
+      await expect(logout(token)).resolves.toBeUndefined()
+    })
+
+    it('should propagate redis error', async () => {
+      const token = 'valid-token'
+      const payload = {
+        jti: 'jti-123',
+        exp: Math.floor(Date.now() / 1000) + 3600
+      }
+
+      jwtVerify.mockResolvedValue({ payload })
+      mockedRedis.set.mockRejectedValue(new Error('Redis connection failed'))
+
+      // logout łapie wszystkie błędy w catch i zwraca HTTPException 401
       await expect(logout(token)).rejects.toThrow(
         new HTTPException(401, { message: 'Invalid token' })
       )
@@ -268,7 +344,11 @@ describe('Auth Service', () => {
         exp: Math.floor(Date.now() / 1000) + 3600
       }
 
-      mockedJwtVerify.mockResolvedValue({ payload })
+      vi.mocked(jwtVerify).mockResolvedValueOnce({
+        payload,
+        protectedHeader: { alg: 'HS256' }
+      } as Awaited<ReturnType<typeof jwtVerify>>)
+
       mockedRedis.get.mockResolvedValue(null)
       mockedPrisma.user.findUnique.mockResolvedValue({
         id: 'user-id',
@@ -290,11 +370,65 @@ describe('Auth Service', () => {
       const input = { token: 'refresh-token' }
       const payload = { jti: 'jti-123' }
 
-      mockedJwtVerify.mockResolvedValue({ payload })
+      jwtVerify.mockResolvedValue({ payload })
       mockedRedis.get.mockResolvedValue('1')
 
       await expect(refreshTokens(input)).rejects.toThrow(
         new HTTPException(401, { message: 'Refresh token has been revoked' })
+      )
+    })
+
+    it('should throw error for deactivated user', async () => {
+      const input = { token: 'refresh-token' }
+      const payload = {
+        sub: 'user-id',
+        jti: 'jti-123',
+        exp: Math.floor(Date.now() / 1000) + 3600
+      }
+
+      jwtVerify.mockResolvedValue({ payload })
+      mockedRedis.get.mockResolvedValue(null)
+      mockedPrisma.user.findUnique.mockResolvedValue({
+        id: 'user-id',
+        email: 'john@example.com',
+        role: 'OPERATOR' as UserRole,
+        isActive: false
+      } as any)
+
+      await expect(refreshTokens(input)).rejects.toThrow(
+        new HTTPException(401, { message: 'User not found or deactivated' })
+      )
+    })
+
+    it('should throw error for deleted user', async () => {
+      const input = { token: 'refresh-token' }
+      const payload = {
+        sub: 'user-id',
+        jti: 'jti-123',
+        exp: Math.floor(Date.now() / 1000) + 3600
+      }
+
+      jwtVerify.mockResolvedValue({ payload })
+      mockedRedis.get.mockResolvedValue(null)
+      mockedPrisma.user.findUnique.mockResolvedValue(null)
+
+      await expect(refreshTokens(input)).rejects.toThrow(
+        new HTTPException(401, { message: 'User not found or deactivated' })
+      )
+    })
+
+    it('should throw error for token without sub', async () => {
+      const input = { token: 'refresh-token' }
+      const payload = {
+        jti: 'jti-123',
+        exp: Math.floor(Date.now() / 1000) + 3600
+      }
+
+      jwtVerify.mockResolvedValue({ payload })
+      mockedRedis.get.mockResolvedValue(null)
+
+      await expect(refreshTokens(input)).rejects.toThrow(
+        new HTTPException(401, { message: 'User not found or deactivated' })
       )
     })
   })
@@ -327,6 +461,16 @@ describe('Auth Service', () => {
       await expect(getMe(userId)).rejects.toThrow(
         new HTTPException(404, { message: 'User not found' })
       )
+    })
+
+    it('should propagate prisma error', async () => {
+      const userId = 'user-id'
+
+      mockedPrisma.user.findUnique.mockRejectedValue(
+        new Error('Database connection failed')
+      )
+
+      await expect(getMe(userId)).rejects.toThrow('Database connection failed')
     })
   })
 })

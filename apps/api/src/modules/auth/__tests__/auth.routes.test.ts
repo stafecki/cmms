@@ -5,6 +5,8 @@ import auth from '../auth.routes.js'
 import * as authService from '../auth.service.js'
 import { UserRole } from '../../../../generated/prisma/client.js'
 import { jwtVerify } from 'jose'
+import { HTTPException } from 'hono/http-exception'
+import { authMiddleware } from '../../../middleware/auth.middleware.js'
 
 // Mock auth service
 vi.mock('../auth.service.js', () => ({
@@ -29,7 +31,7 @@ vi.mock('../../../lib/redis.js', () => ({
 }))
 
 // Mock auth middleware
-vi.mock('../../middleware/auth.middleware.js', () => ({
+vi.mock('../../../middleware/auth.middleware.js', () => ({
   authMiddleware: vi.fn(async (c, next) => {
     c.set('user', {
       sub: 'user-id',
@@ -105,6 +107,7 @@ describe('Auth Routes', () => {
       const data = await res.json()
       expect(data).toEqual(response)
       expect(mockedAuthService.register).toHaveBeenCalledWith(input)
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
 
     it('should return 400 for invalid input', async () => {
@@ -119,6 +122,10 @@ describe('Auth Routes', () => {
       })
 
       expect(res.status).toBe(400)
+      const data = await res.json()
+      expect(data.success).toBe(false)
+      expect(data).toHaveProperty('error')
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
   })
 
@@ -148,6 +155,7 @@ describe('Auth Routes', () => {
       const data = await res.json()
       expect(data).toEqual(response)
       expect(mockedAuthService.login).toHaveBeenCalledWith(input)
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
 
     it('should return 400 for invalid input', async () => {
@@ -161,6 +169,10 @@ describe('Auth Routes', () => {
       })
 
       expect(res.status).toBe(400)
+      const data = await res.json()
+      expect(data.success).toBe(false)
+      expect(data).toHaveProperty('error')
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
   })
 
@@ -180,6 +192,7 @@ describe('Auth Routes', () => {
       const data = await res.json()
       expect(data).toEqual({ message: 'Logged out successfully' })
       expect(mockedAuthService.logout).toHaveBeenCalledWith('valid-token')
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
 
     it('should return 401 for missing authorization', async () => {
@@ -207,6 +220,7 @@ describe('Auth Routes', () => {
       const data = await res.json()
       expect(data).toEqual(response)
       expect(mockedAuthService.refreshTokens).toHaveBeenCalledWith(input)
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
 
     it('should return 400 for invalid input', async () => {
@@ -217,6 +231,10 @@ describe('Auth Routes', () => {
       })
 
       expect(res.status).toBe(400)
+      const data = await res.json()
+      expect(data.success).toBe(false)
+      expect(data).toHaveProperty('error')
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
   })
 
@@ -229,7 +247,7 @@ describe('Auth Routes', () => {
         email: 'john@example.com',
         role: UserRole.OPERATOR,
         isActive: true,
-        // Poprawka 3: Date zamiast string
+        // ...existing code...
         createdAt: new Date('2023-01-01T00:00:00.000Z'),
         certifications: [] as []
       }
@@ -250,10 +268,54 @@ describe('Auth Routes', () => {
         createdAt: user.createdAt.toISOString()
       })
       expect(mockedAuthService.getMe).toHaveBeenCalledWith('user-id')
+      expect(res.headers.get('content-type')).toBe('application/json')
     })
 
-    it('should return 401 for missing authorization', async () => {
+    it('should return 401 when authMiddleware rejects', async () => {
+      // Mockujemy że middleware wyrzuci error
+      vi.mocked(authMiddleware).mockImplementationOnce(async (c, next) => {
+        throw new HTTPException(401, { message: 'Missing or invalid token' })
+      })
+
       const res = await client.auth.me.$get()
+
+      expect(res.status).toBe(401)
+    })
+  })
+
+  describe('Middleware Errors', () => {
+    it('should return 401 for expired token on /auth/me', async () => {
+      vi.mocked(authMiddleware).mockImplementationOnce(async (c, next) => {
+        throw new HTTPException(401, { message: 'Token expired' })
+      })
+
+      const res = await client.auth.me.$get({
+        header: { Authorization: 'Bearer token' }
+      })
+
+      expect(res.status).toBe(401)
+    })
+
+    it('should return 401 for blacklisted token on /auth/me', async () => {
+      vi.mocked(authMiddleware).mockImplementationOnce(async (c, next) => {
+        throw new HTTPException(401, { message: 'Token blacklisted' })
+      })
+
+      const res = await client.auth.me.$get({
+        header: { Authorization: 'Bearer token' }
+      })
+
+      expect(res.status).toBe(401)
+    })
+
+    it('should return 401 for invalid token on /auth/logout', async () => {
+      vi.mocked(authMiddleware).mockImplementationOnce(async (c, next) => {
+        throw new HTTPException(401, { message: 'Invalid token' })
+      })
+
+      const res = await client.auth.logout.$post({
+        header: { Authorization: 'Bearer token' }
+      })
 
       expect(res.status).toBe(401)
     })

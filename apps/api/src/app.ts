@@ -22,7 +22,7 @@ const app = new Hono()
 app.use(
   '/*',
   cors({
-    origin: 'http://localhost:8080/',
+    origin: 'http://localhost:8080',
     allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
     credentials: true

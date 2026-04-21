@@ -1,6 +1,5 @@
 @import "../../styles/vars";
 
-// --- WSPÓLNE STYLE BAZOWE ---
 .HeaderBase {
   position: fixed;
   top: 0;
@@ -20,6 +19,24 @@
   .logo {
     display: flex;
     align-items: center;
+
+    .homeLink {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+
     h1 {
       font-size: 3.5rem;
       color: $oat;
@@ -27,6 +44,7 @@
       margin: 0;
       font-weight: 900;
       white-space: nowrap;
+      line-height: 1;
     }
   }
 
@@ -37,32 +55,25 @@
   }
 }
 
-// --- WARIANT: ZALOGOWANY (Logo na środku, burger po lewej) ---
 .HeaderLoggedIn {
   @extend .HeaderBase;
-  // Struktura: [Lewa: 1fr] [Logo: auto] [Prawa: 1fr]
   grid-template-columns: 1fr auto 1fr;
 
   .leftSection {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
   }
 
   .logo {
-    justify-self: center; // Wypycha logo dokładnie na środek ekranu
-  }
-
-  .rightSection {
-    // Prawa strona zajmuje 1fr, przycisk AuthBtn trzyma się prawej krawędzi
+    justify-self: center;
   }
 }
 
-// --- WARIANT: WYLOGOWANY (Logo po lewej, Navbar obok) ---
 .HeaderLoggedOut {
   @extend .HeaderBase;
-  // Struktura: [Logo: auto] [Pusty/Navbar: 1fr] [Prawa: auto]
   grid-template-columns: auto 1fr auto;
-  gap: 5rem;
+  gap: 2rem;
 
   .logo {
     justify-self: start;
@@ -70,15 +81,10 @@
 
   .navWrapper {
     display: flex;
-    justify-content: center; // Navbar wycentrowany w swojej kolumnie
-  }
-
-  .rightSection {
-    // AuthBtn trzyma się prawej strony
+    justify-content: center;
+    align-items: center;
   }
 }
-
-// --- ELEMENTY WEWNĘTRZNE ---
 
 .burgerWrapper {
   cursor: pointer;
@@ -87,6 +93,7 @@
   gap: 6px;
   padding: 0.8rem;
   margin-left: -0.8rem;
+  transition: all 0.2s ease;
 
   span {
     display: block;
@@ -94,21 +101,39 @@
     height: 3px;
     background-color: $oat;
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &:hover span {
-    background-color: $darkerOat;
-    &:nth-child(2) { transform: translateX(5px); }
+  &:hover {
+    span {
+      background-color: $darkerOat;
+      &:nth-child(2) {
+        transform: translateX(5px);
+      }
+    }
   }
 }
 
 @media (max-width: 1024px) {
   .HeaderLoggedOut {
-    gap: 2rem;
+    gap: 1rem;
   }
 
   .HeaderBase {
-    .logo h1 { font-size: 2.5rem; }
+    height: 8vh;
+
+    .logo h1 {
+      font-size: 2.5rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .navWrapper {
+    display: none;
+  }
+
+  .HeaderLoggedOut {
+    grid-template-columns: 1fr auto;
   }
 }

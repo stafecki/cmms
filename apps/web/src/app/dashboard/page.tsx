@@ -26,7 +26,7 @@ export default function Dashboard() {
 
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:3000/dashboard/?period=${period}`, {
+        const res = await fetch(`http://localhost:3000/dashboard?period=${period}`, {
           headers: {
             'Authorization': `Bearer ${accessToken}`
           }

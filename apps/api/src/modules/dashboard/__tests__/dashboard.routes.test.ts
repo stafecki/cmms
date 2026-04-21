@@ -91,15 +91,19 @@ describe('Dashboard Routes', () => {
   let initialRequireRolesCalls: unknown[][]
 
   beforeAll(() => {
-    initialRequireRolesCalls = vi.mocked(requireRoles).mock.calls.map(call => [...call])
+    initialRequireRolesCalls = vi
+      .mocked(requireRoles)
+      .mock.calls.map((call) => [...call])
   })
 
   beforeEach(() => {
     vi.clearAllMocks()
     // Przywróć domyślne zachowanie (pass-through) po wyczyszczeniu mocków
-    rolesMiddleware.mockImplementation(async (_c: unknown, next: () => Promise<void>) => {
-      await next()
-    })
+    rolesMiddleware.mockImplementation(
+      async (_c: unknown, next: () => Promise<void>) => {
+        await next()
+      }
+    )
   })
 
   // ─── GET /dashboard ────────────────────────────────────────────────────────

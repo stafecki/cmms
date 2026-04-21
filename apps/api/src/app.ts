@@ -1,7 +1,10 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors' // 1. Importujemy middleware CORS
 import { connectMongo } from './lib/mongoose.js'
-import { requestLoggerMiddleware, errorLoggerMiddleware} from "./middleware/logger.middleware.js";
+import {
+  requestLoggerMiddleware,
+  errorLoggerMiddleware
+} from './middleware/logger.middleware.js'
 import redis from './lib/redis.js'
 import auth from './modules/auth/auth.routes.js'
 import machines from './modules/machines/machines.routes.js'
@@ -10,12 +13,21 @@ import workOrders from './modules/work-orders/work-orders.routes.js'
 import inventory from './modules/inventory/inventory.routes.js'
 import preventive from './modules/preventive/preventive.routes.js'
 import notifications from './modules/notifications/notifications.routes.js'
-import monitoring from "./modules/monitoring/monitoring.routes.js";
-import dashboard from "./modules/dashboard/dashboard.routes.js";
-import users from "./modules/users/users.routes.js";
+import monitoring from './modules/monitoring/monitoring.routes.js'
+import dashboard from './modules/dashboard/dashboard.routes.js'
+import users from './modules/users/users.routes.js'
 
 const app = new Hono()
-app.use('*', cors())
+
+app.use(
+  '/*',
+  cors({
+    origin: 'http://localhost:8080/',
+    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  })
+)
 app.use('*', requestLoggerMiddleware)
 
 app.get('/', (c) => c.text('CMMS API'))
@@ -29,7 +41,6 @@ app.route('/notifications', notifications)
 app.route('/monitoring', monitoring)
 app.route('/dashboard', dashboard)
 app.route('/users', users)
-
 
 app.onError(errorLoggerMiddleware)
 

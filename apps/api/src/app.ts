@@ -18,7 +18,16 @@ import dashboard from './modules/dashboard/dashboard.routes.js'
 import users from './modules/users/users.routes.js'
 
 const app = new Hono()
-app.use('*', cors())
+
+app.use(
+  '/*',
+  cors({
+    origin: 'http://localhost:8080',
+    allowMethods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  })
+)
 app.use('*', requestLoggerMiddleware)
 
 app.get('/', (c) => c.text('CMMS API'))

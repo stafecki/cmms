@@ -114,6 +114,17 @@ export const getPartById = async (id: string): Promise<PartWithCategory> => {
 }
 
 export const createPart = async (input: CreatePartInput): Promise<Part> => {
+  if (input.qrCode) {
+    const existingQr = await prisma.part.findUnique({
+      where: { qrCode: input.qrCode }
+    })
+    if (existingQr) {
+      throw new HTTPException(409, {
+        message: 'Kod QR jest już przypisany do innego przedmiotu'
+      })
+    }
+  }
+
   const category = await prisma.partCategory.findUnique({
     where: { id: input.categoryId }
   })
@@ -126,6 +137,7 @@ export const createPart = async (input: CreatePartInput): Promise<Part> => {
     data: {
       categoryId: input.categoryId,
       name: input.name,
+      qrCode: input.qrCode,
       stockQuantity: input.stockQuantity,
       reorderPoint: input.reorderPoint,
       unitPrice: input.unitPrice

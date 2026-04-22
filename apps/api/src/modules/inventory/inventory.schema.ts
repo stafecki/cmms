@@ -26,7 +26,10 @@ export const createPartSchema = z.object({
   unitPrice: z
     .number()
     .min(0, 'Unit price must be a positive number')
-    .multipleOf(0.01, 'Unit price must have at most 2 decimal places')
+    .multipleOf(0.01, 'Unit price must have at most 2 decimal places'),
+  qrCode: z
+    .string()
+    .regex(/^QR-\d{3}$/, 'Format code must be QR-000 (ex. QR-001)')
 })
 
 export const updatePartSchema = createPartSchema.partial()

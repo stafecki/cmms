@@ -14,7 +14,6 @@ import { randomUUID } from 'crypto'
 import { HTTPException } from 'hono/http-exception'
 import type { UserRole } from '../../../../generated/prisma/client.js'
 
-// Mock dependencies
 vi.mock('../../../lib/prisma.js', () => ({
   default: {
     user: {
@@ -328,7 +327,6 @@ describe('Auth Service', () => {
       jwtVerify.mockResolvedValue({ payload })
       mockedRedis.set.mockRejectedValue(new Error('Redis connection failed'))
 
-      // logout łapie wszystkie błędy w catch i zwraca HTTPException 401
       await expect(logout(token)).rejects.toThrow(
         new HTTPException(401, { message: 'Invalid token' })
       )

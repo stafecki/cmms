@@ -29,7 +29,6 @@ vi.mock('../../../lib/prisma.js', () => ({
 
 const mockedPrisma = vi.mocked(prisma)
 
-// Pomocnicze factory — unika duplikowania danych w każdym teście
 const makeWorkOrder = (overrides = {}) => ({
   status: WorkOrderStatus.COMPLETED,
   priority: Priority.MEDIUM,
@@ -47,7 +46,6 @@ describe('Dashboard Service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // Domyślne mocki — każdy test może je nadpisać przez mockResolvedValueOnce
     mockedPrisma.workOrder.findMany.mockResolvedValue([])
     mockedPrisma.workOrder.count.mockResolvedValue(0)
     mockedPrisma.machine.count.mockResolvedValue(0)
@@ -56,7 +54,7 @@ describe('Dashboard Service', () => {
     mockedPrisma.preventivePlan.count.mockResolvedValue(0)
   })
 
-  // ─── getPeriodDates (testowane pośrednio przez getDashboard) ───────────────
+  // ─── getPeriodDates ───────────────
 
   describe('period date ranges', () => {
     it('should query with correct date range for "week"', async () => {
@@ -70,7 +68,6 @@ describe('Dashboard Service', () => {
       const expectedFrom = new Date(before)
       expectedFrom.setDate(expectedFrom.getDate() - 7)
 
-      // tolerancja ±5s na czas wykonania testu
       expect(gte.getTime()).toBeGreaterThanOrEqual(
         expectedFrom.getTime() - 5000
       )
@@ -129,8 +126,8 @@ describe('Dashboard Service', () => {
         { status: WorkOrderStatus.COMPLETED, priority: Priority.LOW }
       ])
       mockedPrisma.workOrder.count
-        .mockResolvedValueOnce(2) // open
-        .mockResolvedValueOnce(1) // critical
+        .mockResolvedValueOnce(2)
+        .mockResolvedValueOnce(1)
 
       const result = await getDashboard('month')
 
@@ -144,8 +141,8 @@ describe('Dashboard Service', () => {
 
     it('should return open and critical counts from prisma.count', async () => {
       mockedPrisma.workOrder.count
-        .mockResolvedValueOnce(5) // open
-        .mockResolvedValueOnce(2) // critical
+        .mockResolvedValueOnce(5)
+        .mockResolvedValueOnce(2)
 
       const result = await getDashboard('month')
 
@@ -156,7 +153,6 @@ describe('Dashboard Service', () => {
     it('should query open with correct statuses', async () => {
       await getDashboard('month')
 
-      // count wywoływany 2x: open i critical — sprawdzamy pierwsze wywołanie
       const openCall = mockedPrisma.workOrder.count.mock.calls[0][0]
       expect(openCall.where.status.in).toEqual(
         expect.arrayContaining([
@@ -193,9 +189,8 @@ describe('Dashboard Service', () => {
   describe('costs stats', () => {
     it('should sum laborCost and partsCost correctly', async () => {
       mockedPrisma.workOrder.findMany
-        .mockResolvedValueOnce([]) // getWorkOrderStats (first findMany)
+        .mockResolvedValueOnce([])
         .mockResolvedValueOnce([
-          // getCostStats (second findMany)
           makeWorkOrder({ laborCost: 100, partsCost: 50 }),
           makeWorkOrder({ laborCost: 200.5, partsCost: 99.99 })
         ])
@@ -273,10 +268,8 @@ describe('Dashboard Service', () => {
 
       const result = await getDashboard('month')
 
-      // powinno zwrócić maksymalnie 5 maszyn
       expect(result.costs.topMachinesByCost).toHaveLength(5)
 
-      // posortowane malejąco po koszcie
       expect(result.costs.topMachinesByCost[0].machineId).toBe('machine-3') // 900
       expect(result.costs.topMachinesByCost[1].machineId).toBe('machine-1') // 800
       expect(result.costs.topMachinesByCost[2].machineId).toBe('machine-5') // 400
@@ -309,8 +302,8 @@ describe('Dashboard Service', () => {
   describe('machines stats', () => {
     it('should return total and active machine counts', async () => {
       mockedPrisma.machine.count
-        .mockResolvedValueOnce(20) // total
-        .mockResolvedValueOnce(15) // active
+        .mockResolvedValueOnce(20)
+        .mockResolvedValueOnce(15)
 
       const result = await getDashboard('month')
 
@@ -319,15 +312,13 @@ describe('Dashboard Service', () => {
     })
 
     it('should calculate MTTR as average repair time in hours', async () => {
-      // 2 zlecenia po 2h każde → MTTR = 2h
       const startedAt = new Date('2024-01-01T08:00:00Z')
       const closedAt = new Date('2024-01-01T10:00:00Z')
 
       mockedPrisma.workOrder.findMany
-        .mockResolvedValueOnce([]) // workOrderStats
-        .mockResolvedValueOnce([]) // costStats
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
         .mockResolvedValueOnce([
-          // machineStats
           makeWorkOrder({
             startedAt,
             closedAt,
@@ -353,7 +344,6 @@ describe('Dashboard Service', () => {
     })
 
     it('should calculate MTBF from intervals between failures per machine', async () => {
-      // machine-1 ma 3 awarie: 0h, 24h, 48h → 2 interwały × 24h = MTBF 24h
       const base = new Date('2024-01-01T00:00:00Z')
       const d1 = new Date(base.getTime())
       const d2 = new Date(base.getTime() + 24 * 3600 * 1000)
@@ -396,7 +386,6 @@ describe('Dashboard Service', () => {
 
       const result = await getDashboard('month')
 
-      // zlecenie bez startedAt nie powinno wchodzić do MTTR
       expect(result.machines.mttr).toBe(0)
     })
   })
@@ -406,8 +395,8 @@ describe('Dashboard Service', () => {
   describe('inventory stats', () => {
     it('should return totalParts, lowStockCount and activeLoans', async () => {
       mockedPrisma.part.count
-        .mockResolvedValueOnce(100) // totalParts (isActive: true)
-        .mockResolvedValueOnce(8) // lowStockCount (stockQuantity <= 5)
+        .mockResolvedValueOnce(100)
+        .mockResolvedValueOnce(8)
       mockedPrisma.toolLoan.count.mockResolvedValue(3)
 
       const result = await getDashboard('month')
@@ -453,9 +442,9 @@ describe('Dashboard Service', () => {
   describe('preventive stats', () => {
     it('should return totalPlans, upcomingIn7Days and overdue', async () => {
       mockedPrisma.preventivePlan.count
-        .mockResolvedValueOnce(10) // totalPlans
-        .mockResolvedValueOnce(3) // upcomingIn7Days
-        .mockResolvedValueOnce(2) // overdue
+        .mockResolvedValueOnce(10)
+        .mockResolvedValueOnce(3)
+        .mockResolvedValueOnce(2)
 
       const result = await getDashboard('month')
 
@@ -507,7 +496,7 @@ describe('Dashboard Service', () => {
     })
   })
 
-  // ─── getDashboard (integracja) ─────────────────────────────────────────────
+  // ─── getDashboard ─────────────────────────────────────────────
 
   describe('getDashboard integration', () => {
     it('should return complete dashboard structure', async () => {

@@ -53,7 +53,6 @@ vi.mock('../../../lib/redis.js', () => ({
   default: { get: vi.fn(), set: vi.fn() }
 }))
 
-// USER_ID musi być zdefiniowane przed vi.mock (vi.hoisted gwarantuje dostęp wewnątrz factory)
 const USER_ID = 'a0000000-0000-4000-8000-000000000004'
 const CATEGORY_ID = 'a0000000-0000-4000-8000-000000000001'
 const PART_ID = 'a0000000-0000-4000-8000-000000000002'
@@ -112,8 +111,6 @@ app.route('/inventory', inventory)
 const client = testClient(app)
 
 describe('Inventory Routes', () => {
-  // requireRoles jest wywoływany przy imporcie modułu routy, przed jakimkolwiek beforeEach.
-  // Przechwytujemy argumenty przed clearAllMocks.
   let initialRequireRolesCalls: unknown[][]
 
   beforeAll(() => {

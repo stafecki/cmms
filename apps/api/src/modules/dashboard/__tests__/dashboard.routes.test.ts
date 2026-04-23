@@ -8,9 +8,6 @@ import { UserRole } from '../../../../generated/prisma/client.js'
 import { authMiddleware } from '../../../middleware/auth.middleware.js'
 import { requireRoles } from '../../../middleware/roles.middleware.js'
 
-// rolesMiddleware musi być vi.fn() żeby można było nadpisać implementację per-test.
-// requireRoles() jest wywoływany RAZ przy imporcie modułu routy i zwraca tę funkcję —
-// Hono przechowuje referencję do niej, nie do requireRoles samego w sobie.
 const { rolesMiddleware } = vi.hoisted(() => ({
   rolesMiddleware: vi.fn(async (_c: unknown, next: () => Promise<void>) => {
     await next()
@@ -44,7 +41,6 @@ vi.mock('../../../lib/redis.js', () => ({
 
 const mockedService = vi.mocked(dashboardService)
 
-// Przykładowa odpowiedź serwisu — pokrywa cały shape DashboardData
 const makeDashboardResponse = (period = 'month') => ({
   period,
   from: new Date('2024-01-01T00:00:00Z'),
@@ -86,8 +82,6 @@ app.route('/dashboard', dashboard)
 const client = testClient(app)
 
 describe('Dashboard Routes', () => {
-  // requireRoles jest wywoływany przy imporcie modułu (rejestracja routy), przed jakimkolwiek
-  // beforeEach. Przechwytujemy argumenty tutaj, zanim clearAllMocks wyczyści historię.
   let initialRequireRolesCalls: unknown[][]
 
   beforeAll(() => {
@@ -98,7 +92,6 @@ describe('Dashboard Routes', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    // Przywróć domyślne zachowanie (pass-through) po wyczyszczeniu mocków
     rolesMiddleware.mockImplementation(
       async (_c: unknown, next: () => Promise<void>) => {
         await next()
@@ -119,7 +112,6 @@ describe('Dashboard Routes', () => {
 
       expect(res.status).toBe(200)
       const data = await res.json()
-      // Daty są serializowane do stringa w JSON
       expect(data).toMatchObject({
         period: 'month',
         workOrders: response.workOrders,
@@ -250,8 +242,6 @@ describe('Dashboard Routes', () => {
     })
 
     it('should call requireRoles with ADMIN and MANAGER', () => {
-      // requireRoles jest wywoływany przy rejestracji routy (imporcie modułu), nie przy każdym
-      // requeście. Przechwytujemy argumenty w beforeAll, zanim clearAllMocks wyczyści historię.
       expect(initialRequireRolesCalls).toContainEqual([
         UserRole.ADMIN,
         UserRole.MANAGER

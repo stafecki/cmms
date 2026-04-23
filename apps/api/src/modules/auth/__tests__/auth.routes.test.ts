@@ -8,7 +8,6 @@ import { jwtVerify } from 'jose'
 import { HTTPException } from 'hono/http-exception'
 import { authMiddleware } from '../../../middleware/auth.middleware.js'
 
-// Mock auth service
 vi.mock('../auth.service.js', () => ({
   register: vi.fn(),
   login: vi.fn(),
@@ -17,12 +16,10 @@ vi.mock('../auth.service.js', () => ({
   getMe: vi.fn()
 }))
 
-// Mock jose for middleware
 vi.mock('jose', () => ({
   jwtVerify: vi.fn()
 }))
 
-// Mock redis
 vi.mock('../../../lib/redis.js', () => ({
   default: {
     get: vi.fn(),
@@ -30,7 +27,6 @@ vi.mock('../../../lib/redis.js', () => ({
   }
 }))
 
-// Mock auth middleware
 vi.mock('../../../middleware/auth.middleware.js', () => ({
   authMiddleware: vi.fn(async (c, next) => {
     c.set('user', {
@@ -262,7 +258,6 @@ describe('Auth Routes', () => {
 
       expect(res.status).toBe(200)
       const data = await res.json()
-      // createdAt będzie zserializowane do stringa w JSON
       expect(data).toEqual({
         ...user,
         createdAt: user.createdAt.toISOString()
@@ -272,7 +267,6 @@ describe('Auth Routes', () => {
     })
 
     it('should return 401 when authMiddleware rejects', async () => {
-      // Mockujemy że middleware wyrzuci error
       vi.mocked(authMiddleware).mockImplementationOnce(async (c, next) => {
         throw new HTTPException(401, { message: 'Missing or invalid token' })
       })

@@ -35,7 +35,7 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 
   .searchBox {
     display: flex;
@@ -70,6 +70,7 @@
   border: 1px solid rgba($oat, 0.2);
   color: $oat;
   padding: 0 1.5rem;
+  height: 48px;
   border-radius: 10px;
   cursor: pointer;
   font-size: 1.3rem;
@@ -82,6 +83,98 @@
   }
 }
 
+// --- ALERTS (BELL & PANEL) ---
+.alertBell {
+  position: relative;
+  background: rgba($oat, 0.05);
+  border: 1px solid rgba($oat, 0.2);
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  height: 48px;
+  display: flex;
+  align-items: center;
+
+  &.hasAlerts {
+    border-color: $warningRed;
+    .bellIcon { filter: drop-shadow(0 0 5px $warningRed); }
+  }
+
+  .countBadge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: $warningRed;
+    color: white;
+    font-size: 0.9rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+}
+
+.alertPanel {
+  position: absolute;
+  top: 100px;
+  right: 4%;
+  width: 380px;
+  background: lighten($noir, 2%);
+  border: 1px solid rgba($warningRed, 0.5);
+  border-radius: $radius;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  z-index: 1000;
+  padding: 2rem;
+  animation: slideInRight 0.3s ease-out;
+
+  .alertHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba($oat, 0.1);
+    padding-bottom: 1rem;
+
+    h3 { font-size: 1.3rem; color: $warningRed; margin: 0; text-transform: uppercase; }
+    button { background: none; border: none; color: $oat; font-size: 2rem; cursor: pointer; opacity: 0.5; &:hover { opacity: 1; } }
+  }
+
+  .alertList {
+    max-height: 350px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .alertItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+
+    .alertInfo {
+      display: flex;
+      flex-direction: column;
+      .partName { font-weight: 600; color: $oat; font-size: 1.2rem; }
+      .partStock { font-size: 1rem; opacity: 0.6; strong { color: $warningRed; } }
+    }
+
+    .orderBtn {
+      font-size: 0.9rem;
+      background: rgba($warningRed, 0.1);
+      color: $warningRed;
+      padding: 6px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      &:hover { background: $warningRed; color: $noir; }
+    }
+  }
+}
+
 // --- FILTER PANEL ---
 .filterPanel {
   background: rgba(255, 255, 255, 0.03);
@@ -90,9 +183,10 @@
   border-radius: 15px;
   margin-bottom: 3.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 2.5rem;
   align-items: flex-end;
+  animation: slideDown 0.3s ease-out;
 
   .filterGroup {
     display: flex;
@@ -100,36 +194,27 @@
     gap: 1rem;
 
     label {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       text-transform: uppercase;
       opacity: 0.6;
       letter-spacing: 1px;
-
-      strong {
-        color: $oat;
-        font-size: 1.4rem;
-        margin-left: 0.5rem;
-      }
+      strong { color: $oat; margin-left: 5px; }
     }
 
     select, input[type="number"] {
       background: $noir;
       border: 1px solid rgba($oat, 0.2);
-      padding: 1.1rem;
+      padding: 1rem;
       border-radius: 8px;
       color: $oat;
-      font-size: 1.4rem;
-
-      &:focus {
-        border-color: $oat;
-        outline: none;
-      }
+      font-size: 1.3rem;
+      &:focus { border-color: $oat; outline: none; }
     }
 
     .inputRange {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
+      gap: 1rem;
     }
   }
 }
@@ -137,42 +222,32 @@
 .slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 6px;
+  height: 4px;
   background: rgba($oat, 0.2);
-  border-radius: 5px;
+  border-radius: 2px;
   outline: none;
-  margin: 1.2rem 0;
+  margin: 1rem 0;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     background: $oat;
     border-radius: 50%;
     cursor: pointer;
-    transition: transform 0.2s;
-  }
-
-  &::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
   }
 }
 
 .resetBtn {
   background: transparent;
-  border: 1px solid rgba(#ff6b6b, 0.4);
-  color: #ff6b6b;
-  padding: 1.1rem;
+  border: 1px solid rgba($warningRed, 0.4);
+  color: $warningRed;
+  padding: 1rem;
   border-radius: 8px;
-  font-size: 1.3rem;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s;
-
-  &:hover {
-    background: #ff6b6b;
-    color: white;
-  }
+  font-weight: bold;
+  transition: all 0.2s;
+  &:hover { background: $warningRed; color: white; }
 }
 
 // --- TABS ---
@@ -202,21 +277,15 @@
   background: $oat;
   color: $noir;
   border: none;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
+  height: 48px;
   border-radius: 10px;
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 2rem;
   cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  transition: all 0.2s ease;
-
-  .plus {
-    font-size: 1.9rem;
-    line-height: 0;
-    margin-bottom: 2px;
-  }
 
   &:hover {
     background: #fff;
@@ -252,14 +321,11 @@
     border-color: rgba($oat, 0.3);
   }
 
-  h3 {
-    margin: 1.2rem 0;
-    font-size: 1.7rem;
-  }
+  h3 { margin: 1.2rem 0; font-size: 1.7rem; }
 
   &.lowStock {
-    border-color: rgba(#ff6b6b, 0.4);
-    background: rgba(#ff6b6b, 0.05);
+    border-color: rgba($warningRed, 0.4);
+    background: rgba($warningRed, 0.05);
   }
 }
 
@@ -270,21 +336,22 @@
 }
 
 .categoryTag {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
   background: rgba($oat, 0.1);
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 6px;
 }
 
-.alertBadge {
-  font-size: 1.2rem;
-  background: #ff6b6b;
-  color: white;
-  padding: 4px 12px;
+.quickLoanBtn {
+  background: rgba($oat, 0.1);
+  border: 1px solid rgba($oat, 0.2);
+  color: $oat;
+  padding: 5px 10px;
   border-radius: 6px;
-  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  &:hover { background: $oat; color: $noir; }
 }
 
 .stats {
@@ -295,9 +362,9 @@
   .stat {
     display: flex;
     flex-direction: column;
-    label { font-size: 1.25rem; opacity: 0.5; }
-    strong { font-size: 1.6rem; }
-    .zero { color: #ff6b6b; }
+    label { font-size: 1.1rem; opacity: 0.5; }
+    strong { font-size: 1.5rem; }
+    .outOfStock { color: $warningRed; }
   }
 }
 
@@ -318,14 +385,16 @@
     padding: 1.5rem;
     text-align: left;
     border-bottom: 1px solid rgba($oat, 0.05);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
   }
 
-  th {
-    background: rgba(255, 255, 255, 0.05);
-    font-size: 1.35rem;
-    text-transform: uppercase;
-    opacity: 0.7;
+  th { background: rgba(255, 255, 255, 0.05); opacity: 0.7; text-transform: uppercase; font-size: 1.1rem; }
+
+  .qrCodeSmall {
+    font-family: monospace;
+    background: rgba($oat, 0.1);
+    padding: 3px 6px;
+    border-radius: 4px;
   }
 }
 
@@ -333,128 +402,34 @@
   background: $oat;
   color: $noir;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 1.3rem;
-  transition: background 0.2s;
-
-  &:hover { background: #fff; }
+  font-weight: bold;
+  &:hover { background: white; }
 }
 
-// --- MODAL STYLING ---
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 2000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+// --- UTILS & ANIMATIONS ---
+.loading, .noResults { text-align: center; padding: 4rem; font-size: 1.5rem; opacity: 0.5; grid-column: 1 / -1; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.modal {
-  background: $noir;
-  border: 1px solid rgba($oat, 0.2);
-  padding: 4rem;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 650px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-
-  h2 {
-    font-size: 2.7rem;
-    margin-bottom: 2.5rem;
-    color: $oat;
-    span { opacity: 0.5; font-weight: 300; }
-  }
-
-  .field {
-    margin-bottom: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-
-    label {
-      font-size: 1.3rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      opacity: 0.7;
-      color: $oat;
-    }
-
-    input { background: rgba(255, 255, 255, 0.05); }
-    select { background: $noir; }
-
-    input, select {
-      border: 1px solid rgba($oat, 0.2);
-      padding: 1.2rem;
-      border-radius: 12px;
-      color: $oat;
-      font-size: 1.6rem;
-      transition: border-color 0.2s;
-
-      &:focus {
-        border-color: $oat;
-        outline: none;
-      }
-    }
-  }
-
-  .helperText {
-    font-size: 1.1rem;
-    opacity: 0.5;
-    margin-top: 0.4rem;
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-.modalActions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-top: 3rem;
-
-  .saveBtn {
-    background: $oat;
-    color: $noir;
-    border: none;
-    padding: 1.4rem;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    &:hover { background: #fff; }
-  }
-
-  .cancelBtn {
-    background: transparent;
-    color: $oat;
-    border: 1px solid rgba($oat, 0.3);
-    padding: 1.4rem;
-    border-radius: 10px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    &:hover { background: rgba($oat, 0.05); }
-  }
+// --- RESPONSIVE ---
+@media (max-width: 1024px) {
+  .header { flex-direction: column; align-items: stretch; gap: 2rem; }
+  .headerActions { flex-wrap: wrap; }
+  .searchInput { width: 100%; }
 }
 
-.loading, .noResults {
-  text-align: center;
-  padding: 4rem;
-  font-size: 1.7rem;
-  opacity: 0.6;
-  grid-column: 1 / -1;
+@media (max-width: 600px) {
+  .alertPanel { width: 90%; right: 5%; }
+  .grid { grid-template-columns: 1fr; }
 }

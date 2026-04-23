@@ -70,6 +70,7 @@
   border: 1px solid rgba($oat, 0.2);
   color: $oat;
   padding: 0 1.5rem;
+  height: 48px;
   border-radius: 10px;
   cursor: pointer;
   font-size: 1.3rem;
@@ -91,6 +92,9 @@
   padding: 0.8rem 1.2rem;
   cursor: pointer;
   transition: all 0.3s;
+  height: 48px;
+  display: flex;
+  align-items: center;
 
   &.hasAlerts {
     border-color: $warningRed;
@@ -107,8 +111,143 @@
     padding: 2px 6px;
     border-radius: 50%;
     font-weight: bold;
-    box-shadow: 0 0 10px rgba($warningRed, 0.5);
   }
+}
+
+.alertPanel {
+  position: absolute;
+  top: 100px;
+  right: 4%;
+  width: 380px;
+  background: lighten($noir, 2%);
+  border: 1px solid rgba($warningRed, 0.5);
+  border-radius: $radius;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  z-index: 1000;
+  padding: 2rem;
+  animation: slideInRight 0.3s ease-out;
+
+  .alertHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba($oat, 0.1);
+    padding-bottom: 1rem;
+
+    h3 { font-size: 1.3rem; color: $warningRed; margin: 0; text-transform: uppercase; }
+    button { background: none; border: none; color: $oat; font-size: 2rem; cursor: pointer; opacity: 0.5; &:hover { opacity: 1; } }
+  }
+
+  .alertList {
+    max-height: 350px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .alertItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+
+    .alertInfo {
+      display: flex;
+      flex-direction: column;
+      .partName { font-weight: 600; color: $oat; font-size: 1.2rem; }
+      .partStock { font-size: 1rem; opacity: 0.6; strong { color: $warningRed; } }
+    }
+
+    .orderBtn {
+      font-size: 0.9rem;
+      background: rgba($warningRed, 0.1);
+      color: $warningRed;
+      padding: 6px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      &:hover { background: $warningRed; color: $noir; }
+    }
+  }
+}
+
+// --- FILTER PANEL ---
+.filterPanel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba($oat, 0.1);
+  padding: 2.5rem;
+  border-radius: 15px;
+  margin-bottom: 3.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2.5rem;
+  align-items: flex-end;
+  animation: slideDown 0.3s ease-out;
+
+  .filterGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    label {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      opacity: 0.6;
+      letter-spacing: 1px;
+      strong { color: $oat; margin-left: 5px; }
+    }
+
+    select, input[type="number"] {
+      background: $noir;
+      border: 1px solid rgba($oat, 0.2);
+      padding: 1rem;
+      border-radius: 8px;
+      color: $oat;
+      font-size: 1.3rem;
+      &:focus { border-color: $oat; outline: none; }
+    }
+
+    .inputRange {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+  }
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba($oat, 0.2);
+  border-radius: 2px;
+  outline: none;
+  margin: 1rem 0;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: $oat;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+}
+
+.resetBtn {
+  background: transparent;
+  border: 1px solid rgba($warningRed, 0.4);
+  color: $warningRed;
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  &:hover { background: $warningRed; color: white; }
 }
 
 // --- TABS ---
@@ -138,12 +277,15 @@
   background: $oat;
   color: $noir;
   border: none;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
+  height: 48px;
   border-radius: 10px;
   font-weight: 800;
-  font-size: 1.5rem;
+  font-size: 2rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
 
   &:hover {
     background: #fff;
@@ -179,10 +321,7 @@
     border-color: rgba($oat, 0.3);
   }
 
-  h3 {
-    margin: 1.2rem 0;
-    font-size: 1.7rem;
-  }
+  h3 { margin: 1.2rem 0; font-size: 1.7rem; }
 
   &.lowStock {
     border-color: rgba($warningRed, 0.4);
@@ -194,35 +333,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
 }
 
 .categoryTag {
   font-size: 1.1rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
   background: rgba($oat, 0.1);
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 6px;
-  opacity: 0.8;
 }
 
 .quickLoanBtn {
   background: rgba($oat, 0.1);
-  border: 1px solid rgba($oat, 0.3);
+  border: 1px solid rgba($oat, 0.2);
   color: $oat;
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
   font-size: 0.9rem;
-  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: $oat;
-    color: $noir;
-    transform: scale(1.05);
-  }
+  &:hover { background: $oat; color: $noir; }
 }
 
 .stats {
@@ -233,14 +362,9 @@
   .stat {
     display: flex;
     flex-direction: column;
-    label { font-size: 1.25rem; opacity: 0.5; }
-    strong { font-size: 1.6rem; }
-
-    .outOfStock {
-      color: $warningRed;
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
+    label { font-size: 1.1rem; opacity: 0.5; }
+    strong { font-size: 1.5rem; }
+    .outOfStock { color: $warningRed; }
   }
 }
 
@@ -261,23 +385,16 @@
     padding: 1.5rem;
     text-align: left;
     border-bottom: 1px solid rgba($oat, 0.05);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
   }
 
-  th {
-    background: rgba(255, 255, 255, 0.05);
-    text-transform: uppercase;
-    opacity: 0.7;
-    letter-spacing: 1px;
-  }
+  th { background: rgba(255, 255, 255, 0.05); opacity: 0.7; text-transform: uppercase; font-size: 1.1rem; }
 
   .qrCodeSmall {
     font-family: monospace;
     background: rgba($oat, 0.1);
-    color: $oat;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 4px;
-    font-size: 1.1rem;
   }
 }
 
@@ -285,71 +402,34 @@
   background: $oat;
   color: $noir;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 1.3rem;
-  transition: all 0.2s;
-
-  &:hover {
-    background: #fff;
-    transform: translateY(-1px);
-  }
+  font-weight: bold;
+  &:hover { background: white; }
 }
 
-// --- UTILS ---
-.loading, .noResults {
-  text-align: center;
-  padding: 4rem;
-  font-size: 1.7rem;
-  opacity: 0.6;
-  grid-column: 1 / -1;
-  color: $oat;
+// --- UTILS & ANIMATIONS ---
+.loading, .noResults { text-align: center; padding: 4rem; font-size: 1.5rem; opacity: 0.5; grid-column: 1 / -1; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.helperText {
-  font-size: 0.9rem;
-  opacity: 0.5;
-  margin-top: 4px;
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-// --- RESPONSIVENESS ---
+// --- RESPONSIVE ---
 @media (max-width: 1024px) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2rem;
-
-    .headerActions {
-      width: 100%;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-
-      .searchInput {
-        width: 100%;
-        max-width: none;
-      }
-    }
-  }
+  .header { flex-direction: column; align-items: stretch; gap: 2rem; }
+  .headerActions { flex-wrap: wrap; }
+  .searchInput { width: 100%; }
 }
 
 @media (max-width: 600px) {
-  .container { padding: 10vh 15px 20px 15px; }
-
-  .header .titleSection h1 { font-size: 2.2rem; }
-
-  .tabs {
-    overflow-x: auto;
-    width: 100%;
-    padding-bottom: 10px;
-    button { font-size: 1.2rem; white-space: nowrap; }
-  }
-
+  .alertPanel { width: 90%; right: 5%; }
   .grid { grid-template-columns: 1fr; }
-
-  .tableWrapper {
-    overflow-x: auto;
-    .loanTable { min-width: 600px; }
-  }
 }

@@ -24,10 +24,5 @@
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2"
-  },
-  "dependencies": {
-    "js-cookie": "^3.0.5",
-    "lucide-react": "^1.8.0",
-    "recharts": "^3.8.1"
   }
 }

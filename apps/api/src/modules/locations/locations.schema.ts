@@ -9,13 +9,13 @@ export const createLocationSchema = z.object({
   type: z.enum(
     Object.values(LocationType) as [LocationType, ...LocationType[]]
   ),
-  parentId: z.uuid('Invalid parent location ID').optional()
+  parentId: z.string('Invalid parent location ID').optional().nullable()
 })
 
 export const updateLocationSchema = createLocationSchema.partial()
 
 export const locationIdSchema = z.object({
-  id: z.uuid('Invalid location ID')
+  id: z.string().min(1, 'Invalid location ID')
 })
 
 export type CreateLocationInput = z.infer<typeof createLocationSchema>

@@ -8,7 +8,69 @@
   min-height: 100vh;
 }
 
-// --- NAGŁÓWEK ---
+.deleteIcon {
+  background: transparent;
+  color: #ff4d4d;
+  border: 1px solid #ff4d4d;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #ff4d4d;
+    color: white;
+  }
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.actionGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.editBtn {
+  background: #f0ad4e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  background: #d9534f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.saveBtn {
+  background: #5cb85c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+.editInput {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -20,7 +82,11 @@
   h1 {
     font-size: 2.5rem;
     margin: 0 0 0.5rem 0;
-    span { color: rgba($oat, 0.5); font-weight: 300; }
+
+    span {
+      color: rgba($oat, 0.5);
+      font-weight: 300;
+    }
   }
 }
 
@@ -55,7 +121,10 @@
   cursor: pointer;
   margin-bottom: 2rem;
   transition: all 0.2s;
-  &:hover { background: rgba($oat, 0.1); }
+
+  &:hover {
+    background: rgba($oat, 0.1);
+  }
 }
 
 // --- SIATKA I KARTY (WIDOK LISTY) ---
@@ -89,7 +158,10 @@
     }
   }
 
-  h3 { font-size: 1.5rem; margin: 0.5rem 0 1rem 0; }
+  h3 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 1rem 0;
+  }
 }
 
 .cardHeader {
@@ -153,7 +225,12 @@
   padding-top: 1rem;
   border-top: 1px solid rgba($oat, 0.05);
 
-  h4 { font-size: 0.9rem; opacity: 0.5; margin-bottom: 0.5rem; text-transform: uppercase; }
+  h4 {
+    font-size: 0.9rem;
+    opacity: 0.5;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
 
   ul {
     list-style: none;
@@ -168,14 +245,25 @@
       font-size: 1rem;
       border-bottom: 1px solid rgba($oat, 0.02);
 
-      &:last-child { border-bottom: none; }
-      small { opacity: 0.4; font-size: 0.75rem; text-transform: uppercase; }
+      &:last-child {
+        border-bottom: none;
+      }
+
+      small {
+        opacity: 0.4;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
     }
   }
 }
+
 .modalOverlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
@@ -192,7 +280,10 @@
   width: 100%;
   max-width: 450px;
 
-  h2 { margin-bottom: 2rem; color: $oat; }
+  h2 {
+    margin-bottom: 2rem;
+    color: $oat;
+  }
 }
 
 .formGroup {
@@ -201,7 +292,10 @@
   flex-direction: column;
   gap: 0.5rem;
 
-  label { font-size: 0.9rem; opacity: 0.7; }
+  label {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
 
   input, select {
     background: rgba(255, 255, 255, 0.05);
@@ -211,7 +305,9 @@
     color: white;
     outline: none;
 
-    &:focus { border-color: $oat; }
+    &:focus {
+      border-color: $oat;
+    }
   }
 }
 
@@ -222,7 +318,13 @@
   margin-top: 2rem;
 }
 
-.cancelBtn { background: transparent; border: none; color: $oat; cursor: pointer; }
+.cancelBtn {
+  background: transparent;
+  border: none;
+  color: $oat;
+  cursor: pointer;
+}
+
 .saveBtn {
   background: $oat;
   color: $noir;
@@ -231,8 +333,12 @@
   border: none;
   font-weight: bold;
   cursor: pointer;
-  &:disabled { opacity: 0.5; }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
+
 // --- WIDOK SZCZEGÓŁOWY ([id]) ---
 .detailHeader {
   margin-bottom: 3rem;
@@ -249,8 +355,17 @@
     margin-bottom: 1rem;
   }
 
-  h1 { font-size: 3.5rem; margin: 0; }
-  .idText { opacity: 0.3; font-family: monospace; font-size: 0.9rem; margin-top: 0.5rem; }
+  h1 {
+    font-size: 3.5rem;
+    margin: 0;
+  }
+
+  .idText {
+    opacity: 0.3;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
 }
 
 .detailsGrid {
@@ -292,7 +407,11 @@
     border-color: rgba($oat, 0.3);
   }
 
-  small { opacity: 0.5; text-transform: uppercase; font-size: 0.7rem; }
+  small {
+    opacity: 0.5;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+  }
 }
 
 // --- UTILS ---
@@ -312,7 +431,15 @@
 
 // --- RESPONSIVE ---
 @media (max-width: 900px) {
-  .detailsGrid { grid-template-columns: 1fr; }
-  .header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-  .detailHeader h1 { font-size: 2.5rem; }
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  .detailHeader h1 {
+    font-size: 2.5rem;
+  }
 }

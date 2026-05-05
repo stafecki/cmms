@@ -26,7 +26,6 @@ export default function LocationsPage() {
           'Content-Type': 'application/json'
         }
       })
-
       if (res.ok) {
         const data = await res.json()
         setLocations(data)
@@ -46,8 +45,7 @@ export default function LocationsPage() {
     e.preventDefault()
     e.stopPropagation()
 
-    const confirmed = window.confirm('Czy na pewno chcesz usunąć tę lokalizację? Operacja jest nieodwracalna.')
-    if (!confirmed) return
+    if (!window.confirm('Czy na pewno chcesz usunąć tę lokalizację wraz z jej strukturą?')) return
 
     try {
       const res = await fetch(`http://localhost:3000/locations/${id}`, {
@@ -66,7 +64,6 @@ export default function LocationsPage() {
       }
     } catch (err) {
       console.error('Błąd sieciowy:', err)
-      alert('Wystąpił błąd podczas połączenia z serwerem.')
     }
   }
 
@@ -79,7 +76,6 @@ export default function LocationsPage() {
           <h1>Struktura <span>Lokalizacji</span></h1>
           <p className={styles.helperText}>Zarządzaj obszarami, regałami i punktami składowania.</p>
         </div>
-        <button className={styles.addBtn}>+ Dodaj obszar</button>
       </header>
 
       <div className={styles.content}>
@@ -107,14 +103,14 @@ export default function LocationsPage() {
 
                 {loc.children && loc.children.length > 0 && (
                   <div className={styles.subLocations}>
-                    <h4>Podlokalizacje:</h4>
+                    <h4>Podlokalizacje ({loc.children.length}):</h4>
                     <ul>
-                      {loc.children.map((child) => (
+                      {loc.children.slice(0, 3).map((child) => (
                         <li key={child.id}>
                           <span>{child.name}</span>
-                          <small>{child.type}</small>
                         </li>
                       ))}
+                      {loc.children.length > 3 && <li>... i więcej</li>}
                     </ul>
                   </div>
                 )}

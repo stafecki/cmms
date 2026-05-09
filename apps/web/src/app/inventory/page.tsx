@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import styles from './inventory.module.scss';
 import Link from 'next/link';
 import { useInventory } from './useInventory';
+import { useAuth } from '../context/AuthContext';
 import { InventoryModal } from './components/InventoryModal';
 import { LowStockPanel } from './components/LowStockPanel';
-
-// Zwróć uwagę na czyste importy!
 import { SearchBar } from '@/components/searchBar';
 import { FilterPanel, FilterGroup } from '@/components/filterPanel';
 
@@ -18,6 +17,7 @@ export default function InventoryPage() {
   const [showLowStock, setShowLowStock] = useState(false);
 
   const inv = useInventory();
+  const { user } = useAuth();
 
   return (
     <div className={styles.container}>
@@ -25,13 +25,22 @@ export default function InventoryPage() {
         <div className={styles.titleSection}>
           <h1>Magazyn <span>Części i Narzędzi</span></h1>
           <div className={styles.tabs}>
-            <button className={activeTab === 'parts' ? styles.activeTab : ''} onClick={() => setActiveTab('parts')}>
+            <button
+              className={activeTab === 'parts' ? styles.activeTab : ''}
+              onClick={() => setActiveTab('parts')}
+            >
               Stan ({inv.parts.length})
             </button>
-            <button className={activeTab === 'loans' ? styles.activeTab : ''} onClick={() => setActiveTab('loans')}>
-              Wypożyczenia ({inv.loans.length})
+            <button
+              className={activeTab === 'loans' ? styles.activeTab : ''}
+              onClick={() => setActiveTab('loans')}
+            >
+              Wszystkie wypożyczenia ({inv.loans.length})
             </button>
-            <button className={activeTab === 'myLoans' ? styles.activeTab : ''} onClick={() => setActiveTab('myLoans')}>
+            <button
+              className={activeTab === 'myLoans' ? styles.activeTab : ''}
+              onClick={() => setActiveTab('myLoans')}
+            >
               Moje Zasoby ({inv.myLoans.length})
             </button>
           </div>
@@ -58,44 +67,12 @@ export default function InventoryPage() {
         <FilterPanel onReset={() => {
           inv.setSearchQuery('');
           inv.setFilterCategory('');
-          inv.setPriceFrom('');
-          inv.setPriceTo('');
-          inv.setMinStock(0);
         }}>
           <FilterGroup label="Kategoria">
             <select value={inv.filterCategory} onChange={(e) => inv.setFilterCategory(e.target.value)}>
               <option value="">Wszystkie kategorie</option>
               {inv.categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-          </FilterGroup>
-
-          <FilterGroup label="Cena (PLN)">
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <input
-                type="number"
-                placeholder="Od"
-                style={{ width: '100px' }}
-                value={inv.priceFrom}
-                onChange={(e) => inv.setPriceFrom(e.target.value === '' ? '' : Number(e.target.value))}
-              />
-              <input
-                type="number"
-                placeholder="Do"
-                style={{ width: '100px' }}
-                value={inv.priceTo}
-                onChange={(e) => inv.setPriceTo(e.target.value === '' ? '' : Number(e.target.value))}
-              />
-            </div>
-          </FilterGroup>
-
-          <FilterGroup label={<>Min. ilość sztuk: <strong>{inv.minStock}</strong></>}>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={inv.minStock}
-              onChange={(e) => inv.setMinStock(Number(e.target.value))}
-            />
           </FilterGroup>
         </FilterPanel>
       )}
@@ -109,9 +86,11 @@ export default function InventoryPage() {
       )}
 
       {inv.loading ? (
-        <p className={styles.loading}>Ładowanie...</p>
+        <p className={styles.loading}>Ładowanie danych z magazynu...</p>
       ) : (
         <div className={styles.content}>
+
+          {/* TAB: STAN MAGAZYNOWY */}
           {activeTab === 'parts' && (
             <div className={styles.grid}>
               {inv.filteredParts.map(part => (
@@ -147,6 +126,7 @@ export default function InventoryPage() {
             </div>
           )}
 
+          {/* TAB: WYPOŻYCZENIA (WSZYSTKIE I MOJE) */}
           {(activeTab === 'loans' || activeTab === 'myLoans') && (
             <div className={styles.tableWrapper}>
               <table className={styles.loanTable}>
@@ -154,31 +134,46 @@ export default function InventoryPage() {
                 <tr>
                   <th>Narzędzie</th>
                   <th>{activeTab === 'loans' ? 'Użytkownik' : 'Kod QR'}</th>
-                  <th>Data</th>
+                  <th>Data wypożyczenia</th>
                   <th>Akcje</th>
                 </tr>
                 </thead>
                 <tbody>
                 {(activeTab === 'loans' ? inv.loans : inv.myLoans).length === 0 ? (
-                  <tr><td colSpan={4} className={styles.noResults}>Brak aktywnych pozycji.</td></tr>
+                  <tr><td colSpan={4} className={styles.noResults}>Brak aktywnych wypożyczeń.</td></tr>
                 ) : (
-                  (activeTab === 'loans' ? inv.loans : inv.myLoans).map(loan => (
-                    <tr key={loan.id}>
-                      <td><strong>{loan.part.name}</strong></td>
-                      <td>
-                        {activeTab === 'loans'
-                          ? loan.user.name
-                          : <code className={styles.qrCodeSmall}>{loan.part.qrCode}</code>
-                        }
-                      </td>
-                      <td>{new Date(loan.loanedAt).toLocaleDateString()}</td>
-                      <td>
-                        <button onClick={() => inv.handleReturn(loan.id)} className={styles.returnBtn}>
-                          {activeTab === 'myLoans' ? 'Zwróć teraz' : 'Zwrot'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  (activeTab === 'loans' ? inv.loans : inv.myLoans).map(loan => {
+
+                    // KLUCZOWA LOGIKA:
+                    // Przycisk widzi TYLKO osoba, której ID zgadza się z ID pożyczającego.
+                    // Admin i Manager widzą listę, ale canReturn będzie dla nich false (chyba że to ich własne wypożyczenie).
+                    const canReturn = user?.id === loan.user.id;
+
+                    return (
+                      <tr key={loan.id}>
+                        <td><strong>{loan.part.name}</strong></td>
+                        <td>
+                          {activeTab === 'loans'
+                            ? loan.user.name
+                            : <code className={styles.qrCodeSmall}>{loan.part.qrCode}</code>
+                          }
+                        </td>
+                        <td>{new Date(loan.loanedAt).toLocaleDateString()}</td>
+                        <td>
+                          {canReturn ? (
+                            <button
+                              onClick={() => inv.handleReturn(loan.id)}
+                              className={styles.returnBtn}
+                            >
+                              {activeTab === 'myLoans' ? 'Zwróć teraz' : 'Zwrot'}
+                            </button>
+                          ) : (
+                            <span className={styles.othersLoanBadge}>W posiadaniu</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
                 </tbody>
               </table>

@@ -14,7 +14,7 @@ interface Props {
 export const AddLocationModal = ({ isOpen, onClose, onSuccess, parentId = null }: Props) => {
   const [formData, setFormData] = useState({
     name: '',
-    type: 'AREA'
+    type: 'HALL'
   });
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,8 @@ export const AddLocationModal = ({ isOpen, onClose, onSuccess, parentId = null }
 
     try {
       await locationsApi.create({ ...formData, parentId });
-      setFormData({ name: '', type: 'AREA' }); // Reset
+      // POPRAWKA: Zmieniono 'AREA' na prawidłową wartość 'HALL' zgodną z enumem
+      setFormData({ name: '', type: 'HALL' });
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -39,7 +40,7 @@ export const AddLocationModal = ({ isOpen, onClose, onSuccess, parentId = null }
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-        <h2>{parentId ? '➕ Dodaj podlokalizację' : '🏢 Nowa lokalizacja główna'}</h2>
+        <h2>{parentId ? 'Dodaj podlokalizację' : 'Nowa lokalizacja główna'}</h2>
 
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
@@ -48,7 +49,7 @@ export const AddLocationModal = ({ isOpen, onClose, onSuccess, parentId = null }
               required
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
-              placeholder="np. Hala Produkcyjna, Regał A1..."
+              placeholder="np. Hala Produkcyjna, Linia A1..."
             />
           </div>
 
@@ -58,10 +59,10 @@ export const AddLocationModal = ({ isOpen, onClose, onSuccess, parentId = null }
               value={formData.type}
               onChange={e => setFormData({ ...formData, type: e.target.value })}
             >
-              <option value="AREA">Obszar / Hala</option>
-              <option value="SECTION">Sekcja / Linia</option>
-              <option value="RACK">Regał / Półka</option>
-              <option value="STORAGE_BIN">Miejsce składowania</option>
+              <option value="PLANT">Zakład / Fabryka</option>
+              <option value="HALL">Hala produkcyjna</option>
+              <option value="LINE">Linia / Sekcja</option>
+              <option value="STATION">Stacja robocza</option>
             </select>
           </div>
 

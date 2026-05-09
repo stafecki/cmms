@@ -1,9 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import Cookies from 'js-cookie'
 import Link from 'next/link'
 import styles from './locations.module.scss'
+import { AddLocationModal } from './components/AddLocationModal'
+import { locationsApi } from './locations.api'
+
+import { SearchBar } from '@/components/searchBar'
+import { FilterPanel, FilterGroup } from '@/components/filterPanel'
 
 interface Location {
   id: string
@@ -16,20 +20,17 @@ interface Location {
 export default function LocationsPage() {
   const [locations, setLocations] = useState<Location[]>([])
   const [loading, setLoading] = useState(true)
-  const token = Cookies.get('accessToken')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Nowe stany do filtrów lokalnych
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
+  const [filterType, setFilterType] = useState('')
 
   const fetchLocations = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/locations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setLocations(data)
-      }
+      const data = await locationsApi.getAll()
+      setLocations(data)
     } catch (err) {
       console.error('Błąd pobierania lokalizacji:', err)
     } finally {
@@ -48,24 +49,19 @@ export default function LocationsPage() {
     if (!window.confirm('Czy na pewno chcesz usunąć tę lokalizację wraz z jej strukturą?')) return
 
     try {
-      const res = await fetch(`http://localhost:3000/locations/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (res.ok) {
-        fetchLocations()
-      } else {
-        const errData = await res.json()
-        alert(`Nie można usunąć: ${errData.message || 'Błąd serwera'}`)
-      }
-    } catch (err) {
-      console.error('Błąd sieciowy:', err)
+      await locationsApi.delete(id)
+      fetchLocations()
+    } catch (err: any) {
+      alert(`Nie można usunąć: ${err.message}`)
     }
   }
+
+  // Logika filtrowania - łączymy wyszukiwarkę tekstową z filtrem select
+  const filteredLocations = locations.filter(loc => {
+    const matchSearch = loc.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchType = filterType ? loc.type === filterType : true;
+    return matchSearch && matchType;
+  });
 
   if (loading) return <div className={styles.loading}>Wczytywanie struktury...</div>
 
@@ -76,49 +72,95 @@ export default function LocationsPage() {
           <h1>Struktura <span>Lokalizacji</span></h1>
           <p className={styles.helperText}>Zarządzaj obszarami, regałami i punktami składowania.</p>
         </div>
+
+        {/* Kontener dla wyszukiwarki i przycisku dodawania */}
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            showFilterToggle={true}
+            isFilterActive={showFilters}
+            onToggleFilters={() => setShowFilters(!showFilters)}
+            placeholder="Szukaj lokalizacji..."
+          />
+          <button
+            className={styles.addBtn}
+            onClick={() => setIsModalOpen(true)}
+          >
+            + Dodaj
+          </button>
+        </div>
       </header>
+
+      {/* Rozwijany panel filtrów */}
+      {showFilters && (
+        <FilterPanel onReset={() => {
+          setSearchQuery('');
+          setFilterType('');
+        }}>
+          <FilterGroup label="Typ lokalizacji">
+            <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+              <option value="">Wszystkie typy</option>
+              <option value="PLANT">Zakład / Fabryka</option>
+              <option value="HALL">Hala produkcyjna</option>
+              <option value="LINE">Linia / Sekcja</option>
+              <option value="STATION">Stacja robocza</option>
+            </select>
+          </FilterGroup>
+        </FilterPanel>
+      )}
 
       <div className={styles.content}>
         <div className={styles.locationGrid}>
-          {locations.map((loc) => (
-            <Link
-              href={`/locations/${loc.id}`}
-              key={loc.id}
-              className={styles.cardLink}
-            >
-              <div className={styles.locationCard}>
-                <div className={styles.cardHeader}>
-                  <span className={styles.typeTag}>{loc.type}</span>
-                  <div className={styles.actions}>
-                    <button
-                      onClick={(e) => handleDelete(e, loc.id)}
-                      className={styles.deleteIcon}
-                      title="Usuń lokalizację"
-                    >
-                      usuń
-                    </button>
+          {filteredLocations.length === 0 ? (
+            <p className={styles.emptyText}>Brak wyników do wyświetlenia.</p>
+          ) : (
+            filteredLocations.map((loc) => (
+              <Link
+                href={`/locations/${loc.id}`}
+                key={loc.id}
+                className={styles.cardLink}
+              >
+                <div className={styles.locationCard}>
+                  <div className={styles.cardHeader}>
+                    <span className={styles.typeTag}>{loc.type}</span>
+                    <div className={styles.actions}>
+                      <button
+                        onClick={(e) => handleDelete(e, loc.id)}
+                        className={styles.deleteIcon}
+                        title="Usuń lokalizację"
+                      >
+                        usuń
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <h3>{loc.name}</h3>
+                  <h3>{loc.name}</h3>
 
-                {loc.children && loc.children.length > 0 && (
-                  <div className={styles.subLocations}>
-                    <h4>Podlokalizacje ({loc.children.length}):</h4>
-                    <ul>
-                      {loc.children.slice(0, 3).map((child) => (
-                        <li key={child.id}>
-                          <span>{child.name}</span>
-                        </li>
-                      ))}
-                      {loc.children.length > 3 && <li>... i więcej</li>}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </Link>
-          ))}
+                  {loc.children && loc.children.length > 0 && (
+                    <div className={styles.subLocations}>
+                      <h4>Podlokalizacje ({loc.children.length}):</h4>
+                      <ul>
+                        {loc.children.slice(0, 3).map((child) => (
+                          <li key={child.id}>
+                            <span>{child.name}</span>
+                          </li>
+                        ))}
+                        {loc.children.length > 3 && <li>... i więcej</li>}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))
+          )}
         </div>
       </div>
+
+      <AddLocationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchLocations}
+      />
     </div>
   )
 }

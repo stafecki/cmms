@@ -2,8 +2,13 @@
 
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
 import styles from '../locations.module.scss'
+import { AddLocationModal } from '../components/AddLocationModal'
+import { locationsApi } from '../locations.api' // <-- Używamy API zamiast surowego fetch
+
+// Importy naszych współdzielonych komponentów
+import { SearchBar } from '@/components/searchBar'
+import { FilterPanel, FilterGroup } from '@/components/filterPanel'
 
 interface DetailedLocation {
   id: string
@@ -20,26 +25,23 @@ export default function LocationDetailsPage() {
   const [location, setLocation] = useState<DetailedLocation | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Stany dla edycji
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const token = Cookies.get('accessToken')
+  // --- STANY DLA WYSZUKIWARKI I FILTRÓW ---
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
+  const [filterType, setFilterType] = useState('')
 
   const fetchDetails = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/locations/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setLocation(data)
-        setEditName(data.name) // Inicjalizacja pola edycji
-      } else {
-        router.push('/locations')
-      }
+      const data = await locationsApi.getById(id as string)
+      setLocation(data)
+      setEditName(data.name)
     } catch (err) {
       console.error(err)
+      router.push('/locations')
     } finally {
       setLoading(false)
     }
@@ -47,53 +49,37 @@ export default function LocationDetailsPage() {
 
   useEffect(() => {
     fetchDetails()
-  }, [id, token])
+  }, [id])
 
-  // Obsługa usuwania
   const handleDelete = async () => {
     if (!window.confirm('Czy na pewno chcesz usunąć tę lokalizację?')) return
 
     try {
-      const res = await fetch(`http://localhost:3000/locations/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      })
-
-      if (res.ok) {
-        router.push('/locations')
-        router.refresh()
-      } else {
-        const error = await res.json()
-        alert(`Błąd: ${error.message || 'Nie udało się usunąć lokalizacji'}`)
-      }
-    } catch (err) {
-      console.error('Delete error:', err)
+      await locationsApi.delete(id as string)
+      router.push('/locations')
+      router.refresh()
+    } catch (err: any) {
+      alert(`Błąd: ${err.message || 'Nie udało się usunąć lokalizacji'}`)
     }
   }
 
-  // Obsługa edycji (PATCH)
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await fetch(`http://localhost:3000/locations/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ name: editName })
-      })
-
-      if (res.ok) {
-        setIsEditing(false)
-        fetchDetails() // Odświeżamy dane
-      } else {
-        alert('Błąd podczas aktualizacji')
-      }
-    } catch (err) {
-      console.error('Update error:', err)
+      await locationsApi.update(id as string, { name: editName })
+      setIsEditing(false)
+      fetchDetails()
+    } catch (err: any) {
+      alert(`Błąd: ${err.message || 'Błąd podczas aktualizacji'}`)
     }
   }
+
+  // --- LOGIKA FILTROWANIA JEDNOSTEK PODRZĘDNYCH ---
+  const filteredChildren = location?.children.filter((child) => {
+    const matchSearch = child.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchType = filterType ? child.type === filterType : true
+    return matchSearch && matchType
+  }) || []
 
   if (loading) return <div className={styles.loading}>Pobieranie detali...</div>
   if (!location) return null
@@ -139,12 +125,52 @@ export default function LocationDetailsPage() {
       </header>
 
       <div className={styles.detailsGrid}>
-        {/* ... reszta Twojego kodu (sekcje children i machines) ... */}
         <section className={styles.infoSection}>
-          <h2>Struktura podrzędna</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(244, 238, 224, 0.1)', paddingBottom: '0.5rem' }}>
+            <h2 style={{ borderBottom: 'none', margin: 0, padding: 0 }}>Struktura podrzędna</h2>
+            <button
+              className={styles.addBtn}
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}
+              onClick={() => setIsModalOpen(true)}
+            >
+              + Dodaj
+            </button>
+          </div>
+
+          {/* --- KOMPONENTY WYSZUKIWARKI I FILTRÓW --- */}
+          {location.children.length > 0 && (
+            <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+                showFilterToggle={true}
+                isFilterActive={showFilters}
+                onToggleFilters={() => setShowFilters(!showFilters)}
+                placeholder="Szukaj w strukturze..."
+              />
+
+              {showFilters && (
+                <FilterPanel onReset={() => {
+                  setSearchQuery('');
+                  setFilterType('');
+                }}>
+                  <FilterGroup label="Typ podlokalizacji">
+                    <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                      <option value="">Wszystkie typy</option>
+                      <option value="PLANT">Zakład / Fabryka</option>
+                      <option value="HALL">Hala produkcyjna</option>
+                      <option value="LINE">Linia / Sekcja</option>
+                      <option value="STATION">Stacja robocza</option>
+                    </select>
+                  </FilterGroup>
+                </FilterPanel>
+              )}
+            </div>
+          )}
+
           <div className={styles.subList}>
-            {location.children.length > 0 ? (
-              location.children.map((child) => (
+            {filteredChildren.length > 0 ? (
+              filteredChildren.map((child) => (
                 <div
                   key={child.id}
                   className={styles.subItem}
@@ -155,11 +181,18 @@ export default function LocationDetailsPage() {
                 </div>
               ))
             ) : (
-              <p className={styles.emptyText}>Brak jednostek podrzędnych.</p>
+              <p className={styles.emptyText}>Brak jednostek podrzędnych spełniających kryteria.</p>
             )}
           </div>
         </section>
       </div>
+
+      <AddLocationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchDetails}
+        parentId={id as string}
+      />
     </div>
   )
 }

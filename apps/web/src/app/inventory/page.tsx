@@ -4,9 +4,12 @@ import React, { useState } from 'react';
 import styles from './inventory.module.scss';
 import Link from 'next/link';
 import { useInventory } from './useInventory';
-import { InventoryFilters } from './components/InventoryFilters';
 import { InventoryModal } from './components/InventoryModal';
 import { LowStockPanel } from './components/LowStockPanel';
+
+// Zwróć uwagę na czyste importy!
+import { SearchBar } from '@/components/searchBar';
+import { FilterPanel, FilterGroup } from '@/components/filterPanel';
 
 export default function InventoryPage() {
   const [activeTab, setActiveTab] = useState<'parts' | 'loans' | 'myLoans'>('parts');
@@ -35,32 +38,14 @@ export default function InventoryPage() {
         </div>
 
         <div className={styles.headerActions}>
-          <div className={styles.searchBox}>
-            <input
-              type="text"
-              placeholder="Szukaj..."
-              className={styles.searchInput}
-              value={inv.searchQuery}
-              onChange={(e) => inv.setSearchQuery(e.target.value)}
-            />
-            <button
-              className={`${styles.filterToggle} ${showFilters ? styles.active : ''}`}
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              Filtry
-            </button>
-          </div>
-
-          <button
-            className={`${styles.alertBell} ${inv.lowStockParts.length > 0 ? styles.hasAlerts : ''}`}
-            onClick={() => setShowLowStock(!showLowStock)}
-          >
-            <span className={styles.bellIcon}>🔔</span>
-            {inv.lowStockParts.length > 0 && (
-              <span className={styles.countBadge}>{inv.lowStockParts.length}</span>
-            )}
-          </button>
-
+          <SearchBar
+            value={inv.searchQuery}
+            onChange={inv.setSearchQuery}
+            showFilterToggle={true}
+            isFilterActive={showFilters}
+            onToggleFilters={() => setShowFilters(!showFilters)}
+            placeholder="Szukaj części..."
+          />
           <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>+</button>
         </div>
       </header>
@@ -70,13 +55,49 @@ export default function InventoryPage() {
       )}
 
       {showFilters && activeTab === 'parts' && (
-        <InventoryFilters
-          {...inv}
-          resetFilters={() => {
-            inv.setSearchQuery(''); inv.setFilterCategory('');
-            inv.setPriceFrom(''); inv.setPriceTo(''); inv.setMinStock(0);
-          }}
-        />
+        <FilterPanel onReset={() => {
+          inv.setSearchQuery('');
+          inv.setFilterCategory('');
+          inv.setPriceFrom('');
+          inv.setPriceTo('');
+          inv.setMinStock(0);
+        }}>
+          <FilterGroup label="Kategoria">
+            <select value={inv.filterCategory} onChange={(e) => inv.setFilterCategory(e.target.value)}>
+              <option value="">Wszystkie kategorie</option>
+              {inv.categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </FilterGroup>
+
+          <FilterGroup label="Cena (PLN)">
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                type="number"
+                placeholder="Od"
+                style={{ width: '100px' }}
+                value={inv.priceFrom}
+                onChange={(e) => inv.setPriceFrom(e.target.value === '' ? '' : Number(e.target.value))}
+              />
+              <input
+                type="number"
+                placeholder="Do"
+                style={{ width: '100px' }}
+                value={inv.priceTo}
+                onChange={(e) => inv.setPriceTo(e.target.value === '' ? '' : Number(e.target.value))}
+              />
+            </div>
+          </FilterGroup>
+
+          <FilterGroup label={<>Min. ilość sztuk: <strong>{inv.minStock}</strong></>}>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={inv.minStock}
+              onChange={(e) => inv.setMinStock(Number(e.target.value))}
+            />
+          </FilterGroup>
+        </FilterPanel>
       )}
 
       {isModalOpen && (

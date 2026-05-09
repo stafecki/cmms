@@ -1,0 +1,148 @@
+@import "../../../styles/vars"; // Upewnij się, że ścieżka do zmiennych jest poprawna
+
+.container {
+  padding: 12vh 4% 4%;
+  color: $oat;
+  background-color: $noir;
+  min-height: 100vh;
+  font-family: $font;
+}
+
+.loading, .errorState {
+  text-align: center;
+  padding: 5rem;
+  font-size: 1.2rem;
+  font-family: $font;
+  color: $oat;
+}
+
+.errorState {
+  color: $warningRed;
+  background: rgba($warningRed, 0.1);
+  border-radius: $radius;
+  border: 1px solid rgba($warningRed, 0.2);
+  margin: 2rem;
+}
+
+.backBtn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid rgba($oat, 0.3);
+  background: transparent;
+  color: $oat;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: $font;
+  transition: all 0.2s ease;
+  margin-bottom: 2rem;
+
+  &:hover {
+    background: rgba($oat, 0.1);
+    border-color: $oat;
+  }
+}
+
+.header {
+  margin-bottom: 3rem;
+
+  h1 {
+    font-size: 3rem;
+    margin: 0 0 0.5rem 0;
+    color: $oat;
+  }
+
+  .serialText {
+    font-family: monospace;
+    font-size: 1.1rem;
+    color: $yellow;
+    margin: 0;
+    background: rgba($yellow, 0.1);
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+}
+
+.cardsContainer {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.infoCard {
+  flex: 1 1 300px;
+  background: rgba($oat, 0.03);
+  border: 1px solid rgba($oat, 0.1);
+  padding: 2rem;
+  border-radius: $radius;
+  box-shadow: $bxshdw;
+
+  h3 {
+    font-size: 1.3rem;
+    margin: 0 0 1.5rem 0;
+    border-bottom: 1px solid rgba($oat, 0.1);
+    padding-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $darkerOat;
+  }
+
+  .dataRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed rgba($oat, 0.05);
+    font-size: 1.05rem;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .label {
+      opacity: 0.6;
+    }
+
+    .value {
+      font-weight: bold;
+      color: $oat;
+    }
+
+    .statusActive {
+      color: #10b981; // Zostawiam zieleń dla kontrastu pozytywnego
+      font-weight: bold;
+    }
+
+    .statusInactive {
+      color: $warningRed;
+      font-weight: bold;
+    }
+  }
+
+  .tcoTotal {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba($oat, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .label {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: $yellow;
+    }
+  }
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  margin: 0 0 1.5rem 0;
+  color: $oat;
+}

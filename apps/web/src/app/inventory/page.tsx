@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styles from './inventory.module.scss';
 import Link from 'next/link';
 import { useInventory } from './useInventory';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { InventoryModal } from './components/InventoryModal';
 import { LowStockPanel } from './components/LowStockPanel';
 import { SearchBar } from '@/components/searchBar';

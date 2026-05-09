@@ -1,6 +1,6 @@
 'use client'
 
-import { AuthProvider, useAuth } from '../context/AuthContext'
+import { AuthProvider, useAuth } from '@/context/AuthContext'
 
 // Pomocniczy komponent, żeby nie mieszać logiki w samym Providerze
 function InventoryGuard({ children }: { children: React.ReactNode }) {

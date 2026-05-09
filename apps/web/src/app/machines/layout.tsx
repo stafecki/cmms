@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 
-export default function LocationsLayout({
-  children
-}: {
+export default function MachinesLayout({
+                                         children
+                                       }: {
   children: React.ReactNode
 }) {
   const router = useRouter()
@@ -14,6 +14,7 @@ export default function LocationsLayout({
 
   useEffect(() => {
     const token = Cookies.get('accessToken')
+
     if (!token) {
       router.push('/auth/login')
     } else {

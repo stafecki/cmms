@@ -1,4 +1,5 @@
 @import "../../../styles/vars";
+
 .editContainer {
   padding: 15vh 4% 4% 4%;
   display: flex;
@@ -6,17 +7,18 @@
   align-items: flex-start;
   background-color: $noir;
   min-height: 100vh;
+  font-family: $font;
 }
 
 .formCard {
   background: rgba($oat, 0.03);
   border: 1px solid rgba($oat, 0.15);
   padding: 3.5rem;
-  border-radius: 20px;
+  border-radius: $radius * 2;
   width: 100%;
   max-width: 650px;
   backdrop-filter: blur(15px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: $bxshdw;
 
   h2 {
     margin-bottom: 2.5rem;
@@ -32,11 +34,86 @@
   }
 }
 
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+
+  h2 {
+    margin: 0;
+    font-size: 2.4rem;
+
+    span {
+      opacity: 0.5;
+      font-weight: 300;
+    }
+  }
+}
+
+.deleteBtn {
+  background: transparent;
+  color: $warningRed;
+  border: 1px solid rgba($warningRed, 0.3);
+  padding: 0.8rem 1.5rem;
+  border-radius: $radius - 0.2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $warningRed;
+    color: $noir;
+    border-color: $warningRed;
+    box-shadow: 0 4px 12px rgba($warningRed, 0.2);
+  }
+}
+
+.newOption {
+  color: $yellow;
+  font-weight: 600;
+}
+
+.inlineInput {
+  display: flex;
+  gap: 10px;
+
+  input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba($oat, 0.3);
+    color: $oat;
+    padding: 12px;
+    border-radius: $radius - 0.2rem;
+
+    &:focus {
+      border-color: $oat;
+      outline: none;
+    }
+  }
+
+  button {
+    background: rgba($oat, 0.1);
+    color: $oat;
+    border: none;
+    padding: 0 15px;
+    border-radius: $radius - 0.2rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+
+    &:hover {
+      background: rgba($oat, 0.2);
+    }
+  }
+}
+
 .field {
   margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+
   .helperText {
     font-size: 1.1rem;
     opacity: 0.5;
@@ -44,6 +121,7 @@
     margin-top: -0.5rem;
     margin-bottom: 0.5rem;
   }
+
   label {
     font-size: 1rem;
     text-transform: uppercase;
@@ -57,7 +135,7 @@
     background: rgba(0, 0, 0, 0.4);
     border: 2px solid rgba($oat, 0.15);
     padding: 1.2rem;
-    border-radius: 12px;
+    border-radius: $radius + 0.2rem;
     color: $oat;
     font-size: 1.2rem;
     outline: none;
@@ -98,7 +176,7 @@
   color: $noir;
   border: none;
   padding: 1.4rem;
-  border-radius: 12px;
+  border-radius: $radius + 0.2rem;
   font-size: 1.1rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -120,7 +198,7 @@
   color: $oat;
   border: 2px solid rgba($oat, 0.3);
   padding: 1.4rem;
-  border-radius: 12px;
+  border-radius: $radius + 0.2rem;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;

@@ -1,28 +1,26 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import styles from './dashboard.module.scss';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 
-export default function Dashboard() {
-  const router = useRouter();
+import { useAuth } from '../../context/AuthContext';
+import RoleGuard from '../../components/RoleGuard/index';
+
+
+function DashboardContent() {
   const [data, setData] = useState<any>(null);
   const [period, setPeriod] = useState('month');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      const refreshToken = Cookies.get('refreshToken');
       const accessToken = Cookies.get('accessToken');
 
-      if (!refreshToken) {
-        window.location.href = '/auth/login';
-        return;
-      }
+      if (!accessToken) return;
 
       setLoading(true);
       try {
@@ -39,8 +37,7 @@ export default function Dashboard() {
 
         const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          const text = await res.text();
-          console.error("Otrzymano tekst zamiast JSON:", text);
+          console.error("Otrzymano tekst zamiast JSON");
           return;
         }
 
@@ -65,7 +62,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={styles.dashboardContainer}>
+    <>
       <header className={styles.header}>
         <div className={styles.titleSection}>
           <h1>Panel <span>Główny</span></h1>
@@ -86,6 +83,7 @@ export default function Dashboard() {
       </header>
 
       <section className={styles.statsGrid}>
+        {/* Twoje karty statystyk bez zmian */}
         <div className={styles.statCard}>
           <div className={styles.info}>
             <span>Otwarte Zlecenia</span>
@@ -162,6 +160,34 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+    </>
+  );
+}
+
+export default function Dashboard() {
+  const { user } = useAuth();
+
+  const unauthorizedFallback = (
+    <>
+      <header className={styles.header}>
+        <div className={styles.titleSection}>
+          <h1>Witaj, <span>{user?.name}</span></h1>
+          <p>Twój poziom dostępu ({user?.role}) nie pozwala na podgląd statystyk finansowych i globalnych.</p>
+          <p>Wybierz odpowiednią opcję z menu bocznego, aby rozpocząć pracę.</p>
+        </div>
+      </header>
+
+    </>
+  );
+
+  return (
+    <div className={styles.dashboardContainer}>
+      <RoleGuard
+        allowedRoles={['ADMIN', 'MANAGER']}
+        fallback={unauthorizedFallback}
+      >
+        <DashboardContent />
+      </RoleGuard>
     </div>
   );
 }

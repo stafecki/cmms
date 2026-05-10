@@ -27,7 +27,11 @@
     }
   }
 
-  select, input[type="number"], input[type="range"] {
+  select, input[type="number"],
+  input[type="range"],
+  input[type="datetime-local"],
+  input[type="text"],
+{
     padding: 0.6rem;
     border-radius: 8px;
     border: 1px solid rgba($oat, 0.2);
@@ -36,6 +40,12 @@
     outline: none;
     font-family: $font;
 
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+      opacity: 0.6;
+      &:hover { opacity: 1; }
+    }
 
     &:focus {
       border-color: $oatHover;

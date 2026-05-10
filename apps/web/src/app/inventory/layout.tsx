@@ -1,12 +1,19 @@
 'use client'
 
-import { AuthProvider, useAuth } from '@/context/AuthContext'
+import React from 'react'
+import { useAuth } from '@/context/AuthContext'
 
-// Pomocniczy komponent, żeby nie mieszać logiki w samym Providerze
 function InventoryGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()
 
-  if (isLoading) return <div className="loading-screen">Weryfikacja uprawnień...</div>
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: '#F0EDE5' }}>
+        Weryfikacja uprawnień...
+      </div>
+    )
+  }
+
   if (!user) return null
 
   return <>{children}</>
@@ -14,10 +21,8 @@ function InventoryGuard({ children }: { children: React.ReactNode }) {
 
 export default function InventoryLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <InventoryGuard>
-        {children}
-      </InventoryGuard>
-    </AuthProvider>
+    <InventoryGuard>
+      {children}
+    </InventoryGuard>
   )
 }

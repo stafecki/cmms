@@ -5,6 +5,7 @@ import Link from 'next/link'
 import styles from './locations.module.scss'
 import { AddLocationModal } from './components/AddLocationModal'
 import { locationsApi } from './locations.api'
+import { useAuth } from '@/context/AuthContext'
 
 import { SearchBar } from '@/components/searchBar'
 import { FilterPanel, FilterGroup } from '@/components/filterPanel'
@@ -18,14 +19,18 @@ interface Location {
 }
 
 export default function LocationsPage() {
+  const { user } = useAuth() // Pobieramy zalogowanego użytkownika
+
   const [locations, setLocations] = useState<Location[]>([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Nowe stany do filtrów lokalnych
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [filterType, setFilterType] = useState('')
+
+  const canAddLocation = user?.role === 'ADMIN' || user?.role === 'MANAGER'
+  const canDeleteLocation = user?.role === 'ADMIN'
 
   const fetchLocations = async () => {
     try {
@@ -46,17 +51,22 @@ export default function LocationsPage() {
     e.preventDefault()
     e.stopPropagation()
 
-    if (!window.confirm('Czy na pewno chcesz usunąć tę lokalizację wraz z jej strukturą?')) return
+    if (!canDeleteLocation) {
+      alert('Nie masz uprawnień do usuwania lokalizacji.')
+      return
+    }
+
+    if (!window.confirm('Czy na pewno chcesz usunąć tę lokalizację?')) return
 
     try {
       await locationsApi.delete(id)
       fetchLocations()
     } catch (err: any) {
-      alert(`Nie można usunąć: ${err.message}`)
+     const errorMessage = err.response?.data?.message || err.message || 'Wystąpił błąd podczas usuwania.'
+      alert(`Nie można usunąć: ${errorMessage}`)
     }
   }
 
-  // Logika filtrowania - łączymy wyszukiwarkę tekstową z filtrem select
   const filteredLocations = locations.filter(loc => {
     const matchSearch = loc.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchType = filterType ? loc.type === filterType : true;
@@ -73,7 +83,6 @@ export default function LocationsPage() {
           <p className={styles.helperText}>Zarządzaj obszarami, regałami i punktami składowania.</p>
         </div>
 
-        {/* Kontener dla wyszukiwarki i przycisku dodawania */}
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <SearchBar
             value={searchQuery}
@@ -83,16 +92,18 @@ export default function LocationsPage() {
             onToggleFilters={() => setShowFilters(!showFilters)}
             placeholder="Szukaj lokalizacji..."
           />
-          <button
-            className={styles.addBtn}
-            onClick={() => setIsModalOpen(true)}
-          >
-            + Dodaj
-          </button>
+
+          {canAddLocation && (
+            <button
+              className={styles.addBtn}
+              onClick={() => setIsModalOpen(true)}
+            >
+              + Dodaj
+            </button>
+          )}
         </div>
       </header>
 
-      {/* Rozwijany panel filtrów */}
       {showFilters && (
         <FilterPanel onReset={() => {
           setSearchQuery('');
@@ -125,13 +136,15 @@ export default function LocationsPage() {
                   <div className={styles.cardHeader}>
                     <span className={styles.typeTag}>{loc.type}</span>
                     <div className={styles.actions}>
-                      <button
-                        onClick={(e) => handleDelete(e, loc.id)}
-                        className={styles.deleteIcon}
-                        title="Usuń lokalizację"
-                      >
-                        usuń
-                      </button>
+                      {canDeleteLocation && (
+                        <button
+                          onClick={(e) => handleDelete(e, loc.id)}
+                          className={styles.deleteIcon}
+                          title="Usuń lokalizację"
+                        >
+                          usuń
+                        </button>
+                      )}
                     </div>
                   </div>
                   <h3>{loc.name}</h3>
@@ -156,11 +169,13 @@ export default function LocationsPage() {
         </div>
       </div>
 
-      <AddLocationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchLocations}
-      />
+      {canAddLocation && (
+        <AddLocationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchLocations}
+        />
+      )}
     </div>
   )
 }

@@ -17,8 +17,10 @@ export default function InventoryPage() {
   const [showLowStock, setShowLowStock] = useState(false);
 
   const inv = useInventory();
-  const { user } = useAuth();
+  const { user } = useAuth(); // Pobieramy zalogowanego użytkownika
 
+  const canAddPart = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'WAREHOUSE';
+  const canViewAllLoans = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE' || user?.role === 'MANAGER';
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -31,12 +33,14 @@ export default function InventoryPage() {
             >
               Stan ({inv.parts.length})
             </button>
-            <button
-              className={activeTab === 'loans' ? styles.activeTab : ''}
-              onClick={() => setActiveTab('loans')}
-            >
-              Wszystkie wypożyczenia ({inv.loans.length})
-            </button>
+            {canViewAllLoans && (
+              <button
+                className={activeTab === 'loans' ? styles.activeTab : ''}
+                onClick={() => setActiveTab('loans')}
+              >
+                Wszystkie wypożyczenia ({inv.loans.length})
+              </button>
+            )}
             <button
               className={activeTab === 'myLoans' ? styles.activeTab : ''}
               onClick={() => setActiveTab('myLoans')}
@@ -55,7 +59,9 @@ export default function InventoryPage() {
             onToggleFilters={() => setShowFilters(!showFilters)}
             placeholder="Szukaj części..."
           />
-          <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>+</button>
+          {canAddPart && (
+            <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>+</button>
+          )}
         </div>
       </header>
 
@@ -77,7 +83,7 @@ export default function InventoryPage() {
         </FilterPanel>
       )}
 
-      {isModalOpen && (
+      {isModalOpen && canAddPart && (
         <InventoryModal
           categories={inv.categories}
           onClose={() => setIsModalOpen(false)}
@@ -90,18 +96,21 @@ export default function InventoryPage() {
       ) : (
         <div className={styles.content}>
 
-          {/* TAB: STAN MAGAZYNOWY */}
           {activeTab === 'parts' && (
             <div className={styles.grid}>
-              {inv.filteredParts.map(part => (
-                <Link href={`/inventory/${part.id}`} key={part.id} className={styles.cardLink}>
+              {inv.filteredParts.map(part => {
+
+                const cardContent = (
                   <div className={`${styles.card} ${part.stockQuantity <= part.reorderPoint ? styles.lowStock : ''}`}>
                     <div className={styles.cardHeader}>
                       <span className={styles.categoryTag}>{part.category.name}</span>
                       {part.stockQuantity > 0 && (
                         <button
                           className={styles.quickLoanBtn}
-                          onClick={(e) => { e.preventDefault(); inv.handleLoan(part.id); }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            inv.handleLoan(part.id);
+                          }}
                         >
                           + Wypożycz
                         </button>
@@ -121,12 +130,21 @@ export default function InventoryPage() {
                       </div>
                     </div>
                   </div>
-                </Link>
-              ))}
+                );
+
+                return canAddPart ? (
+                  <Link href={`/inventory/${part.id}`} key={part.id} className={styles.cardLink}>
+                    {cardContent}
+                  </Link>
+                ) : (
+                  <div key={part.id} className={styles.cardLink} style={{ cursor: 'default' }}>
+                    {cardContent}
+                  </div>
+                );
+              })}
             </div>
           )}
 
-          {/* TAB: WYPOŻYCZENIA (WSZYSTKIE I MOJE) */}
           {(activeTab === 'loans' || activeTab === 'myLoans') && (
             <div className={styles.tableWrapper}>
               <table className={styles.loanTable}>
@@ -144,9 +162,6 @@ export default function InventoryPage() {
                 ) : (
                   (activeTab === 'loans' ? inv.loans : inv.myLoans).map(loan => {
 
-                    // KLUCZOWA LOGIKA:
-                    // Przycisk widzi TYLKO osoba, której ID zgadza się z ID pożyczającego.
-                    // Admin i Manager widzą listę, ale canReturn będzie dla nich false (chyba że to ich własne wypożyczenie).
                     const canReturn = user?.id === loan.user.id;
 
                     return (

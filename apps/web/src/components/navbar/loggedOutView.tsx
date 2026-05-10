@@ -9,7 +9,6 @@ export default function LoggedOutView(){
       <li>
         <Link href="/about">O nas</Link>
       </li>
-
     </>
   )
 }

@@ -4,24 +4,19 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import styles from '../locations.module.scss'
 import { AddLocationModal } from '../components/AddLocationModal'
-import { locationsApi } from '../locations.api' // <-- Używamy API zamiast surowego fetch
+import { locationsApi } from '../locations.api'
+import { useAuth } from '@/context/AuthContext'
 
-// Importy naszych współdzielonych komponentów
+import { DetailedLocation } from './types'
+
 import { SearchBar } from '@/components/searchBar'
 import { FilterPanel, FilterGroup } from '@/components/filterPanel'
-
-interface DetailedLocation {
-  id: string
-  name: string
-  type: string
-  parentId: string | null
-  children: any[]
-  machines: any[]
-}
 
 export default function LocationDetailsPage() {
   const { id } = useParams()
   const router = useRouter()
+  const { user } = useAuth()
+
   const [location, setLocation] = useState<DetailedLocation | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -29,10 +24,12 @@ export default function LocationDetailsPage() {
   const [editName, setEditName] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // --- STANY DLA WYSZUKIWARKI I FILTRÓW ---
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [filterType, setFilterType] = useState('')
+
+  const canEdit = user?.role === 'ADMIN' || user?.role === 'MANAGER'
+  const canDelete = user?.role === 'ADMIN'
 
   const fetchDetails = async () => {
     try {
@@ -52,6 +49,11 @@ export default function LocationDetailsPage() {
   }, [id])
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      alert('Nie masz uprawnień do usuwania lokalizacji.')
+      return
+    }
+
     if (!window.confirm('Czy na pewno chcesz usunąć tę lokalizację?')) return
 
     try {
@@ -59,12 +61,16 @@ export default function LocationDetailsPage() {
       router.push('/locations')
       router.refresh()
     } catch (err: any) {
-      alert(`Błąd: ${err.message || 'Nie udało się usunąć lokalizacji'}`)
+      const errorMessage = err.response?.data?.message || err.message || 'Nie udało się usunąć lokalizacji'
+      alert(`Błąd: ${errorMessage}`)
     }
   }
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!canEdit) return
+
     try {
       await locationsApi.update(id as string, { name: editName })
       setIsEditing(false)
@@ -74,7 +80,6 @@ export default function LocationDetailsPage() {
     }
   }
 
-  // --- LOGIKA FILTROWANIA JEDNOSTEK PODRZĘDNYCH ---
   const filteredChildren = location?.children.filter((child) => {
     const matchSearch = child.name.toLowerCase().includes(searchQuery.toLowerCase())
     const matchType = filterType ? child.type === filterType : true
@@ -92,22 +97,26 @@ export default function LocationDetailsPage() {
         </button>
 
         <div className={styles.actionGroup}>
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className={styles.editBtn}
-          >
-            {isEditing ? 'Anuluj' : 'Edytuj'}
-          </button>
-          <button onClick={handleDelete} className={styles.deleteBtn}>
-            Usuń
-          </button>
+          {canEdit && (
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className={styles.editBtn}
+            >
+              {isEditing ? 'Anuluj' : 'Edytuj'}
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={handleDelete} className={styles.deleteBtn}>
+              Usuń
+            </button>
+          )}
         </div>
       </div>
 
       <header className={styles.detailHeader}>
         <div className={styles.badge}>{location.type}</div>
 
-        {isEditing ? (
+        {isEditing && canEdit ? (
           <form onSubmit={handleUpdate} className={styles.editForm}>
             <input
               value={editName}
@@ -128,13 +137,16 @@ export default function LocationDetailsPage() {
         <section className={styles.infoSection}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(244, 238, 224, 0.1)', paddingBottom: '0.5rem' }}>
             <h2 style={{ borderBottom: 'none', margin: 0, padding: 0 }}>Struktura podrzędna</h2>
-            <button
-              className={styles.addBtn}
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}
-              onClick={() => setIsModalOpen(true)}
-            >
-              + Dodaj
-            </button>
+
+            {canEdit && (
+              <button
+                className={styles.addBtn}
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}
+                onClick={() => setIsModalOpen(true)}
+              >
+                + Dodaj
+              </button>
+            )}
           </div>
 
           {/* --- KOMPONENTY WYSZUKIWARKI I FILTRÓW --- */}
@@ -187,12 +199,14 @@ export default function LocationDetailsPage() {
         </section>
       </div>
 
-      <AddLocationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchDetails}
-        parentId={id as string}
-      />
+      {canEdit && (
+        <AddLocationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={fetchDetails}
+          parentId={id as string}
+        />
+      )}
     </div>
   )
 }

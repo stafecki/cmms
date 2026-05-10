@@ -21,7 +21,7 @@ export default function Home() {
           </div>
 
           <div className={styles.btns}>
-            <Link href="/register" className={styles.primaryBtn}>
+            <Link href="/auth/register" className={styles.primaryBtn}>
               Dołącz do nas
             </Link>
             <Link href="/about" className={styles.secondaryBtn}>

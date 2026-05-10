@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import type { LogType, LogFilters } from './MonitoringDashboard'
-import styles from './StatsBar.module.scss'
+import styles from './Statsbar.module.scss'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 

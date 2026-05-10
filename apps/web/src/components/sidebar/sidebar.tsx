@@ -27,7 +27,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'Magazyn', href: '/inventory' },
     { name: 'Przeglądy', href: '/preventive' },
     { name: 'Powiadomienia', href: '/notifications' },
-    { name: 'Monitoring', href: '/monitoring' },
+    { name: 'Logi', href: '/monitoring' },
     { name: 'Mój profil', href: '/me' },
     { name: 'Użytkownicy', href: '/users' },
   ];

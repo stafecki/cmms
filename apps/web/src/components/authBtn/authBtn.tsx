@@ -1,28 +1,27 @@
 'use client'
+
 import Link from 'next/link'
 import styles from './authBtn.module.scss'
-import { useEffect, useState } from 'react'
-import Cookies from 'js-cookie'
+import { useAuth } from '@/context/AuthContext'
 
-export default function AuthBtn(){
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+export default function AuthBtn() {
+  const { user, isLoading, logout } = useAuth()
 
-  useEffect(() => {
-    const token = Cookies.get('refreshToken')
-    setIsLoggedIn(!!token)
-  }, [])
-  return(
+  if (isLoading) {
+    return <div style={{ width: '80px' }}></div>
+  }
+
+  return (
     <>
-      {isLoggedIn ? (
-      <Link href='/auth/logout' className={styles.logoutBtn}>
-        Wyloguj
-      </Link>
-    ): (
-      <Link href='/auth/login' className={styles.loginBtn}>
-        Zaloguj
-      </Link>
-    )}
+      {user ? (
+        <button onClick={logout} className={styles.logoutBtn}>
+          Wyloguj
+        </button>
+      ) : (
+        <Link href='/auth/login' className={styles.loginBtn}>
+          Zaloguj
+        </Link>
+      )}
     </>
-
   )
 }

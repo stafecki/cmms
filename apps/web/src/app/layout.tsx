@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import './index.scss'
 import Header from "../components/header/index"
 import Footer from "../components/footer/index"
-import Navbar from "../components/navbar/index"
-
+import { AuthProvider } from '@/context/AuthContext'
 
 
 export const metadata: Metadata = {
@@ -19,9 +18,11 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body className={'x'}>
-        <Header/>
-        {children}
-        <Footer/>
+        <AuthProvider>
+          <Header/>
+          {children}
+          <Footer/>
+        </AuthProvider>
       </body>
     </html>
   );

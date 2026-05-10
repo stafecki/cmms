@@ -1,0 +1,109 @@
+// monitoring.module.scss
+
+$oat: #F0EDE5;
+$warningRed: #FF6B6B;
+$font: 'Roboto', sans-serif;
+$radius: 1rem;
+
+$surface: #0f1614;
+$border: rgba(240, 237, 229, 0.1);
+$textMuted: rgba(240, 237, 229, 0.45);
+
+.loadingWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.1rem;
+  color: $textMuted;
+  font-family: $font;
+  font-size: 0.9rem;
+
+  .spinner {
+    width: 38px;
+    height: 38px;
+    border: 2px solid rgba(240, 237, 229, 0.1);
+    border-top-color: $oat;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.accessDenied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem;
+
+  .accessDeniedCard {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius;
+    padding: 3.5rem 4rem;
+    text-align: center;
+    max-width: 440px;
+    width: 100%;
+    animation: fadeUp 0.4s ease;
+
+    .lockIcon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 1.75rem;
+      background: rgba(255, 107, 107, 0.07);
+      border: 1px solid rgba(255, 107, 107, 0.2);
+      border-radius: 50%;
+      color: $warningRed;
+
+      svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    h2 {
+      font-family: $font;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $oat;
+      margin: 0 0 0.85rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: $textMuted;
+      font-family: $font;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      margin: 0 0 1.75rem;
+    }
+
+    .roleBadge {
+      display: inline-block;
+      background: rgba(240, 237, 229, 0.06);
+      border: 1px solid $border;
+      border-radius: 0.5rem;
+      padding: 0.45rem 1rem;
+      font-family: $font;
+      font-size: 0.85rem;
+      color: $textMuted;
+
+      strong {
+        color: $oat;
+      }
+    }
+  }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

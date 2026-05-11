@@ -8,8 +8,10 @@ import { Machine } from './types'
 import { FilterPanel, FilterGroup } from '../../components/filterPanel/FilterPanel'
 import { SearchBar } from '../../components/searchBar/SearchBar'
 import styles from './machines.module.scss'
+import { useAuth } from '../../context/AuthContext'
 
 export default function MachinesPage() {
+  const { user } = useAuth()
   const [machines, setMachines] = useState<Machine[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -17,6 +19,10 @@ export default function MachinesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
+
+  // ROZDZIELONE UPRAWNIENIA ZGODNIE Z TWOIM BACKENDEM (HONO):
+  const canAddMachine = user?.role === 'ADMIN' || user?.role === 'MANAGER'
+  const canDeleteMachine = user?.role === 'ADMIN' // Tylko ADMIN może usuwać
 
   useEffect(() => {
     loadMachines()
@@ -28,7 +34,7 @@ export default function MachinesPage() {
       const data = await fetchMachines()
       setMachines(data)
     } catch (err: any) {
-      if (err.message.includes('401')) {
+      if (err.message?.includes('401')) {
         console.error('Błąd autoryzacji: Sesja wygasła.')
       }
       setError('Wystąpił błąd podczas ładowania maszyn.')
@@ -44,7 +50,7 @@ export default function MachinesPage() {
       await deleteMachine(id)
       setMachines(machines.filter(m => m.id !== id))
     } catch (err) {
-      alert('Nie udało się usunąć maszyny. Sprawdź uprawnienia.')
+      alert('Nie udało się usunąć maszyny. Brak uprawnień lub błąd serwera.')
     }
   }
 
@@ -94,10 +100,12 @@ export default function MachinesPage() {
           <h1>Zarządzanie <span>Maszynami</span></h1>
         </div>
 
-        {/* Zmieniono klasę z addButton na addBtn, zgodnie z SCSS */}
-        <button className={styles.addBtn}>
-          + Dodaj maszynę
-        </button>
+        {/* Dodawać może ADMIN i MANAGER */}
+        {canAddMachine && (
+          <button className={styles.addBtn}>
+            + Dodaj maszynę
+          </button>
+        )}
       </div>
 
       <div className={styles.filtersWrapper}>
@@ -164,12 +172,14 @@ export default function MachinesPage() {
                   Szczegóły
                 </Link>
 
-                <button
-                  onClick={() => handleDelete(machine.id)}
-                  className={styles.deleteIcon}
-                >
-                  Usuń
-                </button>
+                {canDeleteMachine && (
+                  <button
+                    onClick={() => handleDelete(machine.id)}
+                    className={styles.deleteIcon}
+                  >
+                    Usuń
+                  </button>
+                )}
               </td>
             </tr>
           ))}

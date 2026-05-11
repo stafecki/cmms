@@ -10,6 +10,7 @@
   border-radius: 100px;
   border: 4px solid transparent;
   transition: all 0.3s ease;
+  white-space: nowrap;
 
   &:hover {
     background-color: transparent;
@@ -30,6 +31,7 @@
   border: 4px solid rgba($oat, 0.3);
   transition: all 0.3s ease;
   cursor: pointer;
+  white-space: nowrap;
 
   &:hover {
     background-color: rgba($oat, 0.1);
@@ -40,5 +42,29 @@
 
   &:active {
     transform: scale(0.95);
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .loginBtn, .logoutBtn {
+    font-size: 1.4rem;
+    padding: 1rem 2.5rem;
+    border-width: 3px;
+  }
+}
+
+@media (max-width: 768px) {
+  .loginBtn, .logoutBtn {
+    font-size: 1.1rem;
+    padding: 0.8rem 1.8rem;
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginBtn, .logoutBtn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
   }
 }

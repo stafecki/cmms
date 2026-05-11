@@ -19,6 +19,7 @@
 }
 
 .modal {
+  padding-top: 8vh;
   background: $surface;
   border-left: 1px solid $border;
   width: min(620px, 95vw);
@@ -71,7 +72,7 @@
 
   h3 {
     font-family: $font;
-    font-size: 1.05rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: $oat;
     margin: 0 0 0.3rem;
@@ -81,7 +82,7 @@
 
 .entryId {
   font-family: 'Courier New', monospace;
-  font-size: 0.7rem;
+  font-size: 1.1rem;
   color: $textMuted;
   word-break: break-all;
 }
@@ -90,8 +91,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 4rem;
+  height: 4rem;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0.5rem;
@@ -139,7 +140,7 @@
   padding: 0.3rem 0.85rem;
   border-radius: 0.5rem;
   font-family: $font;
-  font-size: 0.8rem;
+  font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.07em;
 
@@ -156,7 +157,7 @@
   padding: 0.3rem 0.85rem;
   border-radius: 0.5rem;
   font-family: $font;
-  font-size: 0.82rem;
+  font-size: 1.3rem;
   font-weight: 600;
 }
 
@@ -175,7 +176,7 @@
   border: 1px solid rgba(104, 211, 145, 0.15);
   color: #68d391;
   font-family: $font;
-  font-size: 0.82rem;
+  font-size: 1.3rem;
   font-weight: 500;
 }
 
@@ -185,7 +186,7 @@
 
 .sectionTitle {
   font-family: $font;
-  font-size: 0.72rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: $textMuted;
   text-transform: uppercase;
@@ -206,14 +207,13 @@
   align-items: baseline;
   gap: 1rem;
   font-family: $font;
-  font-size: 0.9rem;
+  font-size: 1.3rem;
 }
 
 .fieldLabel {
   color: $textMuted;
   min-width: 150px;
   flex-shrink: 0;
-  font-size: 0.82rem;
 }
 
 .fieldValue {
@@ -222,7 +222,7 @@
 
   code {
     font-family: 'Courier New', monospace;
-    font-size: 0.82rem;
+    font-size: 1.3rem;
     color: $textSub;
   }
 }
@@ -237,7 +237,7 @@
   border-radius: 0.75rem;
   padding: 1rem 1.2rem;
   font-family: $font;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: $warningRed;
   line-height: 1.6;
   word-break: break-word;
@@ -249,7 +249,7 @@
   border-radius: 0.75rem;
   padding: 1.1rem;
   font-family: 'Courier New', monospace;
-  font-size: 0.78rem;
+  font-size: 1.2rem;
   color: $textSub;
   white-space: pre-wrap;
   word-break: break-word;
@@ -272,7 +272,7 @@
   border-radius: 0.75rem;
   padding: 0.85rem 1.1rem;
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
+  font-size: 1.3rem;
   color: $textMuted;
   word-break: break-all;
 }
@@ -283,7 +283,7 @@
   border-radius: 0.75rem;
   padding: 1.1rem;
   font-family: 'Courier New', monospace;
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   color: $textSub;
   white-space: pre-wrap;
   word-break: break-word;

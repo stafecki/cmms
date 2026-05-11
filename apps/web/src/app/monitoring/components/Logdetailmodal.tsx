@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import type { LogType } from './MonitoringDashboard'
-import styles from './LogDetailModal.module.scss'
+import styles from './Logdetailmodal.module.scss'
 
 interface LogDetailModalProps {
   entry: Record<string, unknown>

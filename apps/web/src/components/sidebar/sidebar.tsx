@@ -4,12 +4,16 @@ import Link from 'next/link'
 import { useEffect } from 'react'
 import styles from './sidebar.module.scss'
 
+// Definiujemy możliwe role dla jasności kodu
+type UserRole = 'admin' | 'manager' | 'user';
+
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  role: UserRole | string;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -28,9 +32,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'Przeglądy', href: '/preventive' },
     { name: 'Powiadomienia', href: '/notifications' },
     { name: 'Logi', href: '/monitoring' },
-    { name: 'Mój profil', href: '/me' },
     { name: 'Użytkownicy', href: '/users' },
   ];
+
+  const visibleMenuItems = menuItems.filter((item) => {
+    if (role === 'admin') {
+      return true;
+    }
+
+    if (role === 'manager') {
+      return item.href !== '/monitoring';
+    }
+
+    const restrictedPaths = ['/monitoring', '/dashboard', '/users'];
+    return !restrictedPaths.includes(item.href);
+  });
 
   return (
     <>
@@ -50,7 +66,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <nav className={styles.navLinks}>
           <ul>
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} onClick={onClose}>
                   {item.name}

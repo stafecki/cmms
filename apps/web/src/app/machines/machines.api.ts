@@ -42,3 +42,13 @@ export async function deleteMachine(id: string): Promise<void> {
   })
   if (!res.ok) throw new Error('Nie udało się usunąć maszyny')
 }
+
+export async function updateMachine(id: string, data: Partial<Machine>): Promise<Machine> {
+  const res = await fetch(`${API_URL}/machines/${id}`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Nie udało się zaktualizować maszyny')
+  return res.json()
+}

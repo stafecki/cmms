@@ -1,0 +1,263 @@
+@import "../../styles/vars";
+
+.container {
+  padding: 12vh 4% 4%;
+  color: $oat;
+  background-color: $noir;
+  min-height: 100vh;
+  font-family: $font;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  h1 {
+    font-size: 3rem;
+    margin: 0;
+    color: $oat;
+    span { color: $darkerOat; }
+  }
+
+  .headerActions {
+    display: flex;
+    gap: 1rem;
+
+    .checkBtn {
+      background: transparent;
+      border: 1px solid rgba($oat, 0.4);
+      color: $oat;
+      padding: 0.8rem 1.5rem;
+      border-radius: $radius;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: rgba($oat, 0.1);
+        border-color: $oat;
+      }
+    }
+
+    .addBtn {
+      background: $oat;
+      border: 1px solid $oat;
+      color: $noir;
+      padding: 0.8rem 1.5rem;
+      border-radius: $radius;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: $darkerOat;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid $border;
+  padding-bottom: 1rem;
+
+  .tabBtn {
+    background: none;
+    border: none;
+    color: $textSub;
+    font-size: 1.2rem;
+    font-family: $font;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+    border-radius: $radius;
+
+    &:hover {
+      color: $oat;
+      background: rgba($oat, 0.05);
+    }
+
+    &.active {
+      color: $noir;
+      background-color: $oat;
+    }
+  }
+}
+
+.loading, .error, .empty {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: $textSub;
+}
+
+.error {
+  color: $warningRed;
+  background: rgba($warningRed, 0.1);
+  border-radius: $radius;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: $bxshdw;
+    border-color: rgba($oat, 0.2);
+  }
+
+  .cardHeader {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed rgba($oat, 0.1);
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.4rem;
+      color: $oat;
+      line-height: 1.3;
+    }
+
+    .machineTag {
+      font-size: 0.8rem;
+      background: rgba($yellow, 0.15);
+      color: $yellow;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+  }
+  .detailsLink {
+    color: $yellow;
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      border-bottom-color: $yellow;
+      opacity: 0.8;
+    }
+  }
+
+  .details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    .infoRow {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+
+      .label { color: $textSub; }
+
+      .value {
+        font-weight: bold;
+        color: $oat;
+        text-align: right;
+      }
+    }
+
+    .checklistPreview {
+      margin-top: 0.5rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba($oat, 0.05);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+
+      .label { color: $textSub; }
+      .value { color: $darkerOat; font-family: monospace; font-size: 1rem; }
+    }
+  }
+
+  .actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+
+    button {
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .triggerBtn {
+      background: transparent;
+      border: 1px solid $oat;
+      color: $oat;
+
+      &:hover {
+        background: $oat;
+        color: $noir;
+      }
+    }
+
+    .deleteBtn {
+      background: transparent;
+      border: 1px solid rgba($warningRed, 0.3);
+      color: $warningRed;
+
+      &:hover {
+        background: rgba($warningRed, 0.1);
+        border-color: $warningRed;
+      }
+    }
+  }
+}
+
+// Kolory statusów dla dat
+.statusNormal { color: #10b981 !important; } // Zielony
+.statusWarning { color: $yellow !important; } // Żółty
+.statusOverdue {
+  color: $warningRed !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .headerActions {
+      width: 100%;
+      flex-direction: column;
+
+      button { width: 100%; }
+    }
+  }
+
+  .tabs {
+    flex-direction: column;
+    .tabBtn { width: 100%; text-align: left; }
+  }
+}

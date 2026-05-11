@@ -1,0 +1,264 @@
+@import "../../../styles/vars";
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: $trasparentNoir;
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  width: 100%;
+  max-width: 600px; // Trochę szerszy ze względu na checklistę
+  max-height: 90vh; // Ograniczenie wysokości na małych ekranach
+  display: flex;
+  flex-direction: column;
+  box-shadow: $bxshdw;
+  color: $oat;
+  animation: slideIn 0.3s ease-out;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid $border;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: $darkerOat;
+  }
+
+  .closeBtn {
+    background: none;
+    border: none;
+    color: $textSub;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+
+    &:hover { color: $warningRed; }
+  }
+}
+
+.error {
+  background: rgba($warningRed, 0.1);
+  color: $warningRed;
+  padding: 1rem;
+  margin: 1rem 2rem 0;
+  border-radius: $radius;
+  font-size: 0.9rem;
+  border: 1px solid rgba($warningRed, 0.2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Dzieci będą miały scrolla, nie sam formularz
+}
+
+.formContent {
+  padding: 1.5rem 2rem;
+  overflow-y: auto; // Scroll dla zawartości, jeśli jest dużo zadań
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  // Customizacja scrollbara dla Firefoxa i Chrome
+  scrollbar-width: thin;
+  scrollbar-color: rgba($oat, 0.3) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($oat, 0.3);
+    border-radius: 10px;
+  }
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+
+  .inputGroup {
+    flex: 1;
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9rem;
+    color: $textSub;
+  }
+
+  input, select {
+    background: $surfaceElevated;
+    border: 1px solid $border;
+    color: $oat;
+    padding: 0.8rem 1rem;
+    border-radius: $radius;
+    font-family: $font;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+
+    &:focus {
+      outline: none;
+      border-color: $darkerOat;
+    }
+
+    option {
+      background: $surfaceElevated;
+      color: $oat;
+    }
+  }
+}
+
+// === CHECKLISTA ===
+.checklistSection {
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba($oat, 0.1);
+}
+
+.checklistHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  label {
+    font-size: 1rem;
+    color: $oat;
+    font-weight: bold;
+  }
+
+  .addStepBtn {
+    background: transparent;
+    border: 1px solid rgba($oat, 0.5);
+    color: $oat;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: rgba($oat, 0.1); }
+  }
+}
+
+.checklistItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  .stepNumber {
+    color: $textSub;
+    font-weight: bold;
+    min-width: 20px;
+  }
+
+  input {
+    flex: 1;
+    background: $surfaceElevated;
+    border: 1px solid $border;
+    color: $oat;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    font-family: $font;
+
+    &:focus { outline: none; border-color: $oat; }
+  }
+
+  .removeStepBtn {
+    background: transparent;
+    border: none;
+    color: $textSub;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover:not(:disabled) { color: $warningRed; }
+    &:disabled { opacity: 0.3; cursor: not-allowed; }
+  }
+}
+
+// === AKCJE (Przyciski na dole) ===
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid $border;
+  background: $surface; // Zapewnia brak przezroczystości przy przewijaniu
+  border-bottom-left-radius: $radius;
+  border-bottom-right-radius: $radius;
+
+  button {
+    padding: 0.8rem 1.5rem;
+    border-radius: $radius;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .cancelBtn {
+    background: transparent;
+    border: 1px solid $border;
+    color: $textSub;
+
+    &:hover:not(:disabled) {
+      background: rgba($oat, 0.05);
+      color: $oat;
+    }
+  }
+
+  .saveBtn {
+    background: $oat;
+    border: 1px solid $oat;
+    color: $noir;
+
+    &:hover:not(:disabled) {
+      background: $darkerOat;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Responsywność dla inputów w jednym rzędzie
+@media (max-width: 600px) {
+  .row { flex-direction: column; gap: 1.5rem; }
+  .header, .formContent, .actions { padding-left: 1.5rem; padding-right: 1.5rem; }
+}

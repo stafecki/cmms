@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <p>Wygląda na to, że masz już aktywną sesję.</p>
 
           <div className={styles.actions}>
-            <Link href="/dashboard" className={styles.primaryBtn}>
+            <Link href="/" className={styles.primaryBtn}>
               Przejdź do panelu
             </Link>
 

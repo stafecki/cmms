@@ -22,6 +22,9 @@ export default function Header() {
 
   const logoHref = hasDashboardAccess ? '/dashboard' : '/'
 
+
+  const userRole = user?.role?.toLowerCase() || 'user';
+
   return (
     <header className={headerClass}>
       {isLoggedIn ? (
@@ -51,7 +54,11 @@ export default function Header() {
       )}
 
       {isLoggedIn && (
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          role={userRole}
+        />
       )}
     </header>
   )

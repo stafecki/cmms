@@ -1,4 +1,4 @@
-@import "../../../styles/vars"; // Upewnij się, że ścieżka do zmiennych jest poprawna
+@import "../../../styles/vars";
 
 .container {
   padding: 12vh 4% 4%;
@@ -24,31 +24,71 @@
   margin: 2rem;
 }
 
-.backBtn {
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  border: 1px solid rgba($oat, 0.3);
-  background: transparent;
-  color: $oat;
-  cursor: pointer;
-  font-weight: bold;
-  font-family: $font;
-  transition: all 0.2s ease;
-  margin-bottom: 2rem;
-
-  &:hover {
-    background: rgba($oat, 0.1);
-    border-color: $oat;
-  }
-}
-
+// === Zaktualizowany Header ===
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 2rem;
 
-  h1 {
-    font-size: 3rem;
-    margin: 0 0 0.5rem 0;
-    color: $oat;
+  .titleSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .backLink {
+      display: inline-flex;
+      align-items: center;
+      color: $textSub;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      width: fit-content;
+
+      &:hover {
+        color: $yellow;
+        transform: translateX(-5px);
+      }
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin: 0;
+      color: $oat;
+      line-height: 1.1;
+
+      span {
+        color: $darkerOat;
+      }
+    }
+  }
+
+  .editBtn {
+    background-color: $oat;
+    color: $noir;
+    font-family: $font;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.8rem 1.8rem;
+    border: 2px solid $oat;
+    border-radius: $radius;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: transparent;
+      color: $oat;
+      transform: translateY(-2px);
+      box-shadow: $bxshdw;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 
   .serialText {
@@ -63,6 +103,7 @@
   }
 }
 
+// === Reszta stylów ===
 .cardsContainer {
   display: flex;
   gap: 2rem;
@@ -88,7 +129,13 @@
     color: $darkerOat;
   }
 
-  .dataRow {
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .field {
     display: flex;
     justify-content: space-between;
     padding: 0.8rem 0;
@@ -107,9 +154,14 @@
       font-weight: bold;
       color: $oat;
     }
+  }
+
+  // Zachowałem te klasy na wypadek gdybyś ich używał w innej części widoku
+  .dataRow {
+    @extend .field;
 
     .statusActive {
-      color: #10b981; // Zostawiam zieleń dla kontrastu pozytywnego
+      color: #10b981;
       font-weight: bold;
     }
 
@@ -145,4 +197,25 @@
   font-size: 1.8rem;
   margin: 0 0 1.5rem 0;
   color: $oat;
+}
+
+// Responsywność dla urządzeń mobilnych
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .titleSection h1 {
+      font-size: 2.2rem;
+    }
+
+    .editBtn {
+      width: 100%;
+    }
+  }
+
+  .infoCard .field {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
 }

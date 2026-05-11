@@ -1,0 +1,206 @@
+@import "../../styles/vars";
+
+.container {
+  padding: 12vh 4% 4%;
+  color: $oat;
+  background-color: $noir;
+  min-height: 100vh;
+  font-family: $font;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  h1 {
+    font-size: 3rem;
+    margin: 0;
+    color: $oat;
+    span { color: $darkerOat; }
+  }
+
+  .markAllBtn {
+    background-color: transparent;
+    color: $oat;
+    border: 1px solid rgba($oat, 0.3);
+    padding: 0.8rem 1.5rem;
+    border-radius: $radius;
+    cursor: pointer;
+
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: rgba($oat, 0.1);
+      border-color: $oat;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid $border;
+  padding-bottom: 1rem;
+
+  .tabBtn {
+    background: none;
+    border: none;
+    color: $textSub;
+    font-size: 1.2rem;
+    font-family: $font;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+    border-radius: $radius;
+
+    &:hover {
+      color: $oat;
+      background: rgba($oat, 0.05);
+    }
+
+    &.active {
+      color: $noir;
+      background-color: $oat;
+      font-weight: bold;
+    }
+  }
+}
+
+.loading, .error, .empty {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: $textSub;
+}
+
+.error {
+  color: $warningRed;
+  background: rgba($warningRed, 0.1);
+  border-radius: $radius;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &.unread {
+    background: $surfaceElevated;
+    border-left: 4px solid $yellow; // Wyróżnienie nieprzeczytanych
+
+    h3 {
+      font-weight: 900;
+    }
+  }
+
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    .typeTag {
+      font-size: 0.8rem;
+      font-weight: bold;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      background: rgba($oat, 0.1);
+      color: $oat;
+      letter-spacing: 1px;
+
+      &[data-type="CRITICAL_FAILURE"] { background: rgba($warningRed, 0.2); color: $warningRed; }
+      &[data-type="PREVENTIVE_DUE"],
+      &[data-type="CERT_EXPIRING"],
+      &[data-type="REORDER_ALERT"] { background: rgba($yellow, 0.2); color: $yellow; }
+      &[data-type="WORK_ORDER_ASSIGNED"] { background: rgba(#10b981, 0.2); color: #10b981; } // zielony
+      &[data-type="ANNOUNCEMENT"] { background: rgba(#3b82f6, 0.2); color: #60a5fa; } // niebieski
+    }
+
+    .date {
+      font-size: 0.9rem;
+      color: $textSub;
+    }
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    color: $oat;
+  }
+
+  p {
+    margin: 0;
+    color: $textSub;
+    line-height: 1.5;
+  }
+
+  .userInfo {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: $yellow;
+    background: rgba($yellow, 0.05);
+    padding: 0.5rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+
+    .actionBtn {
+      background: transparent;
+      border: 1px solid $border;
+      color: $oat;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+
+      &:hover {
+        background: rgba($oat, 0.1);
+      }
+
+      &.deleteBtn {
+        color: $warningRed;
+        border-color: rgba($warningRed, 0.3);
+
+        &:hover {
+          background: rgba($warningRed, 0.1);
+          border-color: $warningRed;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .markAllBtn { width: 100%; }
+  }
+
+  .tabs {
+    flex-direction: column;
+    .tabBtn { width: 100%; text-align: left; }
+  }
+}

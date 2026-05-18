@@ -78,7 +78,9 @@
       li {
         margin-bottom: 0.5rem;
         a {
-          display: block;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
           color: rgba($oat, 0.7);
           text-decoration: none;
           font-size: 1.2rem;
@@ -94,6 +96,25 @@
         }
       }
     }
+  }
+
+  .navLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .badge {
+    background: $yellow;
+    color: $noir;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    min-width: 1.3rem;
+    text-align: center;
+    line-height: 1.4;
+    flex-shrink: 0;
   }
 
   .sidebarFooter {

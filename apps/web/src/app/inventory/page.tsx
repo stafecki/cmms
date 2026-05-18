@@ -6,20 +6,26 @@ import Link from 'next/link';
 import { useInventory } from './useInventory';
 import { useAuth } from '@/context/AuthContext';
 import { InventoryModal } from './components/InventoryModal';
+import { AdjustStockModal } from './components/AdjustStockModal';
 import { LowStockPanel } from './components/LowStockPanel';
+import { CategoriesPanel } from './components/CategoriesPanel';
 import { SearchBar } from '@/components/searchBar';
 import { FilterPanel, FilterGroup } from '@/components/filterPanel';
+import { Part } from './types';
 
 export default function InventoryPage() {
   const [activeTab, setActiveTab] = useState<'parts' | 'loans' | 'myLoans'>('parts');
   const [showFilters, setShowFilters] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLowStock, setShowLowStock] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
+  const [adjustPart, setAdjustPart] = useState<Part | null>(null);
 
   const inv = useInventory();
   const { user } = useAuth(); // Pobieramy zalogowanego użytkownika
 
   const canAddPart = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'WAREHOUSE';
+  const canManageCategories = user?.role === 'ADMIN';
   const canViewAllLoans = user?.role === 'ADMIN' || user?.role === 'WAREHOUSE' || user?.role === 'MANAGER';
   return (
     <div className={styles.container}>
@@ -59,6 +65,9 @@ export default function InventoryPage() {
             onToggleFilters={() => setShowFilters(!showFilters)}
             placeholder="Szukaj części..."
           />
+          {canManageCategories && (
+            <button className={styles.catBtn} onClick={() => setShowCategories(!showCategories)}>Kategorie</button>
+          )}
           {canAddPart && (
             <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>+</button>
           )}
@@ -67,6 +76,14 @@ export default function InventoryPage() {
 
       {showLowStock && (
         <LowStockPanel parts={inv.lowStockParts} onClose={() => setShowLowStock(false)} />
+      )}
+
+      {showCategories && canManageCategories && (
+        <CategoriesPanel
+          categories={inv.categories}
+          onDelete={inv.handleDeleteCategory}
+          onClose={() => setShowCategories(false)}
+        />
       )}
 
       {showFilters && activeTab === 'parts' && (
@@ -91,6 +108,14 @@ export default function InventoryPage() {
         />
       )}
 
+      {adjustPart && (
+        <AdjustStockModal
+          part={adjustPart}
+          onClose={() => setAdjustPart(null)}
+          onSuccess={() => { inv.fetchData(); setAdjustPart(null); }}
+        />
+      )}
+
       {inv.loading ? (
         <p className={styles.loading}>Ładowanie danych z magazynu...</p>
       ) : (
@@ -104,17 +129,31 @@ export default function InventoryPage() {
                   <div className={`${styles.card} ${part.stockQuantity <= part.reorderPoint ? styles.lowStock : ''}`}>
                     <div className={styles.cardHeader}>
                       <span className={styles.categoryTag}>{part.category.name}</span>
-                      {part.stockQuantity > 0 && (
-                        <button
-                          className={styles.quickLoanBtn}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            inv.handleLoan(part.id);
-                          }}
-                        >
-                          + Wypożycz
-                        </button>
-                      )}
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {canAddPart && (
+                          <button
+                            className={styles.quickLoanBtn}
+                            style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setAdjustPart(part);
+                            }}
+                          >
+                            Koryguj
+                          </button>
+                        )}
+                        {part.stockQuantity > 0 && (
+                          <button
+                            className={styles.quickLoanBtn}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              inv.handleLoan(part.id);
+                            }}
+                          >
+                            + Wypożycz
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <h3>{part.name}</h3>
                     <div className={styles.stats}>

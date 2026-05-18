@@ -104,3 +104,34 @@ export async function deleteNotification(id: string): Promise<void> {
   const res = await fetchWithAuth(`/notifications/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error('Nie udało się usunąć powiadomienia')
 }
+
+export async function getUnreadCount(): Promise<number> {
+  const res = await fetchWithAuth('/notifications/unread-count')
+  if (!res.ok) return 0
+  const data = await res.json()
+  return data.count ?? 0
+}
+
+export async function createNotification(data: {
+  userId: string
+  type: string
+  title: string
+  message: string
+}): Promise<void> {
+  const res = await fetchWithAuth('/notifications', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Nie udało się wysłać powiadomienia')
+}
+
+export async function createAnnouncement(data: {
+  title: string
+  message: string
+}): Promise<void> {
+  const res = await fetchWithAuth('/notifications/announcement', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Nie udało się wysłać ogłoszenia')
+}

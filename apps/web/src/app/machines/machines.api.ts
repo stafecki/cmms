@@ -52,3 +52,31 @@ export async function updateMachine(id: string, data: Partial<Machine>): Promise
   if (!res.ok) throw new Error('Nie udało się zaktualizować maszyny')
   return res.json()
 }
+
+export async function createMachine(data: {
+  name: string
+  serialNumber: string
+  locationId: string
+  purchaseDate: string
+  purchasePrice: number
+  operatingHours?: number
+  isActive?: boolean
+}): Promise<Machine> {
+  const res = await fetch(`${API_URL}/machines`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Nie udało się utworzyć maszyny')
+  return res.json()
+}
+
+export async function updateOperatingHours(id: string, operatingHours: number): Promise<Machine> {
+  const res = await fetch(`${API_URL}/machines/${id}/operating-hours`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify({ operatingHours }),
+  })
+  if (!res.ok) throw new Error('Nie udało się zaktualizować godzin pracy')
+  return res.json()
+}

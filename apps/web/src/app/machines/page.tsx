@@ -9,6 +9,7 @@ import { FilterPanel, FilterGroup } from '../../components/filterPanel/FilterPan
 import { SearchBar } from '../../components/searchBar/SearchBar'
 import styles from './machines.module.scss'
 import { useAuth } from '../../context/AuthContext'
+import AddMachineModal from './components/AddMachineModal'
 
 export default function MachinesPage() {
   const { user } = useAuth()
@@ -18,6 +19,7 @@ export default function MachinesPage() {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
   const canAddMachine = user?.role === 'ADMIN' || user?.role === 'MANAGER'
   const canDeleteMachine = user?.role === 'ADMIN'
@@ -93,7 +95,7 @@ export default function MachinesPage() {
         </div>
 
         {canAddMachine && (
-          <button className={styles.addBtn}>
+          <button className={styles.addBtn} onClick={() => setIsAddModalOpen(true)}>
             + Dodaj maszynę
           </button>
         )}
@@ -173,6 +175,12 @@ export default function MachinesPage() {
           </tbody>
         </table>
       </div>
+
+      <AddMachineModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={(newMachine) => setMachines([newMachine, ...machines])}
+      />
 
     </div>
   )

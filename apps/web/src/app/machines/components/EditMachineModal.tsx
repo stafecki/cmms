@@ -87,11 +87,11 @@ export default function EditMachineModal({ isOpen, onClose, machine, onSuccess }
             <label htmlFor="status">Status</label>
             <select
               id="status"
-              value={isActive ? 'true' : 'false'}
-              onChange={(e) => setIsActive(e.target.value === 'true')}
+              value={isActive ? "1" : "0"}
+              onChange={(e) => setIsActive(e.target.value === '1')}
             >
-              <option value="true">Aktywna</option>
-              <option value="false">Nieaktywna</option>
+              <option value="1">Aktywna</option>
+              <option value="0">Nieaktywna</option>
             </select>
           </div>
 

@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useState, use } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import styles from './machineDetails.module.scss'
-import { fetchMachineById } from '../machines.api'
+import { fetchMachineById, updateOperatingHours } from '../machines.api'
 import { Machine } from '../types'
 import { useAuth } from '../../../context/AuthContext'
 import EditMachineModal from '../components/EditMachineModal'
@@ -15,8 +14,6 @@ interface PageProps {
 
 export default function MachineDetailsPage({ params }: PageProps) {
   const { user } = useAuth()
-  const router = useRouter()
-
   const resolvedParams = use(params)
   const id = resolvedParams.id
 
@@ -25,7 +22,11 @@ export default function MachineDetailsPage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
+  const [hoursInput, setHoursInput] = useState('')
+  const [isUpdatingHours, setIsUpdatingHours] = useState(false)
+
   const canEditMachine = user?.role === 'ADMIN' || user?.role === 'MANAGER'
+  const canUpdateHours = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'TECHNICIAN'
 
   useEffect(() => {
     const loadMachine = async () => {
@@ -44,6 +45,22 @@ export default function MachineDetailsPage({ params }: PageProps) {
 
   const handleEditSuccess = (updatedMachine: Machine) => {
     setMachine(updatedMachine)
+  }
+
+  const handleUpdateHours = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const hours = parseInt(hoursInput)
+    if (isNaN(hours) || hours < 0) return
+    setIsUpdatingHours(true)
+    try {
+      const updated = await updateOperatingHours(id, hours)
+      setMachine(updated)
+      setHoursInput('')
+    } catch (err: any) {
+      alert(err.message || 'Nie udało się zaktualizować godzin pracy.')
+    } finally {
+      setIsUpdatingHours(false)
+    }
   }
 
   if (isLoading) return <div className={styles.loading}>Ładowanie...</div>
@@ -95,6 +112,54 @@ export default function MachineDetailsPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {canUpdateHours && (
+          <div className={styles.infoCard}>
+            <h3>Aktualizacja godzin pracy</h3>
+            <form onSubmit={handleUpdateHours} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <label style={{ fontSize: '0.85rem', color: 'rgba(240,237,229,0.6)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Nowa wartość (h)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={hoursInput}
+                  onChange={(e) => setHoursInput(e.target.value)}
+                  placeholder={String(machine.operatingHours)}
+                  required
+                  style={{
+                    background: 'rgba(240,237,229,0.05)',
+                    border: '1px solid rgba(240,237,229,0.1)',
+                    borderRadius: '8px',
+                    color: '#F0EDE5',
+                    padding: '0.7rem 1rem',
+                    fontSize: '1rem',
+                    width: '160px',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isUpdatingHours}
+                style={{
+                  padding: '0.7rem 1.4rem',
+                  background: '#F0EDE5',
+                  color: '#060D0C',
+                  border: '1px solid #F0EDE5',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  opacity: isUpdatingHours ? 0.5 : 1,
+                }}
+              >
+                {isUpdatingHours ? 'Zapisywanie...' : 'Zaktualizuj'}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       <EditMachineModal

@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './sidebar.module.scss'
+import { useAuth } from '../../context/AuthContext'
+import { getUnreadCount } from '../../app/notifications/notifications.api'
 
 // Definiujemy możliwe role dla jasności kodu
 type UserRole = 'admin' | 'manager' | 'user';
@@ -10,10 +12,13 @@ type UserRole = 'admin' | 'manager' | 'user';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  role: UserRole | string;
+  role?: UserRole | string;
 }
 
 export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
+  const { user } = useAuth()
+  const [unreadCount, setUnreadCount] = useState(0)
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -22,6 +27,16 @@ export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!user) return
+    const fetchCount = () => getUnreadCount().then(setUnreadCount).catch(() => {})
+    fetchCount()
+    const interval = setInterval(fetchCount, 30000)
+    return () => clearInterval(interval)
+  }, [user])
+
+  const effectiveRole = role ?? user?.role?.toLowerCase() ?? ''
 
   const menuItems = [
     { name: 'Panel główny', href: '/dashboard'},
@@ -36,11 +51,11 @@ export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
   ];
 
   const visibleMenuItems = menuItems.filter((item) => {
-    if (role === 'admin') {
+    if (effectiveRole === 'admin') {
       return true;
     }
 
-    if (role === 'manager') {
+    if (effectiveRole === 'manager') {
       return item.href !== '/monitoring';
     }
 
@@ -68,8 +83,11 @@ export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
           <ul>
             {visibleMenuItems.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} onClick={onClose}>
+                <Link href={item.href} onClick={onClose} className={styles.navLink}>
                   {item.name}
+                  {item.href === '/notifications' && unreadCount > 0 && (
+                    <span className={styles.badge}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                  )}
                 </Link>
               </li>
             ))}

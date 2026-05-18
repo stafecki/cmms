@@ -524,6 +524,52 @@
   &:hover { background: white; }
 }
 
+.catBtn {
+  background: transparent;
+  border: 1px solid rgba($oat, 0.3);
+  color: rgba($oat, 0.8);
+  padding: 0 1.4rem;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($oat, 0.08);
+    border-color: $oat;
+    color: $oat;
+  }
+}
+
+.deleteCatBtn {
+  background: transparent;
+  border: 1px solid rgba($warningRed, 0.3);
+  color: $warningRed;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba($warningRed, 0.15);
+    border-color: $warningRed;
+  }
+}
+
+.emptyAlerts {
+  text-align: center;
+  opacity: 0.5;
+  padding: 1rem 0;
+}
+
+.categoriesPanel {
+  .alertHeader h3 { color: $oat; }
+}
+
 // --- UTILS & ANIMATIONS ---
 .loading, .noResults { text-align: center; padding: 4rem; font-size: 1.5rem; opacity: 0.5; grid-column: 1 / -1; }
 

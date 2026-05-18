@@ -95,6 +95,23 @@ export function useInventory() {
     }
   };
 
+  const handleDeleteCategory = async (categoryId: string) => {
+    const token = Cookies.get('accessToken');
+    try {
+      const res = await fetch(`http://localhost:3000/inventory/categories/${categoryId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) await fetchData();
+      else {
+        const error = await res.json();
+        alert(`Błąd: ${error.message}`);
+      }
+    } catch (err) {
+      console.error('Błąd podczas usuwania kategorii:', err);
+    }
+  };
+
   const handleLoan = async (partId: string) => {
     const token = Cookies.get('accessToken');
     try {
@@ -118,7 +135,7 @@ export function useInventory() {
 
   return {
     parts, loans, categories, lowStockParts, myLoans, loading, filteredParts,
-    fetchData, handleReturn, handleLoan,
+    fetchData, handleReturn, handleLoan, handleDeleteCategory,
     searchQuery, setSearchQuery, filterCategory, setFilterCategory,
     priceFrom, setPriceFrom, priceTo, setPriceTo, minStock, setMinStock
   };

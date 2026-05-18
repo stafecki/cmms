@@ -10,6 +10,7 @@ export const createMachineSchema = z.object({
     .min(1, 'Serial number is required')
     .max(100, 'Serial number must be at most 100 characters'),
   locationId: z.uuid('Invalid location ID'),
+  isActive: z.boolean().optional(),
   operatingHours: z
     .number()
     .min(0, 'Operating hours must be a positive number')

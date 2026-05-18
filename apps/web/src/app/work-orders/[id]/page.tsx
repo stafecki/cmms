@@ -25,6 +25,22 @@ import {
   fetchAllParts
 } from '../work-orders.api';
 
+const VALID_TRANSITIONS: Record<WorkOrderStatus, WorkOrderStatus[]> = {
+  [WorkOrderStatus.NEW]: [WorkOrderStatus.IN_PROGRESS, WorkOrderStatus.CANCELLED],
+  [WorkOrderStatus.IN_PROGRESS]: [WorkOrderStatus.WAITING_FOR_PARTS, WorkOrderStatus.COMPLETED, WorkOrderStatus.CANCELLED],
+  [WorkOrderStatus.WAITING_FOR_PARTS]: [WorkOrderStatus.IN_PROGRESS, WorkOrderStatus.CANCELLED],
+  [WorkOrderStatus.COMPLETED]: [],
+  [WorkOrderStatus.CANCELLED]: [],
+};
+
+const STATUS_LABELS: Record<WorkOrderStatus, string> = {
+  [WorkOrderStatus.NEW]: 'Nowe',
+  [WorkOrderStatus.IN_PROGRESS]: 'W trakcie',
+  [WorkOrderStatus.WAITING_FOR_PARTS]: 'Oczekuje na części',
+  [WorkOrderStatus.COMPLETED]: 'Zakończone',
+  [WorkOrderStatus.CANCELLED]: 'Anulowane',
+};
+
 export default function WorkOrderDetailsPage() {
   const { id } = useParams() as { id: string };
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -52,6 +68,14 @@ export default function WorkOrderDetailsPage() {
 
   const selectedPartDetails = availableParts.find(p => p.id === selectedPart);
   const maxAvailableStock = selectedPartDetails ? selectedPartDetails.stockQuantity : 1;
+
+  const getAvailableStatuses = (currentStatus: WorkOrderStatus, bhpConfirmed: boolean) => {
+    let available = VALID_TRANSITIONS[currentStatus] || [];
+    if (!bhpConfirmed) {
+      available = available.filter(s => s !== WorkOrderStatus.IN_PROGRESS);
+    }
+    return available;
+  };
 
   useEffect(() => {
     if (!isAuthLoading && user) {
@@ -211,12 +235,12 @@ export default function WorkOrderDetailsPage() {
               <select
                 value={order.status}
                 onChange={e => handleStatusChange(e.target.value as WorkOrderStatus)}
+                disabled={getAvailableStatuses(order.status, order.bhpConfirmed).length === 0}
               >
-                <option value={WorkOrderStatus.NEW}>Nowe</option>
-                <option value={WorkOrderStatus.IN_PROGRESS}>W trakcie</option>
-                <option value={WorkOrderStatus.WAITING_FOR_PARTS}>Oczekuje na części</option>
-                <option value={WorkOrderStatus.COMPLETED}>Zakończone</option>
-                <option value={WorkOrderStatus.CANCELLED}>Anulowane</option>
+                <option value={order.status}>{STATUS_LABELS[order.status]}</option>
+                {getAvailableStatuses(order.status, order.bhpConfirmed).map(status => (
+                  <option key={status} value={status}>{STATUS_LABELS[status]}</option>
+                ))}
               </select>
             </div>
           )}
@@ -236,7 +260,7 @@ export default function WorkOrderDetailsPage() {
             </div>
           )}
 
-          {isAssigned && !order.bhpConfirmed && (
+          {isTechnician && !order.bhpConfirmed && (
             <button className={styles.btn} onClick={handleConfirmBhp} >
               Potwierdź zapoznanie z BHP
             </button>

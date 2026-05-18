@@ -18,11 +18,9 @@ export default function MachinesPage() {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
-  const [statusFilter, setStatusFilter] = useState('ALL')
 
-  // ROZDZIELONE UPRAWNIENIA ZGODNIE Z TWOIM BACKENDEM (HONO):
   const canAddMachine = user?.role === 'ADMIN' || user?.role === 'MANAGER'
-  const canDeleteMachine = user?.role === 'ADMIN' // Tylko ADMIN może usuwać
+  const canDeleteMachine = user?.role === 'ADMIN'
 
   useEffect(() => {
     loadMachines()
@@ -57,7 +55,6 @@ export default function MachinesPage() {
   const handleResetFilters = () => {
     setSearchQuery('')
     setLocationFilter('')
-    setStatusFilter('ALL')
   }
 
   const uniqueLocations = useMemo(() => {
@@ -79,14 +76,9 @@ export default function MachinesPage() {
 
       const matchesLocation = locationFilter ? machine.locationId === locationFilter : true
 
-      const matchesStatus =
-        statusFilter === 'ALL' ? true :
-          statusFilter === 'ACTIVE' ? machine.isActive === true :
-            machine.isActive === false
-
-      return matchesSearch && matchesLocation && matchesStatus
+      return matchesSearch && matchesLocation
     })
-  }, [machines, searchQuery, locationFilter, statusFilter])
+  }, [machines, searchQuery, locationFilter])
 
 
   if (isLoading) return <div className={styles.loading}>Ładowanie maszyn...</div>
@@ -100,7 +92,6 @@ export default function MachinesPage() {
           <h1>Zarządzanie <span>Maszynami</span></h1>
         </div>
 
-        {/* Dodawać może ADMIN i MANAGER */}
         {canAddMachine && (
           <button className={styles.addBtn}>
             + Dodaj maszynę
@@ -127,17 +118,6 @@ export default function MachinesPage() {
               {uniqueLocations.map(([id, name]) => (
                 <option key={id} value={id}>{name}</option>
               ))}
-            </select>
-          </FilterGroup>
-
-          <FilterGroup label="Status">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="ALL">Wszystkie</option>
-              <option value="ACTIVE">Aktywne</option>
-              <option value="INACTIVE">Nieaktywne</option>
             </select>
           </FilterGroup>
         </FilterPanel>

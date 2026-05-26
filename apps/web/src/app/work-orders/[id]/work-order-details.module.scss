@@ -1,0 +1,358 @@
+@import "../../../styles/vars";
+
+.container {
+  padding: 12vh 4% 4%;
+  color: $oat;
+  background-color: $noir;
+  min-height: 100vh;
+  font-family: $font;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 5rem;
+  font-size: 1.2rem;
+  color: $oat;
+}
+
+.error {
+  color: $warningRed;
+  background: rgba($warningRed, 0.1);
+  border-radius: $radius;
+  border: 1px solid rgba($warningRed, 0.2);
+  margin: 2rem;
+  padding: 2rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  color: $textSub;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+
+  &:hover {
+    color: $yellow;
+    transform: translateX(-5px);
+  }
+}
+
+.header {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 2rem;
+  box-shadow: $bxshdw;
+  margin-bottom: 2rem;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+
+  h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: $oat;
+    line-height: 1.2;
+  }
+}
+
+.badges {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.status-NEW { background: rgba(2, 132, 199, 0.2); color: #7dd3fc; }
+.status-IN_PROGRESS { background: rgba(251, 191, 36, 0.2); color: $yellow; }
+.status-WAITING_FOR_PARTS { background: rgba(194, 65, 12, 0.2); color: #fb923c; }
+.status-COMPLETED { background: rgba(22, 101, 52, 0.2); color: #4ade80; }
+.status-CANCELLED { background: rgba(255, 107, 107, 0.2); color: $warningRed; }
+
+.priority-LOW { background: $surfaceElevated; color: $textSub; }
+.priority-MEDIUM { background: rgba(30, 64, 175, 0.2); color: #60a5fa; }
+.priority-HIGH { background: rgba(251, 191, 36, 0.2); color: $yellow; }
+.priority-CRITICAL { background: rgba(255, 107, 107, 0.3); color: $warningRed; }
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba($oat, 0.1);
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  .label {
+    font-size: 0.75rem;
+    color: $textMuted;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .value {
+    color: $oat;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: $textSub;
+  white-space: pre-wrap;
+}
+
+.actionRow {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba($oat, 0.1);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.statusLabel {
+  color: $textSub;
+  font-size: 0.9rem;
+}
+
+.actionRow select {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: $surfaceElevated;
+  color: $oat;
+  font-family: $font;
+  font-size: 0.95rem;
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: rgba($oat, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.btn {
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid $oat;
+  background: $oat;
+  color: $noir;
+  font-family: $font;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: transparent;
+    color: $oat;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section {
+  background: $surface;
+  padding: 2rem;
+  border-radius: $radius;
+  box-shadow: $bxshdw;
+  border: 1px solid $border;
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: $darkerOat;
+    border-bottom: 1px solid rgba($oat, 0.1);
+    padding-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+
+  p { color: $textSub; }
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 10px;
+  }
+}
+
+.message {
+  background: $surfaceElevated;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba($oat, 0.08);
+
+  .messageHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+
+    .author { color: $darkerOat; font-weight: 600; }
+    .date { color: $textMuted; }
+  }
+
+  .messageContent {
+    color: $oat;
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
+.messageForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid $border;
+    background: $surfaceElevated;
+    color: $oat;
+    font-family: $font;
+    font-size: 0.95rem;
+    resize: vertical;
+    min-height: 80px;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: rgba($oat, 0.4);
+    }
+
+    &::placeholder { color: $textMuted; }
+  }
+
+  button { align-self: flex-end; }
+}
+
+.partsList {
+  margin-bottom: 1.5rem;
+
+  p { color: $textSub; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid rgba($oat, 0.08);
+    }
+
+    th {
+      color: $textMuted;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    td {
+      font-size: 0.95rem;
+      color: $darkerOat;
+    }
+  }
+}
+
+.addPartForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: $surfaceElevated;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid rgba($oat, 0.08);
+
+  h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    color: $darkerOat;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  select, input {
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid $border;
+    background: $noir;
+    color: $oat;
+    font-family: $font;
+    font-size: 0.95rem;
+    outline: none;
+
+    &:focus { border-color: rgba($oat, 0.4); }
+
+    &:disabled { opacity: 0.4; }
+  }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 10vh 1rem 2rem; }
+
+  .titleRow {
+    flex-direction: column;
+    h1 { font-size: 1.8rem; }
+  }
+}

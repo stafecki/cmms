@@ -11,12 +11,17 @@ export default function Home() {
 
         <div className={styles.content}>
           <div className={styles.sliderHeader}>
-            <h1>System CMMS <br /> <span>dla Twojej firmy</span></h1>
-            <p>Zarządzaj utrzymaniem ruchu, magazynem i serwisem w jednym miejscu.</p>
+            <h1>
+              System CMMS <br /> <span>dla Twojej firmy</span>
+            </h1>
+            <p>
+              Zarządzaj utrzymaniem ruchu, magazynem i serwisem w jednym
+              miejscu.
+            </p>
           </div>
 
           <div className={styles.btns}>
-            <Link href="/register" className={styles.primaryBtn}>
+            <Link href="/auth/register" className={styles.primaryBtn}>
               Dołącz do nas
             </Link>
             <Link href="/about" className={styles.secondaryBtn}>

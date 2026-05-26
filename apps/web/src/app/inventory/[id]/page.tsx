@@ -2,16 +2,17 @@
 
 import React, { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
 import styles from './editPart.module.scss'
+import { useAuth } from '@/context/AuthContext'
 
 export default function EditPartPage() {
   const { id } = useParams()
   const router = useRouter()
+  const { user } = useAuth()
+
   const [categories, setCategories] = useState<{id: string, name: string}[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Stany dla nowej kategorii
   const [isAddingCategory, setIsAddingCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState('')
 
@@ -22,10 +23,15 @@ export default function EditPartPage() {
     unitPrice: 0
   })
 
-  const token = Cookies.get('accessToken')
+  const canEdit = user?.role === 'ADMIN' || user?.role === 'MANAGER' || user?.role === 'WAREHOUSE';
+  const canDelete = user?.role === 'ADMIN';
 
   useEffect(() => {
+    const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
+
     const fetchData = async () => {
+      if(!token) return;
+
       try {
         const [partRes, catRes] = await Promise.all([
           fetch(`http://localhost:3000/inventory/parts/${id}`, {
@@ -54,15 +60,22 @@ export default function EditPartPage() {
         setLoading(false)
       }
     }
-    fetchData()
-  }, [id, token])
+
+    if(canEdit) {
+      fetchData()
+    } else {
+      setLoading(false)
+    }
+  }, [id, canEdit])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!canEdit) return;
+
+    const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
     let finalCategoryId = formData.categoryId
 
     try {
-      // 1. Jeśli użytkownik wpisał nową kategorię, najpierw ją stwórz
       if (isAddingCategory && newCategoryName.trim()) {
         const catRes = await fetch('http://localhost:3000/inventory/categories', {
           method: 'POST',
@@ -81,7 +94,6 @@ export default function EditPartPage() {
         }
       }
 
-      // 2. Zapisz zmiany w przedmiocie
       const res = await fetch(`http://localhost:3000/inventory/parts/${id}`, {
         method: 'PATCH',
         headers: {
@@ -94,6 +106,9 @@ export default function EditPartPage() {
       if (res.ok) {
         router.push('/inventory')
         router.refresh()
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Wystąpił błąd podczas aktualizacji")
       }
     } catch (err: any) {
       alert(err.message)
@@ -101,7 +116,15 @@ export default function EditPartPage() {
   }
 
   const handleDelete = async () => {
+    if (!canDelete) {
+      alert("Brak uprawnień do usunięcia przedmiotu.");
+      return;
+    }
+
     if (!confirm('Czy na pewno chcesz usunąć ten przedmiot?')) return
+
+    const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
+
     const res = await fetch(`http://localhost:3000/inventory/parts/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
@@ -109,17 +132,34 @@ export default function EditPartPage() {
     if (res.ok) {
       router.push('/inventory')
       router.refresh()
+    } else {
+      const errorData = await res.json();
+      alert(errorData.message || "Nie udało się usunąć przedmiotu.")
     }
   }
 
   if (loading) return <div className={styles.loader}>Wczytywanie...</div>
+
+  if (!canEdit) {
+    return (
+      <div className={styles.editContainer}>
+        <div className={styles.formCard} style={{textAlign: 'center', padding: '3rem'}}>
+          <h2>Brak uprawnień</h2>
+          <p>Zaloguj się na konto o odpowiednich uprawnieniach, aby edytować ten zasób.</p>
+          <button onClick={() => router.back()} className={styles.saveBtn} style={{marginTop: '1rem'}}>Wróć</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.editContainer}>
       <form onSubmit={handleSubmit} className={styles.formCard}>
         <div className={styles.formHeader}>
           <h2>Edytuj <span>Zasób</span></h2>
-          <button type="button" onClick={handleDelete} className={styles.deleteBtn}>Usuń przedmiot</button>
+          {canDelete && (
+            <button type="button" onClick={handleDelete} className={styles.deleteBtn}>Usuń przedmiot</button>
+          )}
         </div>
 
         <div className={styles.field}>

@@ -1,15 +1,24 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './sidebar.module.scss'
+import { useAuth } from '../../context/AuthContext'
+import { getUnreadCount } from '../../app/notifications/notifications.api'
+
+// Definiujemy możliwe role dla jasności kodu
+type UserRole = 'admin' | 'manager' | 'user';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  role?: UserRole | string;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
+  const { user } = useAuth()
+  const [unreadCount, setUnreadCount] = useState(0)
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -19,6 +28,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!user) return
+    const fetchCount = () => getUnreadCount().then(setUnreadCount).catch(() => {})
+    fetchCount()
+    const interval = setInterval(fetchCount, 30000)
+    return () => clearInterval(interval)
+  }, [user])
+
+  const effectiveRole = role ?? user?.role?.toLowerCase() ?? ''
+
   const menuItems = [
     { name: 'Panel główny', href: '/dashboard'},
     { name: 'Maszyny', href: '/machines' },
@@ -27,10 +46,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'Magazyn', href: '/inventory' },
     { name: 'Przeglądy', href: '/preventive' },
     { name: 'Powiadomienia', href: '/notifications' },
-    { name: 'Monitoring', href: '/monitoring' },
-    { name: 'Mój profil', href: '/me' },
+    { name: 'Logi', href: '/monitoring' },
     { name: 'Użytkownicy', href: '/users' },
   ];
+
+  const visibleMenuItems = menuItems.filter((item) => {
+    if (effectiveRole === 'admin') {
+      return true;
+    }
+
+    if (effectiveRole === 'manager') {
+      return item.href !== '/monitoring';
+    }
+
+    const restrictedPaths = ['/monitoring', '/dashboard', '/users'];
+    return !restrictedPaths.includes(item.href);
+  });
 
   return (
     <>
@@ -50,10 +81,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <nav className={styles.navLinks}>
           <ul>
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} onClick={onClose}>
+                <Link href={item.href} onClick={onClose} className={styles.navLink}>
                   {item.name}
+                  {item.href === '/notifications' && unreadCount > 0 && (
+                    <span className={styles.badge}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                  )}
                 </Link>
               </li>
             ))}

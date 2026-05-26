@@ -1,9 +1,9 @@
 @import '../../styles/vars';
 
 .dashboardContainer {
-  margin-top: 8vh;
+  padding-top: 12vh;
+  padding-inline: 8vh;
   min-height: 100vh;
-  padding: 2rem 5%;
   background-color: lighten($noir, 3%);
   color: $oat;
   font-family: $font;

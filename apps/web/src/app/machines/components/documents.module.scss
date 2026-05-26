@@ -1,0 +1,103 @@
+@import "../../../styles/vars";
+
+.tableContainer {
+  overflow-x: auto;
+  background: rgba($oat, 0.03);
+  border: 1px solid rgba($oat, 0.1);
+  border-radius: $radius;
+  box-shadow: $bxshdw;
+  margin-top: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: $font;
+  font-size: 0.95rem;
+
+  th, td {
+    padding: 1rem 1.5rem;
+  }
+
+  th {
+    background: rgba($oat, 0.06);
+    font-weight: 600;
+    color: $oat;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba($oat, 0.15);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba($oat, 0.05);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: rgba($oat, 0.08);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  td {
+    color: rgba($oat, 0.8);
+  }
+}
+
+.filename {
+  font-weight: 600;
+  color: $oat;
+  letter-spacing: 0.5px;
+}
+
+.badge {
+  display: inline-block;
+  background-color: rgba($yellow, 0.15);
+  color: $yellow;
+  border: 1px solid rgba($yellow, 0.3);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.noData {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: rgba($oat, 0.5);
+  font-style: italic;
+  background: rgba($oat, 0.02);
+  border-radius: $radius;
+  border: 1px dashed rgba($oat, 0.2);
+  margin-top: 1rem;
+}
+
+.downloadBtn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: $oat;
+  border: 1px solid rgba($oat, 0.3);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $oat;
+    color: $noir;
+    border-color: $oat;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}

@@ -1,0 +1,157 @@
+@import "../../styles/vars";
+
+.container {
+  padding: 10vh 2rem 2rem 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: $noir;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.headerTitle {
+  font-size: 2rem;
+  color: $oat;
+  margin: 0;
+}
+
+.newButton {
+  background-color: $oat;
+  color: $noir;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: $radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:hover {
+    background-color: $oatHover;
+    transform: translateY(-1px);
+  }
+}
+
+.tableWrapper {
+  background: $surface;
+  border-radius: $radius;
+  box-shadow: $bxshdw;
+  border: 1px solid $border;
+  overflow-x: auto;
+}
+
+.usersTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $border;
+  color: $textMuted;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: $surfaceElevated;
+  white-space: nowrap;
+}
+
+.tr {
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: $surfaceElevated;
+  }
+
+  &:last-child .td {
+    border-bottom: none;
+  }
+}
+
+.td {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $border;
+  font-size: 0.95rem;
+  color: $oat;
+}
+
+.statusBadge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: rgba(22, 101, 52, 0.2);
+  color: #4ade80;
+}
+
+.statusInactive {
+  background: rgba(255, 107, 107, 0.2);
+  color: $warningRed;
+}
+
+.actionLink {
+  color: #60a5fa;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(30, 64, 175, 0.1);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #93c5fd;
+    background-color: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.3);
+  }
+}
+
+/* Stany poboczne (ładowanie, błędy) */
+.loading {
+  text-align: center;
+  padding: 5rem;
+  font-size: 1.125rem;
+  color: $textSub;
+}
+
+.errorContainer {
+  background: rgba(255, 107, 107, 0.1);
+  color: $warningRed;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  padding: 1rem;
+  border-radius: $radius;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.accessDenied {
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.errorTitle {
+  color: $warningRed;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.errorMessage {
+  color: $textSub;
+  font-size: 1.1rem;
+  margin: 0;
+}

@@ -1,0 +1,150 @@
+@import "../../../styles/vars";
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: $trasparentNoir;
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: $bxshdw;
+  padding: 2rem;
+  color: $oat;
+  animation: slideIn 0.3s ease-out;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $border;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: $darkerOat;
+  }
+
+  .closeBtn {
+    background: none;
+    border: none;
+    color: $textSub;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $warningRed;
+    }
+  }
+}
+
+.error {
+  background: rgba($warningRed, 0.1);
+  color: $warningRed;
+  padding: 1rem;
+  border-radius: $radius;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba($warningRed, 0.2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9rem;
+    color: $textSub;
+  }
+
+  input, select {
+    background: $surfaceElevated;
+    border: 1px solid $border;
+    color: $oat;
+    padding: 0.8rem 1rem;
+    border-radius: $radius;
+    font-family: $font;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+
+    &:focus {
+      outline: none;
+      border-color: $darkerOat;
+    }
+
+    option {
+      background: $surfaceElevated;
+      color: $oat;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  button {
+    padding: 0.8rem 1.5rem;
+    border-radius: $radius;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+  }
+
+  .cancelBtn {
+    background: transparent;
+    border: 1px solid $border;
+    color: $textSub;
+
+    &:hover:not(:disabled) {
+      background: rgba($oat, 0.05);
+      color: $oat;
+    }
+  }
+
+  .saveBtn {
+    background: $oat;
+    border: 1px solid $oat;
+    color: $noir;
+
+    &:hover:not(:disabled) {
+      background: $darkerOat;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

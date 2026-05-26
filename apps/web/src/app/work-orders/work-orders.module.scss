@@ -1,0 +1,324 @@
+@import "../../styles/vars";
+
+
+.container {
+  padding: 10vh 2rem 2rem 2rem;
+  width: 100%;
+  margin: 0 auto;
+  background-color: $noir;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 2rem;
+    color: $oat;
+    margin: 0;
+  }
+}
+
+.newButton {
+  background-color: $oat;
+  color: $noir;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: $radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+
+  &:hover {
+    background-color: $oatHover;
+    transform: translateY(-1px);
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+
+  // Stylowanie ewentualnych selectów/inputów w filtrach
+  input, select {
+    background: $surfaceElevated;
+    border: 1px solid $border;
+    color: $oat;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    outline: none;
+
+    &:focus {
+      border-color: $textSub;
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: $surface;
+  border-radius: $radius;
+  padding: 1.5rem;
+  box-shadow: $bxshdw;
+  border: 1px solid $border;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: $textMuted;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: $oat;
+    flex: 1;
+    margin-right: 1rem;
+  }
+}
+
+.badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Kolory statusów i priorytetów dopasowane do ciemnego tła */
+.status-NEW { background: rgba(2, 132, 199, 0.2); color: #7dd3fc; }
+.status-IN_PROGRESS { background: rgba(251, 191, 36, 0.2); color: $yellow; }
+.status-WAITING_FOR_PARTS { background: rgba(194, 65, 12, 0.2); color: #fb923c; }
+.status-COMPLETED { background: rgba(22, 101, 52, 0.2); color: #4ade80; }
+.status-CANCELLED { background: rgba(255, 107, 107, 0.2); color: $warningRed; }
+
+.priority-LOW { background: $surfaceElevated; color: $textSub; }
+.priority-MEDIUM { background: rgba(30, 64, 175, 0.2); color: #60a5fa; }
+.priority-HIGH { background: rgba(251, 191, 36, 0.2); color: $yellow; }
+.priority-CRITICAL { background: rgba(255, 107, 107, 0.3); color: $warningRed; }
+
+.machineTag {
+  display: inline-block;
+  background: $surfaceElevated;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  color: $darkerOat;
+  margin-bottom: 1rem;
+  border: 1px solid $border;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+
+  .label {
+    color: $textMuted;
+    font-weight: 500;
+  }
+
+  .value {
+    color: $oat;
+    font-weight: 600;
+  }
+}
+
+.description {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: $textSub;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardFooter {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.actionButton {
+  background: $surfaceElevated;
+  color: $oat;
+  border: 1px solid $border;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+
+  &:hover {
+    background: $border;
+    border-color: $textMuted;
+  }
+}
+
+.loading, .error, .empty {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.125rem;
+  color: $textSub;
+}
+
+.error {
+  color: $warningRed;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $trasparentNoir;
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: $surface;
+  border-radius: $radius;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid $border;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: $oat;
+    text-align: center;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 10px;
+  }
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: $textSub;
+    font-size: 0.9rem;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: $noir;
+    border: 1px solid $border;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: $oat;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $textSub;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2.5rem;
+
+  button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+  }
+
+  .cancelButton {
+    background: transparent;
+    color: $textMuted;
+    border: 1px solid transparent;
+
+    &:hover {
+      color: $oat;
+    }
+  }
+
+  .submitButton {
+    background: $oat;
+    color: $noir;
+
+    &:hover {
+      background: $oatHover;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}

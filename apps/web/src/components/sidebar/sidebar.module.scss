@@ -7,9 +7,7 @@
   height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-
   z-index: 9998;
-
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -28,12 +26,11 @@
   top: 0;
   left: -320px;
   width: 300px;
+  max-width: 80vw;
   height: 100vh;
   background-color: $noir;
   border-right: 1px solid rgba($oat, 0.1);
-
   z-index: 9999;
-
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 2rem;
   display: flex;
@@ -81,7 +78,9 @@
       li {
         margin-bottom: 0.5rem;
         a {
-          display: block;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
           color: rgba($oat, 0.7);
           text-decoration: none;
           font-size: 1.2rem;
@@ -99,6 +98,25 @@
     }
   }
 
+  .navLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .badge {
+    background: $yellow;
+    color: $noir;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    min-width: 1.3rem;
+    text-align: center;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+
   .sidebarFooter {
     padding-top: 1rem;
     border-top: 1px solid rgba($oat, 0.1);
@@ -107,6 +125,23 @@
       font-size: 0.8rem;
       text-align: center;
       margin: 0;
+    }
+  }
+}
+
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 1.5rem;
+
+    .sidebarHeader {
+      margin-bottom: 2rem;
+      h2 { font-size: 1.2rem; }
+    }
+
+    .navLinks ul li a {
+      font-size: 1.1rem;
+      padding: 0.6rem 0.8rem;
     }
   }
 }

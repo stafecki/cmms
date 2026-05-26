@@ -1,19 +1,22 @@
 'use client'
-import { useEffect, useState } from 'react'
+
+import { useState } from 'react'
 import styles from './navbar.module.scss'
-import Cookies from 'js-cookie'
 import LoggedInView from './loggedInView'
 import LoggedOutView from './loggedOutView'
 import Sidebar from '../sidebar/sidebar'
+import { useAuth } from '../../context/AuthContext'
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { user, isLoading } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  useEffect(() => {
-    const token = Cookies.get('refreshToken')
-    setIsLoggedIn(!!token)
-  }, [])
+
+  if (isLoading) {
+    return <nav className={styles.navbar}></nav>
+  }
+
+  const isLoggedIn = !!user
 
   return (
     <>
@@ -22,12 +25,11 @@ export default function Navbar() {
           {isLoggedIn ? (
             <LoggedInView onOpenSidebar={() => setIsSidebarOpen(true)} />
           ) : (
-            <LoggedOutView/>
+            <LoggedOutView />
           )}
         </ul>
       </nav>
 
-      {}
       {isLoggedIn && (
         <Sidebar
           isOpen={isSidebarOpen}

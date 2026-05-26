@@ -1,0 +1,147 @@
+@import "../../../styles/vars"; // Upewnij się, że ścieżka do zmiennych jest poprawna
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7); // Ciemne, półprzezroczyste tło
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: $surface;
+  border-radius: $radius;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid $border;
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: $oat;
+  text-align: center;
+}
+
+.errorAlert {
+  background: rgba(255, 107, 107, 0.1);
+  color: $warningRed;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.875rem;
+    color: $textMuted;
+    font-weight: 500;
+  }
+
+  input, select {
+    padding: 0.75rem;
+    background: $surfaceElevated;
+    border: 1px solid $border;
+    border-radius: 6px;
+    color: $oat;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $textSub;
+    }
+  }
+}
+
+.disabledInput {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: $noir !important;
+}
+
+.checkboxGroup {
+  margin-top: 0.5rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $oat;
+    font-size: 0.95rem;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
+      accent-color: $oat;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+}
+
+.cancelButton {
+  background: transparent;
+  color: $textMuted;
+  border: 1px solid transparent;
+
+  &:hover {
+    color: $oat;
+    background: $surfaceElevated;
+  }
+}
+
+.submitButton {
+  background: $oat;
+  color: $noir;
+  border: none;
+
+  &:hover {
+    background: $oatHover;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

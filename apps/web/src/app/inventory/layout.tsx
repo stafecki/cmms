@@ -1,35 +1,28 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
+import React from 'react'
+import { useAuth } from '@/context/AuthContext'
 
-export default function InventoryLayout({
-                                          children,
-                                        }: {
-  children: React.ReactNode
-}) {
-  const router = useRouter()
-  const [isAuthorized, setIsAuthorized] = useState(false)
+function InventoryGuard({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth()
 
-  useEffect(() => {
-    const accessToken = Cookies.get('accessToken')
-    const refreshToken = Cookies.get('refreshToken')
-
-    if (!accessToken && !refreshToken) {
-      router.push('/auth/login')
-    } else {
-      setIsAuthorized(true)
-    }
-  }, [router])
-
-  if (!isAuthorized) {
+  if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <p>Weryfikacja uprawnień...</p>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: '#F0EDE5' }}>
+        Weryfikacja uprawnień...
       </div>
     )
   }
 
+  if (!user) return null
+
   return <>{children}</>
+}
+
+export default function InventoryLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <InventoryGuard>
+      {children}
+    </InventoryGuard>
+  )
 }

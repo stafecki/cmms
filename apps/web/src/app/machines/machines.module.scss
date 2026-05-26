@@ -1,0 +1,221 @@
+@import "../../styles/vars";
+
+// --- BAZA I UTILS ---
+.container {
+  padding: 12vh 4% 4%;
+  color: $oat;
+  background-color: $noir;
+  min-height: 100vh;
+  font-family: $font;
+}
+
+.loading {
+  text-align: center;
+  padding: 5rem;
+  font-size: 1.2rem;
+  opacity: 0.6;
+}
+
+.emptyText {
+  opacity: 0.4;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: $warningRed;
+  font-weight: bold;
+  background: rgba($warningRed, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba($warningRed, 0.2);
+}
+
+// --- WSPÓLNE STYLE PRZYCISKÓW ---
+%btn-base {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: $font;
+  transition: all 0.2s ease;
+  outline: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.addBtn {
+  @extend %btn-base;
+  background: $oat;
+  color: $noir;
+
+  &:hover:not(:disabled) {
+    background: $oatHover;
+    transform: translateY(-2px);
+  }
+}
+
+.detailsLink {
+  color: $yellow;
+  text-decoration: none;
+  font-weight: bold;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    border-bottom-color: $yellow;
+    opacity: 0.8;
+  }
+}
+
+.deleteIcon {
+  padding: 0.4rem 1rem;
+  background: rgba($warningRed, 0.1);
+  border: 1px solid rgba($warningRed, 0.2);
+  color: $warningRed;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  z-index: 10;
+  margin-top: 0.6rem;
+
+  &:hover {
+    background: $warningRed;
+    color: $noir;
+    border-color: $warningRed;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba($warningRed, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.95);
+    filter: brightness(0.8);
+  }
+}
+
+// --- NAGŁÓWKI ---
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid rgba($oat, 0.1);
+  padding-bottom: 1.5rem;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .titleSection {
+    h1 {
+      font-size: 2.5rem;
+      margin: 0 0 0.5rem 0;
+
+      span {
+        color: rgba($oat, 0.5);
+        font-weight: 300;
+      }
+    }
+
+    .helperText {
+      margin: 0;
+      opacity: 0.7;
+    }
+  }
+
+  .headerActions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+// --- TABELA ---
+.tableWrapper {
+  overflow-x: auto;
+  background: rgba($oat, 0.03);
+  border: 1px solid rgba($oat, 0.1);
+  border-radius: $radius;
+  box-shadow: $bxshdw;
+}
+
+.table {
+  min-width: 85rem;
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th, td {
+    padding: 2rem 2.5rem;
+  }
+
+  th {
+    background: rgba($oat, 0.05);
+    font-weight: 600;
+    color: $oat;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba($oat, 0.1);
+  }
+
+  tr {
+    border-bottom: 1px solid rgba($oat, 0.05);
+    transition: background-color 0.2s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: rgba($oat, 0.05);
+    }
+  }
+
+  td {
+    color: rgba($oat, 0.8);
+    font-size: 1rem;
+
+    .statusIndicator {
+      font-size: 1.2rem;
+    }
+
+    .machineName {
+      font-weight: bold;
+      color: $oat;
+      font-size: 1.1rem;
+    }
+
+    .serialNumber {
+      font-family: monospace;
+      opacity: 0.6;
+    }
+
+    .locationName{
+    }
+
+    .actionCell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      min-width: 180px;
+    }
+  }
+}

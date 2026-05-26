@@ -41,17 +41,10 @@
 }
 
 @media (max-width: 1024px) {
-  .Header {
-    height: auto;
-    padding: 2rem;
-    flex-direction: column;
-    gap: 2rem;
-
-    .logo h1 { font-size: 4rem; }
-  }
-
   .navbar ul {
-    gap: 3rem;
-    li a { font-size: 1.5rem; }
+    gap: 2.5rem;
+    li a {
+      font-size: 1.4rem;
+    }
   }
 }

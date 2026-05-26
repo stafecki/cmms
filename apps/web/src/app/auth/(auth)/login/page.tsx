@@ -44,8 +44,10 @@ export default function Login() {
 
       localStorage.setItem('user', JSON.stringify(result.user))
 
+      const userRole = result.user.role;
+      const isAdminOrManager = userRole === 'ADMIN' || userRole === 'MANAGER';
 
-      window.location.href = '/dashboard'
+      window.location.href = isAdminOrManager ? '/dashboard' : '/';
 
     } catch (err: any) {
       setError(err.message)

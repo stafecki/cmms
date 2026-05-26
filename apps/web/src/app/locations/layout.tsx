@@ -1,27 +1,28 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
+import React from 'react'
+import { useAuth } from '@/context/AuthContext'
 
-export default function LocationsLayout({
-  children
-}: {
-  children: React.ReactNode
-}) {
-  const router = useRouter()
-  const [isAuthorized, setIsAuthorized] = useState(false)
+function LocationsGuard({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth()
 
-  useEffect(() => {
-    const token = Cookies.get('accessToken')
-    if (!token) {
-      router.push('/login')
-    } else {
-      setIsAuthorized(true)
-    }
-  }, [router])
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: '#F0EDE5' }}>
+        Weryfikacja uprawnień...
+      </div>
+    )
+  }
 
-  if (!isAuthorized) return null
+  if (!user) return null
 
   return <>{children}</>
+}
+
+export default function LocationsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <LocationsGuard>
+      {children}
+    </LocationsGuard>
+  )
 }

@@ -1,0 +1,42 @@
+@import "../../styles/vars";
+
+// --- WYSZUKIWARKA ---
+.searchBox {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.searchInput {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid rgba($oat, 0.2);
+  background: rgba($oat, 0.05);
+  color: $oat;
+  outline: none;
+  font-family: $font;
+  min-width: 250px;
+  transition: all 0.2s;
+
+  &:focus {
+    border-color: $oatHover;
+    background: rgba($oat, 0.08);
+  }
+}
+
+.filterToggle {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba($oat, 0.3);
+  color: $oat;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: $font;
+  transition: all 0.2s;
+
+  &.active, &:hover {
+    background: rgba($oat, 0.1);
+    border-color: $oatHover;
+  }
+}

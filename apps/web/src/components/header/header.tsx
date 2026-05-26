@@ -1,21 +1,29 @@
 'use client'
-import { useState, useEffect } from 'react'
-import Cookies from 'js-cookie'
+import { useState } from 'react'
 import styles from './header.module.scss'
 import Navbar from '../navbar/index'
 import AuthBtn from '../authBtn/index'
 import Sidebar from '../sidebar/sidebar'
 import Link from 'next/link'
+import { useAuth } from '../../context/AuthContext'
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const { user, isLoading } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  useEffect(() => {
-    setIsLoggedIn(!!Cookies.get('refreshToken'))
-  }, [])
+  if (isLoading) {
+    return <header className={styles.HeaderLoggedOut}></header>
+  }
 
+  const isLoggedIn = !!user
   const headerClass = isLoggedIn ? styles.HeaderLoggedIn : styles.HeaderLoggedOut
+
+  const hasDashboardAccess = user?.role === 'ADMIN' || user?.role === 'MANAGER'
+
+  const logoHref = hasDashboardAccess ? '/dashboard' : '/'
+
+
+  const userRole = user?.role?.toLowerCase() || 'user';
 
   return (
     <header className={headerClass}>
@@ -26,19 +34,31 @@ export default function Header() {
               <span></span><span></span><span></span>
             </div>
           </div>
-          <div className={styles.logo}><Link className={styles.homeLink} href="/dashboard"><h1>CMMS</h1></Link></div>
+          <div className={styles.logo}>
+            <Link className={styles.homeLink} href={logoHref}>
+              <h1>CMMS</h1>
+            </Link>
+          </div>
           <div className={styles.rightSection}><AuthBtn/></div>
         </>
       ) : (
         <>
-          <div className={styles.logo}><h1>CMMS</h1></div>
+          <div className={styles.logo}>
+            <Link className={styles.homeLink} href="/">
+              <h1>CMMS</h1>
+            </Link>
+          </div>
           <div className={styles.navWrapper}><Navbar /></div>
           <div className={styles.rightSection}><AuthBtn/></div>
         </>
       )}
 
       {isLoggedIn && (
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          role={userRole}
+        />
       )}
     </header>
   )

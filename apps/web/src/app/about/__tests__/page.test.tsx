@@ -22,6 +22,10 @@ class IntersectionObserverMock {
 
 vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
 
+vi.mock('../about.module.scss', () => ({
+  default: new Proxy({}, { get: (_, key) => String(key) }),
+}))
+
 describe('About', () => {
   beforeEach(() => {
     vi.clearAllMocks()

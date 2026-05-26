@@ -1,27 +1,22 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Cookies from 'js-cookie'
+import { useAuth } from '@/context/AuthContext'
 import InventoryLayout from '../layout'
 
-vi.mock('js-cookie', () => ({
-  default: { get: vi.fn() },
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
 }))
 
-const mockPush = vi.fn()
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockPush }),
-}))
-
-const mockedCookiesGet = vi.mocked(Cookies.get) as any
+const mockedUseAuth = vi.mocked(useAuth)
 
 describe('InventoryLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('niezalogowany', () => {
+  describe('ładowanie', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue(undefined)
+      mockedUseAuth.mockReturnValue({ user: null, isLoading: true, logout: vi.fn() })
     })
 
     it('wyświetla ekran weryfikacji uprawnień', () => {
@@ -29,41 +24,42 @@ describe('InventoryLayout', () => {
       expect(screen.getByText('Weryfikacja uprawnień...')).toBeInTheDocument()
     })
 
-    it('wywołuje router.push do /auth/login gdy brak tokenów', async () => {
-      render(<InventoryLayout><div /></InventoryLayout>)
-      await vi.waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/auth/login')
-      })
+    it('nie renderuje children podczas ładowania', () => {
+      render(<InventoryLayout><div data-testid="child" /></InventoryLayout>)
+      expect(screen.queryByTestId('child')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('niezalogowany', () => {
+    beforeEach(() => {
+      mockedUseAuth.mockReturnValue({ user: null, isLoading: false, logout: vi.fn() })
     })
 
-    it('nie renderuje children', () => {
+    it('nie renderuje children gdy brak użytkownika', () => {
       render(<InventoryLayout><div data-testid="child" /></InventoryLayout>)
       expect(screen.queryByTestId('child')).not.toBeInTheDocument()
     })
   })
 
   describe('zalogowany', () => {
-    it('renderuje children gdy accessToken istnieje', async () => {
-      mockedCookiesGet.mockImplementation((key: string) =>
-        key === 'accessToken' ? 'access-token' : undefined,
-      )
+    it('renderuje children gdy użytkownik jest zalogowany', async () => {
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'OPERATOR' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
       render(<InventoryLayout><div data-testid="child" /></InventoryLayout>)
       expect(await screen.findByTestId('child')).toBeInTheDocument()
     })
 
-    it('renderuje children gdy refreshToken istnieje', async () => {
-      mockedCookiesGet.mockImplementation((key: string) =>
-        key === 'refreshToken' ? 'refresh-token' : undefined,
-      )
+    it('nie wywołuje przekierowania gdy użytkownik istnieje', async () => {
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
       render(<InventoryLayout><div data-testid="child" /></InventoryLayout>)
       expect(await screen.findByTestId('child')).toBeInTheDocument()
-    })
-
-    it('nie wywołuje push gdy token istnieje', async () => {
-      mockedCookiesGet.mockReturnValue('token')
-      render(<InventoryLayout><div data-testid="child" /></InventoryLayout>)
-      await screen.findByTestId('child')
-      expect(mockPush).not.toHaveBeenCalled()
     })
   })
 })

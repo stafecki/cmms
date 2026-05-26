@@ -1,6 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { useAuth } from '@/context/AuthContext'
 import Sidebar from '../sidebar'
+
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
+}))
+
+vi.mock('@/app/notifications/notifications.api', () => ({
+  getUnreadCount: vi.fn(() => Promise.resolve(0)),
+}))
 
 vi.mock('next/link', () => ({
   default: ({ href, children, onClick }: any) => (
@@ -10,10 +19,17 @@ vi.mock('next/link', () => ({
   ),
 }))
 
+const mockedUseAuth = vi.mocked(useAuth)
+
 describe('Sidebar', () => {
   beforeEach(() => {
     document.body.style.overflow = ''
     vi.clearAllMocks()
+    mockedUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+      isLoading: false,
+      logout: vi.fn(),
+    })
   })
 
   describe('zamknięty (isOpen=false)', () => {
@@ -37,8 +53,7 @@ describe('Sidebar', () => {
         { name: 'Magazyn', href: '/inventory' },
         { name: 'Przeglądy', href: '/preventive' },
         { name: 'Powiadomienia', href: '/notifications' },
-        { name: 'Monitoring', href: '/monitoring' },
-        { name: 'Mój profil', href: '/me' },
+        { name: 'Logi', href: '/monitoring' },
         { name: 'Użytkownicy', href: '/users' },
       ]
       expectedItems.forEach(({ name, href }) => {

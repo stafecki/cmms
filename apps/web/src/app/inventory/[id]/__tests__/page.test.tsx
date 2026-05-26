@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Cookies from 'js-cookie'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { useAuth } from '@/context/AuthContext'
 import EditPartPage from '../page'
 
-vi.mock('js-cookie', () => ({
-  default: { get: vi.fn() },
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
 }))
 
 const mockPush = vi.fn()
@@ -18,7 +18,9 @@ vi.mock('next/navigation', () => ({
 const mockedFetch = vi.fn()
 vi.stubGlobal('fetch', mockedFetch)
 
-const mockedCookiesGet = vi.mocked(Cookies.get) as any
+const mockedUseAuth = vi.mocked(useAuth)
+
+const adminUser = { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' as const }
 
 const mockPart = { name: 'Śruba M8', categoryId: 'cat-1', stockQuantity: 10, unitPrice: 2.5 }
 const mockCategories = [{ id: 'cat-1', name: 'Złączniki' }, { id: 'cat-2', name: 'Nakrętki' }]
@@ -32,7 +34,12 @@ const makeLoadFetch = () => {
 describe('EditPartPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockedCookiesGet.mockReturnValue('token')
+    mockedUseAuth.mockReturnValue({ user: adminUser, isLoading: false, logout: vi.fn() })
+    document.cookie = 'accessToken=token; path=/'
+  })
+
+  afterEach(() => {
+    document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
   })
 
   describe('stan ładowania', () => {
@@ -44,23 +51,23 @@ describe('EditPartPage', () => {
   })
 
   describe('formularz po załadowaniu', () => {
-    it('renderuje nagłówek Edytuj Zasób', async () => {
+    it('renderuje nagłówek Edytuj', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      expect(await screen.findByText('Edytuj')).toBeInTheDocument()
+      expect(await screen.findByText(/Edytuj/)).toBeInTheDocument()
     })
 
     it('wypełnia pole nazwy danymi z API', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       expect(screen.getByDisplayValue('Śruba M8')).toBeInTheDocument()
     })
 
     it('renderuje opcje kategorii', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       expect(screen.getByRole('option', { name: 'Złączniki' })).toBeInTheDocument()
       expect(screen.getByRole('option', { name: 'Nakrętki' })).toBeInTheDocument()
     })
@@ -68,21 +75,21 @@ describe('EditPartPage', () => {
     it('renderuje przycisk Zapisz zmiany', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       expect(screen.getByRole('button', { name: 'Zapisz zmiany' })).toBeInTheDocument()
     })
 
     it('renderuje przycisk Usuń przedmiot', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       expect(screen.getByRole('button', { name: 'Usuń przedmiot' })).toBeInTheDocument()
     })
 
     it('renderuje przycisk Anuluj', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       expect(screen.getByRole('button', { name: 'Anuluj' })).toBeInTheDocument()
     })
   })
@@ -91,7 +98,7 @@ describe('EditPartPage', () => {
     it('wybranie opcji NEW pokazuje input nowej kategorii', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       fireEvent.change(screen.getByRole('combobox'), { target: { value: 'NEW' } })
       expect(screen.getByPlaceholderText('Wpisz nazwę nowej kategorii...')).toBeInTheDocument()
     })
@@ -99,7 +106,7 @@ describe('EditPartPage', () => {
     it('kliknięcie Cofnij ukrywa input nowej kategorii', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       fireEvent.change(screen.getByRole('combobox'), { target: { value: 'NEW' } })
       fireEvent.click(screen.getByRole('button', { name: 'Cofnij' }))
       expect(screen.queryByPlaceholderText('Wpisz nazwę nowej kategorii...')).not.toBeInTheDocument()
@@ -110,7 +117,7 @@ describe('EditPartPage', () => {
     it('wywołuje PATCH /inventory/parts/:id', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       mockedFetch.mockResolvedValue({ ok: true })
       fireEvent.submit(screen.getByRole('button', { name: 'Zapisz zmiany' }).closest('form')!)
       await waitFor(() => {
@@ -124,7 +131,7 @@ describe('EditPartPage', () => {
     it('przekierowuje do /inventory po pomyślnym zapisie', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       mockedFetch.mockResolvedValue({ ok: true })
       fireEvent.submit(screen.getByRole('button', { name: 'Zapisz zmiany' }).closest('form')!)
       await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/inventory'))
@@ -136,7 +143,7 @@ describe('EditPartPage', () => {
       makeLoadFetch()
       vi.spyOn(window, 'confirm').mockReturnValue(true)
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       mockedFetch.mockResolvedValue({ ok: true })
       fireEvent.click(screen.getByRole('button', { name: 'Usuń przedmiot' }))
       await waitFor(() => {
@@ -151,7 +158,7 @@ describe('EditPartPage', () => {
       makeLoadFetch()
       vi.spyOn(window, 'confirm').mockReturnValue(false)
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       fireEvent.click(screen.getByRole('button', { name: 'Usuń przedmiot' }))
       expect(mockedFetch).not.toHaveBeenCalledWith(
         expect.anything(),
@@ -164,9 +171,21 @@ describe('EditPartPage', () => {
     it('kliknięcie Anuluj wywołuje router.back', async () => {
       makeLoadFetch()
       render(<EditPartPage />)
-      await screen.findByText('Edytuj')
+      await screen.findByText(/Edytuj/)
       fireEvent.click(screen.getByRole('button', { name: 'Anuluj' }))
       expect(mockBack).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('brak uprawnień', () => {
+    it('wyświetla komunikat braku uprawnień gdy user nie ma roli ADMIN/MANAGER/WAREHOUSE', async () => {
+      mockedUseAuth.mockReturnValue({
+        user: { id: '2', name: 'Op', email: 'op@test.com', role: 'OPERATOR' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
+      render(<EditPartPage />)
+      expect(await screen.findByText('Brak uprawnień')).toBeInTheDocument()
     })
   })
 })

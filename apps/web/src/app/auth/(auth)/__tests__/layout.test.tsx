@@ -60,7 +60,7 @@ describe('AuthLayout', () => {
     it('renderuje link do panelu głównego', async () => {
       render(<AuthLayout>children</AuthLayout>)
       await screen.findByText('Jesteś już zalogowany')
-      expect(screen.getByRole('link', { name: 'Przejdź do panelu' })).toHaveAttribute('href', '/dashboard')
+      expect(screen.getByRole('link', { name: 'Przejdź do panelu' })).toHaveAttribute('href', '/')
     })
 
     it('renderuje link do wylogowania', async () => {

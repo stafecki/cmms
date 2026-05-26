@@ -1,8 +1,13 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import Cookies from 'js-cookie'
+import { useAuth } from '@/context/AuthContext'
 import Dashboard from '../page'
 import DashboardLayout from '../layout'
+
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
+}))
 
 vi.mock('js-cookie', () => ({
   default: { get: vi.fn() },
@@ -22,6 +27,9 @@ const mockedFetch = vi.fn()
 vi.stubGlobal('fetch', mockedFetch)
 
 const mockedCookiesGet = vi.mocked(Cookies.get) as any
+const mockedUseAuth = vi.mocked(useAuth)
+
+const adminUser = { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' as const }
 
 const mockDashboardData = {
   workOrders: { open: 5, critical: 2 },
@@ -41,16 +49,17 @@ describe('DashboardLayout', () => {
 describe('Dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockedUseAuth.mockReturnValue({ user: adminUser, isLoading: false, logout: vi.fn() })
   })
 
   describe('auth guard', () => {
-    it('nie wywołuje fetch gdy brak refreshToken', () => {
+    it('nie wywołuje fetch gdy brak accessToken', () => {
       mockedCookiesGet.mockReturnValue(undefined)
       render(<Dashboard />)
       expect(mockedFetch).not.toHaveBeenCalled()
     })
 
-    it('wyświetla ekran ładowania gdy brak refreshToken', () => {
+    it('wyświetla ekran ładowania gdy brak accessToken', () => {
       mockedCookiesGet.mockReturnValue(undefined)
       render(<Dashboard />)
       expect(screen.getByText('Inicjalizacja danych...')).toBeInTheDocument()
@@ -79,48 +88,48 @@ describe('Dashboard', () => {
 
     it('renderuje nagłówek panelu', async () => {
       render(<Dashboard />)
-      expect(await screen.findByText('Panel')).toBeInTheDocument()
+      expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument()
     })
 
     it('renderuje liczbę otwartych zleceń', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByText('5')).toBeInTheDocument()
     })
 
     it('renderuje liczbę krytycznych zleceń', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByText('Krytyczne: 2')).toBeInTheDocument()
     })
 
     it('renderuje koszty całkowite', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
-      expect(screen.getByText(/12[\s ]?000.*PLN/)).toBeInTheDocument()
+      await screen.findByRole('heading', { level: 1 })
+      expect(screen.getByText(/12[\s ]?000.*PLN/)).toBeInTheDocument()
     })
 
     it('renderuje MTTR', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByText('4 h')).toBeInTheDocument()
     })
 
     it('renderuje zaległe przeglądy', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByText('1')).toBeInTheDocument()
     })
 
     it('renderuje aktywne części', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByText('50')).toBeInTheDocument()
     })
 
     it('renderuje wykres', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
     })
   })
@@ -138,7 +147,7 @@ describe('Dashboard', () => {
 
     it('wyświetla 0 gdy brak danych z API', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       const zeros = screen.getAllByText('0')
       expect(zeros.length).toBeGreaterThan(0)
     })
@@ -157,7 +166,7 @@ describe('Dashboard', () => {
 
     it('renderuje przyciski Tydzień, Miesiąc, Rok', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByRole('button', { name: 'Tydzień' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Miesiąc' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Rok' })).toBeInTheDocument()
@@ -165,13 +174,13 @@ describe('Dashboard', () => {
 
     it('domyślny okres to miesiąc', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getByText('ostatni miesiąc')).toBeInTheDocument()
     })
 
     it('kliknięcie Tydzień zmienia opis okresu', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       fireEvent.click(screen.getByRole('button', { name: 'Tydzień' }))
       await screen.findByText('ostatni tydzień')
       expect(screen.getByText('ostatni tydzień')).toBeInTheDocument()
@@ -179,7 +188,7 @@ describe('Dashboard', () => {
 
     it('kliknięcie Rok zmienia opis okresu', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       fireEvent.click(screen.getByRole('button', { name: 'Rok' }))
       await screen.findByText('ostatni rok')
       expect(screen.getByText('ostatni rok')).toBeInTheDocument()
@@ -187,7 +196,7 @@ describe('Dashboard', () => {
 
     it('zmiana okresu wywołuje ponowny fetch', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       fireEvent.click(screen.getByRole('button', { name: 'Tydzień' }))
       await waitFor(() => {
         expect(mockedFetch).toHaveBeenCalledTimes(2)
@@ -196,7 +205,7 @@ describe('Dashboard', () => {
 
     it('fetch dla tygodnia używa period=week', async () => {
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       fireEvent.click(screen.getByRole('button', { name: 'Tydzień' }))
       await waitFor(() => {
         expect(mockedFetch).toHaveBeenCalledWith(
@@ -215,7 +224,7 @@ describe('Dashboard', () => {
         headers: { get: () => 'application/json' },
       })
       render(<Dashboard />)
-      await screen.findByText('Panel')
+      await screen.findByRole('heading', { level: 1 })
       expect(screen.getAllByText('0').length).toBeGreaterThan(0)
     })
   })

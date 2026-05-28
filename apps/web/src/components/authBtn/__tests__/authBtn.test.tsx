@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Cookies from 'js-cookie'
+import { useAuth } from '@/context/AuthContext'
 import AuthBtn from '../authBtn'
 
-vi.mock('js-cookie', () => ({
-  default: { get: vi.fn() },
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
 }))
 
 vi.mock('next/link', () => ({
@@ -15,7 +15,7 @@ vi.mock('next/link', () => ({
   ),
 }))
 
-const mockedCookiesGet = vi.mocked(Cookies.get) as any
+const mockedUseAuth = vi.mocked(useAuth)
 
 describe('AuthBtn', () => {
   beforeEach(() => {
@@ -24,12 +24,7 @@ describe('AuthBtn', () => {
 
   describe('niezalogowany', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue(undefined)
-    })
-
-    it('sprawdza ciasteczko refreshToken', () => {
-      render(<AuthBtn />)
-      expect(mockedCookiesGet).toHaveBeenCalledWith('refreshToken')
+      mockedUseAuth.mockReturnValue({ user: null, isLoading: false, logout: vi.fn() })
     })
 
     it('renderuje link Zaloguj do /auth/login', () => {
@@ -38,21 +33,24 @@ describe('AuthBtn', () => {
       expect(link).toHaveAttribute('href', '/auth/login')
     })
 
-    it('nie renderuje linku Wyloguj', () => {
+    it('nie renderuje przycisku Wyloguj', () => {
       render(<AuthBtn />)
-      expect(screen.queryByRole('link', { name: 'Wyloguj' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Wyloguj' })).not.toBeInTheDocument()
     })
   })
 
   describe('zalogowany', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue('some-token')
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
     })
 
-    it('renderuje link Wyloguj do /auth/logout', () => {
+    it('renderuje przycisk Wyloguj', () => {
       render(<AuthBtn />)
-      const link = screen.getByRole('link', { name: 'Wyloguj' })
-      expect(link).toHaveAttribute('href', '/auth/logout')
+      expect(screen.getByRole('button', { name: 'Wyloguj' })).toBeInTheDocument()
     })
 
     it('nie renderuje linku Zaloguj', () => {

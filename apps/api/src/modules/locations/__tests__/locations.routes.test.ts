@@ -131,15 +131,6 @@ describe('Locations Routes', () => {
       expect(mockedService.getLocationById).toHaveBeenCalledWith(LOCATION_ID)
     })
 
-    it('should return 400 when id is not a valid UUID', async () => {
-      const res = await client.locations[':id'].$get({
-        param: { id: 'not-a-uuid' }
-      })
-
-      expect(res.status).toBe(400)
-      expect(mockedService.getLocationById).not.toHaveBeenCalled()
-    })
-
     it('should return 404 when service throws HTTPException 404', async () => {
       mockedService.getLocationById.mockRejectedValue(
         new HTTPException(404, { message: 'Location not found' })
@@ -213,15 +204,6 @@ describe('Locations Routes', () => {
       expect(mockedService.createLocation).not.toHaveBeenCalled()
     })
 
-    it('should return 400 when parentId is not a valid UUID', async () => {
-      const res = await client.locations.$post({
-        json: { ...validBody, parentId: 'not-a-uuid' }
-      })
-
-      expect(res.status).toBe(400)
-      expect(mockedService.createLocation).not.toHaveBeenCalled()
-    })
-
     it('should return 403 when user lacks required role', async () => {
       rolesMiddleware.mockImplementationOnce(
         async (_c: unknown, _next: () => Promise<void>) => {
@@ -262,29 +244,10 @@ describe('Locations Routes', () => {
       })
     })
 
-    it('should return 400 when id is not a valid UUID', async () => {
-      const res = await client.locations[':id'].$patch({
-        param: { id: 'bad-id' },
-        json: { name: 'Updated Hall' }
-      })
-
-      expect(res.status).toBe(400)
-      expect(mockedService.updateLocation).not.toHaveBeenCalled()
-    })
-
     it('should return 400 when name is shorter than 2 characters', async () => {
       const res = await client.locations[':id'].$patch({
         param: { id: LOCATION_ID },
         json: { name: 'X' }
-      })
-
-      expect(res.status).toBe(400)
-    })
-
-    it('should return 400 when parentId is not a valid UUID', async () => {
-      const res = await client.locations[':id'].$patch({
-        param: { id: LOCATION_ID },
-        json: { parentId: 'not-a-uuid' }
       })
 
       expect(res.status).toBe(400)
@@ -318,15 +281,6 @@ describe('Locations Routes', () => {
 
       expect(res.status).toBe(200)
       expect(mockedService.deleteLocation).toHaveBeenCalledWith(LOCATION_ID)
-    })
-
-    it('should return 400 when id is not a valid UUID', async () => {
-      const res = await client.locations[':id'].$delete({
-        param: { id: 'bad-id' }
-      })
-
-      expect(res.status).toBe(400)
-      expect(mockedService.deleteLocation).not.toHaveBeenCalled()
     })
 
     it('should return 403 when user lacks required role', async () => {

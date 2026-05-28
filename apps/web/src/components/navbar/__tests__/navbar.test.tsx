@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Cookies from 'js-cookie'
+import { useAuth } from '@/context/AuthContext'
 import Navbar from '../navbar'
 
-vi.mock('js-cookie', () => ({
-  default: { get: vi.fn() },
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
 }))
 
 vi.mock('../loggedInView', () => ({
@@ -23,7 +23,7 @@ vi.mock('../../sidebar/sidebar', () => ({
   ),
 }))
 
-const mockedCookiesGet = vi.mocked(Cookies.get) as any
+const mockedUseAuth = vi.mocked(useAuth)
 
 describe('Navbar', () => {
   beforeEach(() => {
@@ -32,12 +32,7 @@ describe('Navbar', () => {
 
   describe('niezalogowany', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue(undefined)
-    })
-
-    it('sprawdza ciasteczko refreshToken', () => {
-      render(<Navbar />)
-      expect(mockedCookiesGet).toHaveBeenCalledWith('refreshToken')
+      mockedUseAuth.mockReturnValue({ user: null, isLoading: false, logout: vi.fn() })
     })
 
     it('renderuje LoggedOutView', () => {
@@ -54,7 +49,11 @@ describe('Navbar', () => {
 
   describe('zalogowany', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue('some-token')
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
     })
 
     it('renderuje LoggedInView', () => {
@@ -75,7 +74,11 @@ describe('Navbar', () => {
 
   describe('interakcje', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue('some-token')
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
     })
 
     it('onOpenSidebar z LoggedInView otwiera Sidebar', () => {

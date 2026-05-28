@@ -330,7 +330,8 @@ describe('Inventory Routes', () => {
       name: 'New Part',
       stockQuantity: 10,
       reorderPoint: 5,
-      unitPrice: 2.99
+      unitPrice: 2.99,
+      qrCode: 'QR-001'
     }
 
     it('should return 201 with created part', async () => {
@@ -401,7 +402,9 @@ describe('Inventory Routes', () => {
 
       expect(res.status).toBe(200)
       expect(mockedService.updatePart).toHaveBeenCalledWith(PART_ID, {
-        name: 'Updated'
+        name: 'Updated',
+        stockQuantity: 0,
+        reorderPoint: 5
       })
     })
 

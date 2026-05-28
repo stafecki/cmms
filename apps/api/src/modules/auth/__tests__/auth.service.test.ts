@@ -348,6 +348,7 @@ describe('Auth Service', () => {
       } as Awaited<ReturnType<typeof jwtVerify>>)
 
       mockedRedis.get.mockResolvedValue(null)
+      mockedRedis.set.mockResolvedValue('OK')
       mockedPrisma.user.findUnique.mockResolvedValue({
         id: 'user-id',
         email: 'john@example.com',

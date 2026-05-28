@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import Cookies from 'js-cookie'
+import { useAuth } from '@/context/AuthContext'
 import Header from '../header'
 
-vi.mock('js-cookie', () => ({
-  default: { get: vi.fn() },
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: vi.fn(),
 }))
 
 vi.mock('../../navbar/index', () => ({
@@ -29,7 +29,7 @@ vi.mock('next/link', () => ({
   ),
 }))
 
-const mockedCookiesGet = vi.mocked(Cookies.get) as any
+const mockedUseAuth = vi.mocked(useAuth)
 
 describe('Header', () => {
   beforeEach(() => {
@@ -38,18 +38,14 @@ describe('Header', () => {
 
   describe('niezalogowany', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue(undefined)
+      mockedUseAuth.mockReturnValue({ user: null, isLoading: false, logout: vi.fn() })
     })
 
-    it('sprawdza ciasteczko refreshToken', () => {
-      render(<Header />)
-      expect(mockedCookiesGet).toHaveBeenCalledWith('refreshToken')
-    })
-
-    it('renderuje tekst CMMS bez linka', () => {
+    it('renderuje tekst CMMS jako link do /', () => {
       render(<Header />)
       expect(screen.getByText('CMMS')).toBeInTheDocument()
-      expect(screen.queryByRole('link')).not.toBeInTheDocument()
+      const link = screen.getByRole('link')
+      expect(link).toHaveAttribute('href', '/')
     })
 
     it('renderuje Navbar', () => {
@@ -71,7 +67,11 @@ describe('Header', () => {
 
   describe('zalogowany', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue('some-token')
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
     })
 
     it('renderuje logo jako link do /dashboard', () => {
@@ -104,7 +104,11 @@ describe('Header', () => {
 
   describe('interakcje', () => {
     beforeEach(() => {
-      mockedCookiesGet.mockReturnValue('some-token')
+      mockedUseAuth.mockReturnValue({
+        user: { id: '1', name: 'Test', email: 'test@test.com', role: 'ADMIN' },
+        isLoading: false,
+        logout: vi.fn(),
+      })
     })
 
     it('kliknięcie burgera otwiera Sidebar', () => {

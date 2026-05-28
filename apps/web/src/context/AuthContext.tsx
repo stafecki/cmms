@@ -10,7 +10,7 @@ interface User {
   id: string
   name: string
   email: string
-  role: 'ADMIN' | 'MANAGER' | 'WAREHOUSE' | 'OPERATOR'
+  role: 'ADMIN' | 'MANAGER' | 'TECHNICIAN' | 'WAREHOUSE' | 'OPERATOR'
 }
 
 const AuthContext = createContext<{ user: User | null; isLoading: boolean; logout: () => void }>({

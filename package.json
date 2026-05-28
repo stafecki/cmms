@@ -11,7 +11,12 @@
     "dev:web": "npm run dev --workspace=apps/web -- -p 8080",
     "build": "npm run build --workspaces",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:seed": "docker compose exec api npx tsx prisma/seed.ts",
+    "docker:migrate": "docker compose exec api npx prisma migrate deploy"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",

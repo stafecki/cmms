@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useRouter } from 'next/navigation'
 
 interface RoleGuardProps {
-  allowedRoles: Array<'ADMIN' | 'MANAGER' | 'WAREHOUSE' | 'OPERATOR'>
+  allowedRoles: Array<'ADMIN' | 'MANAGER' | 'TECHNICIAN' | 'WAREHOUSE' | 'OPERATOR'>
   children: ReactNode
   fallback?: ReactNode
 }

@@ -94,7 +94,7 @@ export default function NotificationsPage() {
   const openCompose = async () => {
     if (!isComposeOpen && usersList.length === 0) {
       try {
-        const data = await fetchUsers(200)
+        const data = await fetchUsers(100)
         setUsersList(data.data)
       } catch {}
     }

@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma generate && npx tsx watch src/index.ts"]
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npx tsx watch src/index.ts"]

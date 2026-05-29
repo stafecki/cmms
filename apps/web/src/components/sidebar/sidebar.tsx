@@ -94,6 +94,8 @@ export default function Sidebar({ isOpen, onClose, role }: SidebarProps) {
           </ul>
         </nav>
 
+        {user?.name && <p className={styles.footerUser}>{user.name}</p>}
+
         <div className={styles.sidebarFooter}>
           <p>System CMMS v1.0</p>
         </div>

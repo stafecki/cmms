@@ -10,6 +10,7 @@ import {
   WorkOrderMessage,
   WorkOrderPart,
   WorkOrderStatus,
+  Priority,
   User
 } from '../types';
 import {
@@ -39,6 +40,13 @@ const STATUS_LABELS: Record<WorkOrderStatus, string> = {
   [WorkOrderStatus.WAITING_FOR_PARTS]: 'Oczekuje na części',
   [WorkOrderStatus.COMPLETED]: 'Zakończone',
   [WorkOrderStatus.CANCELLED]: 'Anulowane',
+};
+
+const PRIORITY_LABELS: Record<Priority, string> = {
+  [Priority.LOW]: 'Niski',
+  [Priority.MEDIUM]: 'Średni',
+  [Priority.HIGH]: 'Wysoki',
+  [Priority.CRITICAL]: 'Krytyczny',
 };
 
 export default function WorkOrderDetailsPage() {
@@ -197,10 +205,10 @@ export default function WorkOrderDetailsPage() {
           <h1>{order.title}</h1>
           <div className={styles.badges}>
             <span className={`${styles.badge} ${styles[`status-${order.status}`]}`}>
-              {order.status}
+              {STATUS_LABELS[order.status]}
             </span>
             <span className={`${styles.badge} ${styles[`priority-${order.priority}`]}`}>
-              {order.priority}
+              {PRIORITY_LABELS[order.priority]}
             </span>
           </div>
         </div>

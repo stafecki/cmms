@@ -177,20 +177,20 @@ const seedLocations = async () => {
   console.log('🌱 Seeding locations...')
 
   const plant = await prisma.location.upsert({
-    where: { id: 'seed-plant-001' },
+    where: { id: 'a0000000-0000-4000-8000-000000000001' },
     update: {},
     create: {
-      id: 'seed-plant-001',
+      id: 'a0000000-0000-4000-8000-000000000001',
       name: 'Zakład Główny',
       type: LocationType.PLANT
     }
   })
 
   const hallA = await prisma.location.upsert({
-    where: { id: 'seed-hall-001' },
+    where: { id: 'a0000000-0000-4000-8000-000000000002' },
     update: {},
     create: {
-      id: 'seed-hall-001',
+      id: 'a0000000-0000-4000-8000-000000000002',
       name: 'Hala A – Produkcja',
       type: LocationType.HALL,
       parentId: plant.id
@@ -198,10 +198,10 @@ const seedLocations = async () => {
   })
 
   const hallB = await prisma.location.upsert({
-    where: { id: 'seed-hall-002' },
+    where: { id: 'a0000000-0000-4000-8000-000000000003' },
     update: {},
     create: {
-      id: 'seed-hall-002',
+      id: 'a0000000-0000-4000-8000-000000000003',
       name: 'Hala B – Montaż',
       type: LocationType.HALL,
       parentId: plant.id
@@ -209,10 +209,10 @@ const seedLocations = async () => {
   })
 
   const line1 = await prisma.location.upsert({
-    where: { id: 'seed-line-001' },
+    where: { id: 'a0000000-0000-4000-8000-000000000004' },
     update: {},
     create: {
-      id: 'seed-line-001',
+      id: 'a0000000-0000-4000-8000-000000000004',
       name: 'Linia produkcyjna 1',
       type: LocationType.LINE,
       parentId: hallA.id
@@ -220,10 +220,10 @@ const seedLocations = async () => {
   })
 
   const line2 = await prisma.location.upsert({
-    where: { id: 'seed-line-002' },
+    where: { id: 'a0000000-0000-4000-8000-000000000005' },
     update: {},
     create: {
-      id: 'seed-line-002',
+      id: 'a0000000-0000-4000-8000-000000000005',
       name: 'Linia produkcyjna 2',
       type: LocationType.LINE,
       parentId: hallA.id
@@ -231,10 +231,10 @@ const seedLocations = async () => {
   })
 
   const line3 = await prisma.location.upsert({
-    where: { id: 'seed-line-003' },
+    where: { id: 'a0000000-0000-4000-8000-000000000006' },
     update: {},
     create: {
-      id: 'seed-line-003',
+      id: 'a0000000-0000-4000-8000-000000000006',
       name: 'Linia montażowa 1',
       type: LocationType.LINE,
       parentId: hallB.id
@@ -242,10 +242,10 @@ const seedLocations = async () => {
   })
 
   const stationCnc = await prisma.location.upsert({
-    where: { id: 'seed-station-001' },
+    where: { id: 'a0000000-0000-4000-8000-000000000007' },
     update: {},
     create: {
-      id: 'seed-station-001',
+      id: 'a0000000-0000-4000-8000-000000000007',
       name: 'Stanowisko CNC',
       type: LocationType.STATION,
       parentId: line1.id
@@ -253,10 +253,10 @@ const seedLocations = async () => {
   })
 
   const stationWeld = await prisma.location.upsert({
-    where: { id: 'seed-station-002' },
+    where: { id: 'a0000000-0000-4000-8000-000000000008' },
     update: {},
     create: {
-      id: 'seed-station-002',
+      id: 'a0000000-0000-4000-8000-000000000008',
       name: 'Stanowisko spawalnicze',
       type: LocationType.STATION,
       parentId: line2.id

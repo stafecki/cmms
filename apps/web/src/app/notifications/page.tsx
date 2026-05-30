@@ -259,7 +259,7 @@ export default function NotificationsPage() {
 
               <div className={styles.cardHeader}>
                 <div className={styles.typeTag} data-type={notif.type}>
-                  {notif.type}
+                  {TYPE_LABELS[notif.type] ?? notif.type}
                 </div>
                 <div className={styles.date}>
                   {new Date(notif.createdAt).toLocaleString('pl-PL')}

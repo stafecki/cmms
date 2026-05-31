@@ -62,7 +62,6 @@ describe('PreventiveModal', () => {
     it('przycisk usunięcia kroku jest nieaktywny gdy jest tylko jeden krok', async () => {
       render(<PreventiveModal onClose={onClose} onSuccess={onSuccess} />)
       await flush()
-      // last × button belongs to checklist remove (header close button is the first ×)
       const xButtons = screen.getAllByRole('button', { name: '×' })
       const removeStepBtn = xButtons[xButtons.length - 1]
       expect(removeStepBtn).toBeDisabled()

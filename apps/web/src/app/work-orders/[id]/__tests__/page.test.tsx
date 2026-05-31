@@ -112,8 +112,8 @@ describe('WorkOrderDetailsPage', () => {
   it('renderuje status i priorytet', async () => {
     render(<WorkOrderDetailsPage />)
     await flush()
-    expect(screen.getByText('NEW')).toBeInTheDocument()
-    expect(screen.getByText('MEDIUM')).toBeInTheDocument()
+    expect(screen.getAllByText('Nowe')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Średni')[0]).toBeInTheDocument()
   })
 
   it('renderuje nazwę maszyny i zgłaszającego', async () => {

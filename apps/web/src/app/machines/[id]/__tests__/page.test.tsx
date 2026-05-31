@@ -28,8 +28,7 @@ vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: any) => <a href={href} {...props}>{children}</a>,
 }))
 
-// React 19 tracks promise state via .status / .value on the thenable.
-// Pre-patching lets use() return synchronously without suspending.
+
 function resolvedParams(id: string): Promise<{ id: string }> {
   const p = Promise.resolve({ id }) as any
   p.status = 'fulfilled'
@@ -37,7 +36,6 @@ function resolvedParams(id: string): Promise<{ id: string }> {
   return p
 }
 
-// Flush all pending React updates and microtasks (useEffect async callbacks).
 async function flush() {
   await act(async () => {})
 }

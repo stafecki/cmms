@@ -146,7 +146,7 @@ describe('NotificationsPage', () => {
     it('wyświetla typ powiadomienia jako tag', async () => {
       render(<NotificationsPage />)
       await flush()
-      expect(screen.getByText('CRITICAL_FAILURE')).toBeInTheDocument()
+      expect(screen.getByText('Awaria krytyczna')).toBeInTheDocument()
     })
   })
 
@@ -453,7 +453,7 @@ describe('NotificationsPage', () => {
       await flush()
       fireEvent.click(screen.getByRole('button', { name: '+ Nowe powiadomienie' }))
       await flush()
-      expect(mockedFetchUsers).toHaveBeenCalledWith(200)
+      expect(mockedFetchUsers).toHaveBeenCalledWith(100)
     })
 
     it('wyświetla użytkowników w selekcie odbiorcy', async () => {
